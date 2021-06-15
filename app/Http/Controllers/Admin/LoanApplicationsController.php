@@ -38,6 +38,9 @@ class LoanApplicationsController extends Controller
     public function store(StoreLoanApplicationRequest $request)
     {
         $loanApplication = LoanApplication::create($request->only('loan_amount', 'description'));
+        //dd($loanApplication);
+
+        //create fiorebase calls to insert to firebase
 
         return redirect()->route('admin.loan-applications.index');
     }
@@ -54,12 +57,17 @@ class LoanApplicationsController extends Controller
 
         $loanApplication->load('status');
 
+        //dd('edit'.$loanApplication);
+        //getting data from cfo to ceo to approve to send to client money(updater method below)
+
         return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'));
     }
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
     {
         $loanApplication->update($request->only('loan_amount', 'description', 'status_id'));
+        //dd('update'.$loanApplication);
+        //when updating the paymne t status of the loan to send money to user
 
         return redirect()->route('admin.loan-applications.index');
     }

@@ -8,4 +8,9 @@ class HomeController
     {
         return redirect()->route('admin.loan-applications.index');
     }
+
+    public function dashboard()
+    {
+        return view('admin.loanApplications.dashboard');
+    }
 }

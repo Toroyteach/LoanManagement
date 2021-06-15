@@ -36,7 +36,7 @@ class LoanApplicationObserver
     {
         $admins = Role::find(1)->users;
 
-        Notification::send($admins, new NewApplicationNotification($loanApplication));
+        //Notification::send($admins, new NewApplicationNotification($loanApplication));
     }
 
     /**
@@ -55,13 +55,13 @@ class LoanApplicationObserver
                     $user = $loanApplication->cfo;
                 }
 
-                Notification::send($user, new SentForAnalysisNotification($loanApplication));
+                //Notification::send($user, new SentForAnalysisNotification($loanApplication));
             } elseif (in_array($loanApplication->status_id, [3, 4, 6, 7])) {
                 $users = Role::find(1)->users;
 
-                Notification::send($users, new SubmittedAnalysisNotification($loanApplication));
+                //Notification::send($users, new SubmittedAnalysisNotification($loanApplication));
             } elseif (in_array($loanApplication->status_id, [8, 9])) {
-                $loanApplication->created_by->notify(new StatusChangeNotification($loanApplication));
+                //$loanApplication->created_by->notify(new StatusChangeNotification($loanApplication));
             }
         }
     }

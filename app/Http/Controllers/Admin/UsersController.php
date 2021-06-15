@@ -37,6 +37,14 @@ class UsersController extends Controller
         $user = User::create($request->all());
         $user->roles()->sync($request->input('roles', []));
 
+        //create fiorebase calls to insert to firebase
+        $stuRef = app('firebase.firestore')->database()->collection('Customers')->newDocument();
+        $stuRef->set([
+            'firstname' => $user->name,
+            'lastname' => $user->name,
+            'email' => $user->emails
+        ]);
+
         return redirect()->route('admin.users.index');
     }
 
@@ -55,6 +63,7 @@ class UsersController extends Controller
     {
         $user->update($request->all());
         $user->roles()->sync($request->input('roles', []));
+        //update firebase data
 
         return redirect()->route('admin.users.index');
     }

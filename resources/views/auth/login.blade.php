@@ -4,7 +4,7 @@
     <div class="col-md-6">
         <div class="card mx-4">
             <div class="card-body p-4">
-                <h1>{{ trans('panel.site_title') }}</h1>
+                <h1>Member Login</h1>
 
                 <p class="text-muted">{{ trans('global.login') }}</p>
 
@@ -16,6 +16,22 @@
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fa fa-id-badge"></i>
+                            </span>
+                        </div>
+
+                        <input id="idno" name="idno" type="number" class="form-control{{ $errors->has('idno') ? ' is-invalid' : '' }}"  autocomplete="idno" autofocus placeholder="Id No" value="{{ old('idno', null) }}">
+
+                        @if($errors->has('idno'))
+                            <div class="invalid-feedback">
+                                {{ $errors->first('idno') }}
+                            </div>
+                        @endif
+                    </div>
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">

@@ -9,11 +9,20 @@ Route::get('/home', function () {
     return redirect()->route('admin.loan-applications.index');
 });
 
+Route::get('/index', 'Front\FrontendController@index')->name('index');
+Route::get('/about', 'Front\FrontendController@about')->name('about');
+Route::get('/team', 'Front\FrontendController@team')->name('team');
+Route::get('/contact', 'Front\FrontendController@contact')->name('contact');
+Route::get('/portfolio', 'Front\FrontendController@portfolio')->name('portfolio');
+Route::get('/services', 'Front\FrontendController@services')->name('services');
+Route::get('/pricing', 'Front\FrontendController@pricing')->name('pricing');
+
 Auth::routes();
 // Admin
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/dashboard', 'HomeController@dashboard')->name('dashboard');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
     Route::resource('permissions', 'PermissionsController');
