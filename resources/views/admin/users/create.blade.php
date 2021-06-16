@@ -40,6 +40,15 @@
                 <span class="help-block">{{ trans('cruds.user.fields.password_helper') }}</span>
             </div>
             <div class="form-group">
+                <label class="required" for="password">Number</label>
+                <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" value="+254..." name="number" id="number" required>
+                @if($errors->has('number'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('number') }}
+                    </div>
+                @endif
+            </div>
+            <div class="form-group">
                 <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
                 <div style="padding-bottom: 4px">
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>

@@ -11,9 +11,17 @@ use App\User;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Kreait\Firebase\Auth;
 
 class UsersController extends Controller
 {
+    // protected $auth;
+
+    // public function __construct(Auth $auth)
+    // {
+    //     $this->auth = $auth;
+    // }
+
     public function index()
     {
         abort_if(Gate::denies('user_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -36,16 +44,28 @@ class UsersController extends Controller
     {
         $user = User::create($request->all());
         $user->roles()->sync($request->input('roles', []));
+        //dd($request);
 
         //create fiorebase calls to insert to firebase
-        $stuRef = app('firebase.firestore')->database()->collection('Customers')->newDocument();
-        $stuRef->set([
-            'firstname' => $user->name,
-            'lastname' => $user->name,
-            'email' => $user->emails
-        ]);
+        $userProperties = [
+            'email' => $user->email,
+            'emailVerified' => false,
+            'phoneNumber' => $request->number,
+            'password' => $request->password,
+            'displayName' => $user->name,
+            'photoUrl' => '',
+            'disabled' => false,
+        ];
 
-        return redirect()->route('admin.users.index');
+        $newUser = $this->createUser($userProperties);
+        if(!$newUser){
+            dd('error creating new user');
+        } else {
+            return redirect()->route('admin.users.index');
+
+        }
+
+        // return redirect()->route('admin.users.index');
     }
 
     public function edit(User $user)
@@ -91,5 +111,12 @@ class UsersController extends Controller
         User::whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function createUser($user)
+    {
+        $auth = app('firebase.auth');
+        $auth->createUser($user);
+        return $auth;
     }
 }

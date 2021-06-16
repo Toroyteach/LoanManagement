@@ -25,6 +25,7 @@ class LoanApplication extends Model
         'loan_amount',
         'description',
         'analyst_id',
+        'firebaseid',
         'cfo_id',
         'created_at',
         'updated_at',

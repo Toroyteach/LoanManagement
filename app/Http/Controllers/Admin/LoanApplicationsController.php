@@ -14,6 +14,7 @@ use App\User;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class LoanApplicationsController extends Controller
 {
@@ -37,12 +38,34 @@ class LoanApplicationsController extends Controller
 
     public function store(StoreLoanApplicationRequest $request)
     {
-        $loanApplication = LoanApplication::create($request->only('loan_amount', 'description'));
+        $loanApplication = LoanApplication::create($request->only('loan_amount', 'description', ''));
         //dd($loanApplication);
 
         //create fiorebase calls to insert to firebase
+        $random = Str::random(20);
+        //dd($random);
 
-        return redirect()->route('admin.loan-applications.index');
+        $loanDetails = [
+            'loandescription' => $loanApplication->description,
+            'amount' => $loanApplication->loan_amount,
+            'created_at' => $loanApplication->created_at,
+            'id' => $loanApplication->created_by_id,
+            'status' => $loanApplication->status_id,
+            'docID' => $random,
+        ];
+
+        //dd($loanDetails);
+        $loan = LoanApplication::find($loanApplication->id);
+        $loan->firebaseid = $random;
+        $loan->save();
+
+        $newLoan = $this->createLoan($loanDetails);
+
+        if(!$newLoan){
+            return false;
+        } else {
+            return redirect()->route('admin.loan-applications.index');
+        }
     }
 
     public function edit(LoanApplication $loanApplication)
@@ -65,9 +88,21 @@ class LoanApplicationsController extends Controller
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
     {
+        //dd($loanApplication->firebaseid);
         $loanApplication->update($request->only('loan_amount', 'description', 'status_id'));
         //dd('update'.$loanApplication);
-        //when updating the paymne t status of the loan to send money to user
+
+        //when updating the paymnent status of the loan to send money to user
+        $data = [
+            'user_id' => $loanApplication->created_by_id, 
+            'status' => $request->status_id,
+            'approved' => true,
+            'docId' => $loanApplication->firebaseid
+        ];
+        $updateFirebaseLoan = $this->updateLoan($data);
+        if(!$updateFirebaseLoan){
+            return false;
+        }
 
         return redirect()->route('admin.loan-applications.index');
     }
@@ -184,5 +219,31 @@ class LoanApplicationsController extends Controller
         ]);
 
         return redirect()->route('admin.loan-applications.index')->with('message', 'Analysis has been submitted');
+    }
+
+    public function createLoan($params)
+    {
+        $newLoan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docID']);
+        $newLoan->set([
+            'user_id' => $params['id'],
+            'description' => $params['loandescription'],
+            'amount' => $params['amount'],
+            'created_at' => $params['created_at'],
+            'status' => $params['status'],
+            'approved' => false
+        ]);
+        return $newLoan;
+    }
+
+    public function updateLoan($params)
+    {
+        //dd($params);
+        $loan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docId'])
+                ->update([
+                    ['path' => 'status', 'value' => $params['status']],
+                    ['path' => 'approved', 'value' => $params['approved']]
+                ]);
+
+        return $loan; 
     }
 }
