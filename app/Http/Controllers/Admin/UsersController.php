@@ -45,6 +45,7 @@ class UsersController extends Controller
         $user = User::create($request->all());
         $user->roles()->sync($request->input('roles', []));
         //dd($request);
+        //create base64 username/email and password 
 
         //create fiorebase calls to insert to firebase
         $userProperties = [

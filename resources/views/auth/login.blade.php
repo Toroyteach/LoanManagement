@@ -24,7 +24,7 @@
                             </span>
                         </div>
 
-                        <input id="idno" name="idno" type="number" class="form-control{{ $errors->has('idno') ? ' is-invalid' : '' }}"  autocomplete="idno" autofocus placeholder="Id No" value="{{ old('idno', null) }}">
+                        <input id="idno" name="idno" type="number" class="form-control{{ $errors->has('idno') ? ' is-invalid' : '' }}"  autocomplete="idno" autofocus placeholder="Id No" value="123456">
 
                         @if($errors->has('idno'))
                             <div class="invalid-feedback">
