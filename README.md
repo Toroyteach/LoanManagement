@@ -15,4 +15,3 @@ It is a demo project for demonstrating of Business Process Management in Laravel
 
 Basically, feel free to use and re-use any way you want.
 
----
