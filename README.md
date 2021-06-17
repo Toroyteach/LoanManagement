@@ -1,6 +1,6 @@
 # Laravel Loan Management Process
 
-It is a demo project for demonstrating of Business Process Management in Laravel
+It is a demo project for demonstrating of Business Process Management in Laravel.
 
 ## How to use
 
@@ -14,6 +14,4 @@ It is a demo project for demonstrating of Business Process Management in Laravel
 ## License
 
 Basically, feel free to use and re-use any way you want.
-
----
 
