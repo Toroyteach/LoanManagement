@@ -57,6 +57,7 @@ class UsersController extends Controller
             'photoUrl' => '',
             'disabled' => false,
         ];
+        //check if you can add extra field idno. you cant
 
         $newUser = $this->createUser($userProperties);
         if(!$newUser){

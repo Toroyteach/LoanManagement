@@ -49,6 +49,15 @@
                 @endif
             </div>
             <div class="form-group">
+                <label class="required" for="password">Account No</label>
+                <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="" name="idno" id="idno" required>
+                @if($errors->has('idno'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('idno') }}
+                    </div>
+                @endif
+            </div>
+            <div class="form-group">
                 <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
                 <div style="padding-bottom: 4px">
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
