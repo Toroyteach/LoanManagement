@@ -4,9 +4,12 @@ Route::redirect('/', '/index');
 Route::get('/home', function () {
     if (session('status')) {
         return redirect()->route('admin.loan-applications.index')->with('status', session('status'));
+        // return redirect()->route('admin.dashboard');
     }
 
-    return redirect()->route('admin.loan-applications.index');
+    //return redirect()->route('admin.loan-applications.index');
+    return redirect()->route('admin.dashboard');
+
 });
 
 Route::get('/index', 'Front\FrontendController@index')->name('index');

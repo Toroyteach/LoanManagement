@@ -11,7 +11,7 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-shopping-cart"></i></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">New Orders</h5>
+                        <h5 class="card-title mb-0">Active Loans</h5>
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
@@ -34,7 +34,7 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-users"></i></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Customers</h5>
+                        <h5 class="card-title mb-0">Pending Loans</h5>
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
@@ -57,7 +57,7 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-ticket-alt"></i></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Ticket Resolved</h5>
+                        <h5 class="card-title mb-0">Total Paid</h5>
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">

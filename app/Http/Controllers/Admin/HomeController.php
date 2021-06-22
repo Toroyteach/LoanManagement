@@ -11,6 +11,7 @@ class HomeController
 
     public function dashboard()
     {
+        //get and send loan details
         return view('admin.loanApplications.dashboard');
     }
 }

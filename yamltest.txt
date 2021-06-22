@@ -1,0 +1,49 @@
+runtime: php  # language of the app
+env: flex     # let app engine know we use flexible environment
+
+runtime_config:
+ document_root: public   #folder where index.php is
+ 
+ # Ensure we skip ".env", which is only for local development
+skip_files:
+ - .env #we want to skip this to make sure we don’t mess stuff up on the server
+ 
+ env_variables:
+# Put production environment variables here.
+ APP_ENV: local   # or production
+ APP_DEBUG : true # or false 
+ APP_KEY: base64:FqwXmLtL6szdWqIVydb7nKs2eyvHib4lf6d5l6A/XW4= 
+ 
+#go to generate app key paragraf in this tutorial 
+
+CACHE_DRIVER: database
+
+# instead of putting the cache in the database I recommend using redis
+ SESSION_DRIVER: database #or file since both work 
+ APP_LOG: daily
+ APP_TIMEZONE: UTC #your timezone of choice
+ 
+# follow the part of the tutorial on setting up your SQL database
+ DB_CONNECTION: mysql
+ DB_HOST: localhost
+ DB_DATABASE: instance_id
+ DB_USERNAME: database_user_name
+ DB_PASSWORD: database_password
+ DB_SOCKET: /cloudsql/instance_name 
+ 
+ QUEUE_DRIVER: database #in case you execute queued jobs MAIL_DRIVER: smtp
+ 
+ MAIL_HOST: smtp.sparkpostmail.com
+ MAIL_PORT: 587
+ MAIL_USERNAME: sparkpost_username
+ MAIL_PASSWORD: **************** 
+ 
+ LOG_DELETE:  true # this is a parameter added by us in the project .env file. You can add here any setting you would add to your .env file 
+ 
+ GOOGLE_VISION_PROJECT_ID : project_id
+ 
+ #we need this for the flex environment
+beta_settings:
+   # for Cloud SQL, set this value to the Cloud SQL connection name,
+   # e.g. "project:region:cloudsql-instance"
+   cloud_sql_instances: project:cloudsql-instance
