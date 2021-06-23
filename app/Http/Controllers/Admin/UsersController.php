@@ -42,6 +42,15 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request)
     {
+        $this->validate(request(), [
+            'number' => 
+                array(
+                    'required',
+                    'regex:/(254)[0-9]{9}/'
+                )
+        ]);
+        //dd('correct');
+
         $user = User::create($request->all());
         $user->roles()->sync($request->input('roles', []));
         //dd($request);

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+use App\LoanApplication;
 
 class HomeController
 {
@@ -12,6 +13,16 @@ class HomeController
     public function dashboard()
     {
         //get and send loan details
-        return view('admin.loanApplications.dashboard');
+        if(\Auth::user()->getIsUserAttribute()){
+
+            $loan = LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount');
+            //dd(LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount'));
+
+        } else {
+
+            $loan = LoanApplication::sum('loan_amount');
+
+        }
+        return view('admin.loanApplications.dashboard', compact('loan'));
     }
 }
