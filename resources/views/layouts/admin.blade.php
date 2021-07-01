@@ -33,7 +33,6 @@
                 <i class="fas fa-fw fa-bars"></i>
             </button>
 
-            <a class="c-header-brand d-lg-none" href="#">{{ trans('panel.site_title') }}</a>
 
             <button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
                 <i class="fas fa-fw fa-bars"></i>
@@ -52,9 +51,32 @@
                         </div>
                     </li>
                 @endif
-
-
             </ul>
+
+
+            <nav class="navbar navbar-dark bg-dark navbar-expand-sm">
+              <a class="navbar-brand" href="#">
+              {{ Auth::user()->name }} 
+              </a>
+              <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-list-4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button> -->
+              <div class="collapse navbar-collapse" id="navbar-list-4">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                      <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                      <a class="dropdown-item" href="{{ route('profile.password.edit') }}">Edit Profile</a>
+                      <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logoutform').submit();">Log Out</a>
+                    </div>
+                  </li>   
+                </ul>
+              </div>
+            </nav>
+            
         </header>
 
         <div class="c-body">
@@ -171,14 +193,6 @@
         }
       },
       {
-        extend: 'copy',
-        className: 'btn-default',
-        text: copyButtonTrans,
-        exportOptions: {
-          columns: ':visible'
-        }
-      },
-      {
         extend: 'csv',
         className: 'btn-default',
         text: csvButtonTrans,
@@ -210,14 +224,6 @@
           columns: ':visible'
         }
       },
-      {
-        extend: 'colvis',
-        className: 'btn-default',
-        text: colvisButtonTrans,
-        exportOptions: {
-          columns: ':visible'
-        }
-      }
     ]
   });
 

@@ -9,16 +9,29 @@
     <div class="card-body">
         <form method="POST" action="{{ route("admin.users.store") }}" enctype="multipart/form-data">
             @csrf
-            <div class="form-group">
-                <label class="required" for="name">{{ trans('cruds.user.fields.name') }}</label>
-                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>
-                @if($errors->has('name'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('name') }}
-                    </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.user.fields.name_helper') }}</span>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="required" for="firstname">{{ trans('cruds.user.fields.firstname') }}</label>
+                    <input class="form-control {{ $errors->has('firstname') ? 'is-invalid' : '' }}" type="text" name="firstname" id="firstname" value="{{ old('firstname', '') }}" required>
+                    @if($errors->has('firstname'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('firstname') }}
+                        </div>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.user.fields.firstname_helper') }}</span>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="required" for="lastname">{{ trans('cruds.user.fields.lastname') }}</label>
+                    <input class="form-control {{ $errors->has('lastname') ? 'is-invalid' : '' }}" type="text" name="lastname" id="lastname" value="{{ old('lastname', '') }}" required>
+                    @if($errors->has('lastname'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('lastname') }}
+                        </div>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.user.fields.lastname_helper') }}</span>
+                </div>
             </div>
+
             <div class="form-group">
                 <label class="required" for="email">{{ trans('cruds.user.fields.email') }}</label>
                 <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email') }}" required>
@@ -41,7 +54,7 @@
             </div>
             <div class="form-group">
                 <label class="required" for="password">Number</label>
-                <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="+254000000000" value="+254..." name="number" id="number" required>
+                <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="254..." value="+254..." name="number" id="number" required>
                 @if($errors->has('number'))
                     <div class="invalid-feedback">
                         {{ $errors->first('number') }}
@@ -54,6 +67,15 @@
                 @if($errors->has('idno'))
                     <div class="invalid-feedback">
                         {{ $errors->first('idno') }}
+                    </div>
+                @endif
+            </div>
+            <div class="form-group">
+                <label class="required" for="password">Profile Image</label>
+                <input class="form-control {{ $errors->has('avatar') ? 'is-invalid' : '' }}" type="file" value="" name="avatar" id="avatar" required>
+                @if($errors->has('avatar'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('avatar') }}
                     </div>
                 @endif
             </div>

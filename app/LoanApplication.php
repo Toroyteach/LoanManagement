@@ -24,6 +24,10 @@ class LoanApplication extends Model
     protected $fillable = [
         'loan_amount',
         'description',
+        'repaid_amount',
+        'repaid_status',
+        'duration',
+        'loan_type',
         'analyst_id',
         'firebaseid',
         'cfo_id',

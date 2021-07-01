@@ -15,7 +15,7 @@ class AddNumberOnUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->string('number');
+            $table->string('number')->unique();
         });
     }
 

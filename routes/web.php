@@ -1,6 +1,6 @@
 <?php
 
-Route::redirect('/', '/index');
+Route::redirect('/', '/login');
 Route::get('/home', function () {
     if (session('status')) {
         return redirect()->route('admin.loan-applications.index')->with('status', session('status'));
@@ -13,12 +13,12 @@ Route::get('/home', function () {
 });
 
 Route::get('/index', 'Front\FrontendController@index')->name('index');
-Route::get('/about', 'Front\FrontendController@about')->name('about');
-Route::get('/team', 'Front\FrontendController@team')->name('team');
-Route::get('/contact', 'Front\FrontendController@contact')->name('contact');
-Route::get('/portfolio', 'Front\FrontendController@portfolio')->name('portfolio');
-Route::get('/services', 'Front\FrontendController@services')->name('services');
-Route::get('/pricing', 'Front\FrontendController@pricing')->name('pricing');
+// Route::get('/about', 'Front\FrontendController@about')->name('about');
+// Route::get('/team', 'Front\FrontendController@team')->name('team');
+// Route::get('/contact', 'Front\FrontendController@contact')->name('contact');
+// Route::get('/portfolio', 'Front\FrontendController@portfolio')->name('portfolio');
+// Route::get('/services', 'Front\FrontendController@services')->name('services');
+// Route::get('/pricing', 'Front\FrontendController@pricing')->name('pricing');
 
 Auth::routes();
 // Admin
@@ -49,6 +49,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('loan-applications/{loan_application}/send', 'LoanApplicationsController@showSend')->name('loan-applications.showSend');
     Route::post('loan-applications/{loan_application}/send', 'LoanApplicationsController@send')->name('loan-applications.send');
     Route::resource('loan-applications', 'LoanApplicationsController');
+
+    Route::get('status/active/loan-applications', 'LoanApplicationsController@activeLoans')->name('active.loans');
+    Route::get('status/cleared/loan-applications', 'LoanApplicationsController@clearedLoans')->name('cleared.loans');
+    Route::get('status/loan-applications/defaultors', 'LoanApplicationsController@defaultors')->name('defaultors');
 
     // Comments
     Route::delete('comments/destroy', 'CommentsController@massDestroy')->name('comments.massDestroy');

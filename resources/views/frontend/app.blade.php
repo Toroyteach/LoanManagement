@@ -26,6 +26,8 @@
   <link href="{{ asset('frontend/assets/vendor/aos/aos.css') }}" rel="stylesheet">
   <link href="{{ asset('frontend/assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
 
+
+
   <!-- Template Main CSS File -->
   <link href="{{ asset('frontend/assets/css/style.css') }}" rel="stylesheet">
 
@@ -172,6 +174,15 @@
 <script src="{{ asset('frontend/assets/vendor/waypoints/jquery.waypoints.min.js') }}"></script>
 <script src="{{ asset('frontend/assets/vendor/owl.carousel/owl.carousel.min.js') }}"></script>
 <script src="{{ asset('frontend/assets/vendor/aos/aos.js') }}"></script>
+
+<!-- Core -->
+<script src="{{ asset('frontend/charts/assets/vendor/jquery/dist/jquery.min.js') }} "></script>
+<script src="{{ asset('frontend/charts/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+
+<!-- Argon JS -->
+<script src="{{ asset('frontend/charts/assets/js/argon.min.js') }}"></script>
+
+
 
 <!-- Template Main JS File -->
 <script src="{{ asset('frontend/assets/js/main.js') }}"></script>

@@ -19,7 +19,10 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'     => [
+            'firstname'     => [
+                'required',
+            ],
+            'lastname'     => [
                 'required',
             ],
             'email'    => [
@@ -28,6 +31,10 @@ class StoreUserRequest extends FormRequest
             ],
             'password' => [
                 'required',
+            ],
+            'avatar'  => [
+                'required',
+                'image:jpeg,png,jpg,gif,svg|max:2048',
             ],
             'roles.*'  => [
                 'integer',

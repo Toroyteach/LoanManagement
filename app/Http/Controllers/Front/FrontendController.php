@@ -11,7 +11,7 @@ class FrontendController extends Controller
 
     public function index()
     {
-        return view('frontend.pages.home');
+        return view('onepage.index');
     }
 
     public function about()

@@ -15,8 +15,8 @@
     </div>
 
     <div class="card-body">
-        <div class="table-responsive">
-            <table class=" table table-bordered table-striped table-hover datatable datatable-LoanApplication">
+        <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
+            <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
                 <thead>
                     <tr>
                         <th width="10">
@@ -34,12 +34,18 @@
                         <th>
                             {{ trans('cruds.loanApplication.fields.status') }}
                         </th>
+                        <th>
+                            Loan Type
+                        </th>
+                        <th>
+                            Loan Applicant Name
+                        </th>
+                        <th>
+                            Loan Applicant Id No
+                        </th>
                         @if($user->is_admin)
                             <th>
-                                {{ trans('cruds.loanApplication.fields.analyst') }}
-                            </th>
-                            <th>
-                                {{ trans('cruds.loanApplication.fields.cfo') }}
+                                Approved By
                             </th>
                         @endif
                         <th>
@@ -54,7 +60,7 @@
 
                             </td>
                             <td>
-                                {{ $loanApplication->id ?? '' }}
+                                {{ $key++ }}
                             </td>
                             <td>
                                 {{ $loanApplication->loan_amount ?? '' }}
@@ -65,10 +71,16 @@
                             <td>
                                 {{ $user->is_user && $loanApplication->status_id < 8 ? $defaultStatus->name : $loanApplication->status->name }}
                             </td>
+                            <td>
+                                {{ $loanApplication->loan_type }}
+                            </td>
+                            <td>
+                                {{ $loanApplication->created_by->name }}
+                            </td>
+                            <td>
+                                {{ $loanApplication->created_by->idno }}
+                            </td>
                             @if($user->is_admin)
-                                <td>
-                                    {{ $loanApplication->analyst->name ?? '' }}
-                                </td>
                                 <td>
                                     {{ $loanApplication->cfo->name ?? '' }}
                                 </td>
@@ -162,13 +174,13 @@
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   });
-  let table = $('.datatable-LoanApplication:not(.ajaxTable)').DataTable({ buttons: dtButtons })
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-      $($.fn.dataTable.tables(true)).DataTable()
-          .columns.adjust();
-  });
 
-})
+  let table = $('.datatable-LoanApplication:not(.ajaxTable)').DataTable({ buttons: dtButtons })
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+        $($.fn.dataTable.tables(true)).DataTable().columns.adjust();
+    });
+
+});
 
 </script>
 @endsection

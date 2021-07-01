@@ -8,6 +8,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Role;
 use App\User;
+use App\UsersAccount;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,26 +50,50 @@ class UsersController extends Controller
                     'regex:/(254)[0-9]{9}/'
                 )
         ]);
-        //dd('correct');
+        //dd($request->all());
+        //created users account table as well
 
         $user = User::create($request->all());
+        UsersAccount::create([
+            'total_amount' => '0.00',
+            'user_id' => $user->id,
+        ]);
+        $user->name = $request->firstname.' '.$request->lastname;
+        $user->save();
         $user->roles()->sync($request->input('roles', []));
-        //dd($request);
+
+            	// Handle the user upload of avatar
+    	if($request->hasFile('avatar')){
+            
+    		$avatar = $request->file('avatar');
+    		$filename = time() . '.' . $avatar->getClientOriginalExtension();
+    		//Image::make($avatar)->resize(300, 300)->save( public_path('/uploads/avatars/' . $filename ) );
+        
+            $avatar->move(public_path('images'), $filename);
+
+    		$user->avatar = $filename;
+    		$user->save();
+    	}
+        
+        //dd('user created');
         //create base64 username/email and password 
 
         //create fiorebase calls to insert to firebase
         $userProperties = [
             'email' => $user->email,
             'emailVerified' => false,
-            'phoneNumber' => $request->number,
+            'phoneNumber' => '+'.$request->number,
             'password' => $request->password,
-            'displayName' => $user->name,
+            'displayName' => $user->firstname.' '.$user->lastname,
             'photoUrl' => '',
             'disabled' => false,
         ];
         //check if you can add extra field idno. you cant
 
+        //dd($userProperties);
+
         $newUser = $this->createUser($userProperties);
+
         if(!$newUser){
             dd('error creating new user');
         } else {

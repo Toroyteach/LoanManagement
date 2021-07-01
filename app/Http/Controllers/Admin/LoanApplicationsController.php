@@ -7,6 +7,7 @@ use App\Http\Requests\MassDestroyLoanApplicationRequest;
 use App\Http\Requests\StoreLoanApplicationRequest;
 use App\Http\Requests\UpdateLoanApplicationRequest;
 use App\LoanApplication;
+use App\UsersAccount;
 use App\Role;
 use App\Services\AuditLogService;
 use App\Status;
@@ -15,6 +16,7 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class LoanApplicationsController extends Controller
 {
@@ -38,7 +40,8 @@ class LoanApplicationsController extends Controller
 
     public function store(StoreLoanApplicationRequest $request)
     {
-        $loanApplication = LoanApplication::create($request->only('loan_amount', 'description', ''));
+        //dd($request->all());
+        $loanApplication = LoanApplication::create($request->only('loan_amount', 'description', 'loan_type', 'duration'));
         //dd($loanApplication);
 
         //create fiorebase calls to insert to firebase
@@ -54,11 +57,10 @@ class LoanApplicationsController extends Controller
             'docID' => $random,
         ];
 
-        //dd($loanDetails);
-        $loan = LoanApplication::find($loanApplication->id);
-        $loan->firebaseid = $random;
-        $loan->save();
-
+        $loanApplication->firebaseid = $random;
+        $loanApplication->repayment_date = date('Y-m-d', strtotime($request->duration.' months'));
+        $loanApplication->save();
+        
         $newLoan = $this->createLoan($loanDetails);
 
         if(!$newLoan){
@@ -88,20 +90,31 @@ class LoanApplicationsController extends Controller
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
     {
-        //dd($loanApplication->firebaseid);
+        //dd($request->all());
         $loanApplication->update($request->only('loan_amount', 'description', 'status_id'));
         //dd('update'.$loanApplication);
 
+        $userData = UsersAccount::where('user_id', 43)->firstOrFail();
+        $userData->increment('total_amount', $loanApplication->loan_amount);
+        //dd($userData);
         //when updating the paymnent status of the loan to send money to user
-        $data = [
-            'user_id' => $loanApplication->created_by_id, 
-            'status' => $request->status_id,
-            'approved' => true,
-            'docId' => $loanApplication->firebaseid
-        ];
-        $updateFirebaseLoan = $this->updateLoan($data);
-        if(!$updateFirebaseLoan){
-            return false;
+
+        if($request->status_id == 8){
+
+            $data = [
+                'user_id' => $loanApplication->created_by_id, 
+                'status' => $request->status_id,
+                'approved' => true,
+                'docId' => $loanApplication->firebaseid
+            ];
+
+            $updateFirebaseLoan = $this->updateLoan($data);
+
+            if(!$updateFirebaseLoan){
+                return false;
+            }
+            //dd('success');
+
         }
 
         return redirect()->route('admin.loan-applications.index');
@@ -245,5 +258,49 @@ class LoanApplicationsController extends Controller
                 ]);
 
         return $loan; 
+    }
+
+    public function activeLoans()
+    {
+        //return all active loans return only approvec loans
+        abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('status_id', 8)->get();
+        $defaultStatus    = Status::find(1);
+        $user             = auth()->user();
+
+        return view('admin.loanApplications.activeloans', compact('loanApplications', 'defaultStatus', 'user'));
+    }
+
+    public function clearedLoans()
+    {
+        //return all cleared loans. check repaid status
+        abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('repaid_status', 1)->get();
+        $defaultStatus    = Status::find(1);
+        $user             = auth()->user();
+
+        return view('admin.loanApplications.clearedloans', compact('loanApplications', 'defaultStatus', 'user'));
+    }
+
+    public function defaultors()
+    {
+        //return all logice to calculate defaultors loans
+        abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        //only checking dates more than a month after repaid date was set.
+        //creats repayment date
+        $now = Carbon::create(2021, 06, 30, 11, 59, 59, 'CAT')->addMonths(3);
+        // get todays date
+        // get repaymnet set date
+        // $this add repayment plus 3 months
+        //check repaymtn dat passed $this
+        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('status_id', '>', 8)->where('repaid_status', 0)->whereDate('repayment_date', '<=', $now)->get();
+        $defaultStatus    = Status::find(1);
+        $user             = auth()->user();
+        //dd($loanApplications);
+
+        return view('admin.loanApplications.defaultors', compact('loanApplications', 'defaultStatus', 'user'));
     }
 }

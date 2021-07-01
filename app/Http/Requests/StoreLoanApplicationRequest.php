@@ -19,8 +19,10 @@ class StoreLoanApplicationRequest extends FormRequest
     public function rules()
     {
         return [
-            'loan_amount' => [ 'required', 'gt:0',
-            ],
+            'loan_amount' => [ 'required', 'gt:0', ],
+            'description' => ['required'],
+            'duration' => ['required', 'gt:0',],
+            'loan_type' => ['required'],
         ];
     }
 }

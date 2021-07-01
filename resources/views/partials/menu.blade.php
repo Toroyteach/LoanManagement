@@ -2,12 +2,12 @@
 
     <div class="c-sidebar-brand d-md-down-none">
         <a class="c-sidebar-brand-full h4" href="{{ route('admin.dashboard') }}">
-            {{ trans('panel.site_title') }}
+            {{ config('app.name') }}
         </a>
     </div>
 
     <ul class="c-sidebar-nav">
-        @can('user_management_access')
+        @can('user_management_access')  
             <li class="c-sidebar-nav-dropdown">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
                     <i class="fa-fw fas fa-users c-sidebar-nav-icon">
@@ -59,16 +59,58 @@
                 </a>
             </li>
         @endcan
-        @can('loan_application_access')
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route("admin.loan-applications.index") }}" class="c-sidebar-nav-link {{ request()->is('admin/loan-applications') || request()->is('admin/loan-applications/*') ? 'active' : '' }}">
-                    <i class="fa-fw fas fa-file-alt c-sidebar-nav-icon">
+
+        @can('loan_application_access')  
+            <li class="c-sidebar-nav-dropdown">
+                <a class="c-sidebar-nav-dropdown-toggle" href="#">
+                    <i class="fa-fw fas fa-users c-sidebar-nav-icon">
 
                     </i>
-                    {{ trans('cruds.loanApplication.title') }}
+                    Loan Management
                 </a>
+                <ul class="c-sidebar-nav-dropdown-items">
+                    <li class="c-sidebar-nav-item">
+                        <a href="{{ route("admin.loan-applications.index") }}" class="c-sidebar-nav-link {{ request()->is('admin/loan-applications') || request()->is('admin/loan-applications/*') ? 'active' : '' }}">
+                            <i class="fa-fw fas fa-file-alt c-sidebar-nav-icon">
+
+                            </i>
+                            {{ trans('cruds.loanApplication.title') }}
+                        </a>
+                    </li>
+                    @can('view_loan_status')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.active.loans') }}" class="c-sidebar-nav-link {{ request()->is('admin/active/loans') || request()->is('admin/active/loans/*') ? 'active' : '' }}">
+                            <i class="fas fa-money-check c-sidebar-nav-icon"></i>
+
+                                </i>
+                                Active Loans
+                            </a>
+                        </li>
+                    @endcan
+                    @can('view_loan_status')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.cleared.loans') }}" class="c-sidebar-nav-link {{ request()->is('admin/cleared/loans') || request()->is('admin/cleared/loans/*') ? 'active' : '' }}">
+                            <i class="fas fa-money-check-alt c-sidebar-nav-icon"></i>
+
+                                </i>
+                                Cleared Loans
+                            </a>
+                        </li>
+                    @endcan
+                    @can('view_loan_status')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.defaultors') }}" class="c-sidebar-nav-link {{ request()->is('admin/defaultors') || request()->is('admin/defaultors/*') ? 'active' : '' }}">
+                            <i class="fas fa-exclamation-circle c-sidebar-nav-icon"></i>
+
+                                </i>
+                                Defaulters
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
             </li>
         @endcan
+
         @can('comment_access')
             <li class="c-sidebar-nav-item">
                 <a href="{{ route("admin.comments.index") }}" class="c-sidebar-nav-link {{ request()->is('admin/comments') || request()->is('admin/comments/*') ? 'active' : '' }}">
