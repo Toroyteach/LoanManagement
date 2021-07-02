@@ -105,12 +105,20 @@
     </div>
 </div>
 <div class="container-fluid">
-    <div class="row">
-        <div class="card bg-default col-md-6">
+    <div class="row d-flex justify-content-between">
+        <div class="card bg-default col-md-5">
             <div class="card-body">
                 <div class="chart">
                     <!-- Chart wrapper -->
-                    <canvas id="myChartId" width="400" height="400"></canvas>
+                    <canvas id="myChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="card bg-default col-md-5">
+            <div class="card-body">
+                <div class="chart">
+                    <!-- Chart wrapper -->
+                    <canvas id="myChart2" width="400" height="400"></canvas>
                 </div>
             </div>
         </div>
@@ -119,33 +127,55 @@
 
 
 @endsection
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // === include 'setup' then 'config' above ===
-  const labels = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-];
-  const data = {
-  labels: labels,
-  datasets: [{
-    label: 'My First dataset',
-    backgroundColor: 'rgb(255, 99, 132)',
-    borderColor: 'rgb(255, 99, 132)',
-    data: [0, 10, 5, 2, 20, 30, 45],
-  }]
-};
+<script type="text/javascript">
 
-const config = {
-  type: 'line',
-  data,
-  options: {}
-};
+$(document).ready(function(){
 
-var ctx = document.getElementById('myChartId').getContext('2d');
-var myChart = new Chart( ctx, config);
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: 'My First Dataset',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    var ctx2 = document.getElementById('myChart2').getContext('2d');
+    var myChart2 = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: 'My First Dataset',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+});
 </script>
