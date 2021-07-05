@@ -11,7 +11,7 @@
 @endcan
 <div class="card">
     <div class="card-header">
-        Defaultors
+        Defaulters
     </div>
 
     <div class="card-body">
@@ -41,7 +41,7 @@
                             Loan Applicant Name
                         </th>
                         <th>
-                            Loan Applicant Id No
+                            Member No
                         </th>
                         @if($user->is_admin)
                             <th>

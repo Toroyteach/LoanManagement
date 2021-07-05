@@ -113,7 +113,7 @@ return [
         'title'          => 'Loan Applications',
         'title_singular' => 'Loan Application',
         'fields'         => [
-            'id'                 => 'ID',
+            'id'                 => 'Entry No',
             'id_helper'          => '',
             'loan_amount'        => 'Loan Amount',
             'loan_amount_helper' => '',

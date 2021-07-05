@@ -66,7 +66,7 @@ class LoanApplicationsController extends Controller
         if(!$newLoan){
             return false;
         } else {
-            return redirect()->route('admin.loan-applications.index');
+            return redirect()->route('admin.loan-applications.index')->with('message','Loan was created successfully!');;
         }
     }
 
@@ -85,7 +85,7 @@ class LoanApplicationsController extends Controller
         //dd('edit'.$loanApplication);
         //getting data from cfo to ceo to approve to send to client money(updater method below)
 
-        return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'));
+        return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'))->with('message','Loan was updated succesfully');;
     }
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
@@ -117,7 +117,7 @@ class LoanApplicationsController extends Controller
 
         }
 
-        return redirect()->route('admin.loan-applications.index');
+        return redirect()->route('admin.loan-applications.index')->with('message','Loan was updated successfully!');;
     }
 
     public function show(LoanApplication $loanApplication)
@@ -138,7 +138,7 @@ class LoanApplicationsController extends Controller
 
         $loanApplication->delete();
 
-        return back();
+        return back()->with('message','Loan was deleted successfully!');;
     }
 
     public function massDestroy(MassDestroyLoanApplicationRequest $request)

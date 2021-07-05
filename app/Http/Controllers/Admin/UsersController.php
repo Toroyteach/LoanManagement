@@ -13,6 +13,7 @@ use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Kreait\Firebase\Auth;
+use Image;
 
 class UsersController extends Controller
 {
@@ -63,17 +64,33 @@ class UsersController extends Controller
         $user->roles()->sync($request->input('roles', []));
 
             	// Handle the user upload of avatar
-    	if($request->hasFile('avatar')){
+    	// if($request->hasFile('avatar')){
             
-    		$avatar = $request->file('avatar');
-    		$filename = time() . '.' . $avatar->getClientOriginalExtension();
-    		//Image::make($avatar)->resize(300, 300)->save( public_path('/uploads/avatars/' . $filename ) );
+    	// 	$avatar = $request->file('avatar');
+    	// 	$filename = time() . '.' . $avatar->getClientOriginalExtension();
+    	// 	//Image::make($avatar)->resize(300, 300)->save( public_path('/uploads/avatars/' . $filename ) );
         
-            $avatar->move(public_path('images'), $filename);
+        //     $avatar->move(public_path('images'), $filename);
 
-    		$user->avatar = $filename;
-    		$user->save();
-    	}
+    	// 	$user->avatar = $filename;
+    	// 	$user->save();
+    	// }
+
+        if($request->hasFile('avatar')){
+            $avatar = $request->file('avatar');
+            $filename = time() . '.' . $avatar->getClientOriginalExtension();
+    
+            //Fullsize
+            $avatar->move(public_path().'img/profile/',$filename);
+            $path = public_path('img/profile/' . $filename);
+    
+            $image_resize = Image::make(public_path().'img/profile/'.$filename);
+            $image_resize->fit(300, 300);
+            $image_resize->save($path);
+
+            $user->avatar = $filename;
+            $user->save();
+        }
         
         //dd('user created');
         //create base64 username/email and password 
@@ -97,7 +114,7 @@ class UsersController extends Controller
         if(!$newUser){
             dd('error creating new user');
         } else {
-            return redirect()->route('admin.users.index');
+            return redirect()->route('admin.users.index')->with('message','User created successfully!');
 
         }
 
@@ -121,7 +138,7 @@ class UsersController extends Controller
         $user->roles()->sync($request->input('roles', []));
         //update firebase data
 
-        return redirect()->route('admin.users.index');
+        return redirect()->route('admin.users.index')->with('message','User updated successfully!');
     }
 
     public function show(User $user)

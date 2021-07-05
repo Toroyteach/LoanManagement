@@ -37,7 +37,7 @@
                         <option value="" selected>Select Loan Type</option>
                         <option value="Emergency">Emergency</option>
                         <option value="School Fees">School Fess</option>
-                        <option value="Develeopment">Development</option>
+                        <option value="Development">Development</option>
                         <option value="Top Up">Top Up</option>
                     </select>
                     <div class="invalid-feedback">Select Loan Type</div>

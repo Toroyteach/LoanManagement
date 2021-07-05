@@ -56,7 +56,8 @@
 
             <nav class="navbar navbar-dark bg-dark navbar-expand-sm">
               <a class="navbar-brand" href="#">
-              {{ Auth::user()->name }} 
+              {{ Auth::user()->firstname }} 
+              <span class="badge badge-pill badge-warning">{{ Auth::user()->roles[0]->title }}</span> 
               </a>
               <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-list-4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -78,6 +79,8 @@
             </nav>
             
         </header>
+
+  
 
         <div class="c-body">
             <main class="c-main">

@@ -54,7 +54,7 @@
             </div>
             <div class="form-group">
                 <label class="required" for="password">Number</label>
-                <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="254..." value="+254..." name="number" id="number" required>
+                <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="254..." value="254" name="number" id="number" required>
                 @if($errors->has('number'))
                     <div class="invalid-feedback">
                         {{ $errors->first('number') }}

@@ -41,7 +41,7 @@
                             Loan Applicant Name
                         </th>
                         <th>
-                            Loan Applicant Id No
+                            Member No
                         </th>
                         @if($user->is_admin)
                             <th>

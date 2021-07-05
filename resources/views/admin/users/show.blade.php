@@ -13,6 +13,9 @@
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>
+            <div class="container_fluid" style="width:200px;height:auto">
+                <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" class="img-thumbnail" alt="Cinque Terre"> 
+            </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>
