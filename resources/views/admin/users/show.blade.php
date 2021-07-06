@@ -14,7 +14,7 @@
                 </a>
             </div>
             <div class="container_fluid" style="width:200px;height:auto">
-                <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" class="img-thumbnail" alt="Cinque Terre"> 
+                <img src="{{ asset( 'images/'.$user->avatar ) }}" class="img-thumbnail" alt="profile image"> 
             </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
