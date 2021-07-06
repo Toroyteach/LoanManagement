@@ -18,7 +18,7 @@ a {
 }
 
 a:hover {
-  color: #9eccf4;
+  color: #236604;
   text-decoration: none;
 }
 
@@ -125,7 +125,7 @@ h1, h2, h3, h4, h5, h6, .font-primary {
 }
 
 #header .logo h1 a, #header .logo h1 a:hover {
-  color: #1c5c93;
+  color: #21af0e;
   text-decoration: none;
 }
 
@@ -154,7 +154,7 @@ h1, h2, h3, h4, h5, h6, .font-primary {
 .nav-menu a {
   display: block;
   position: relative;
-  color: #5c768d;
+  color: #16a122;
   padding: 12px 15px;
   transition: 0.3s;
   font-size: 14px;
@@ -162,7 +162,7 @@ h1, h2, h3, h4, h5, h6, .font-primary {
 }
 
 .nav-menu a:hover, .nav-menu .active > a, .nav-menu li:hover > a {
-  color: #428bca;
+  color: #4fa14c;
   text-decoration: none;
 }
 
@@ -597,7 +597,9 @@ section {
 }
 
 .about .icon-box .icon {
-  float: left;
+  float: inherit;
+  position: relative;
+  left: 10em;
   display: flex;
   align-items: center;
   justify-content: center;
