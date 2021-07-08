@@ -34,7 +34,7 @@ class LoanApplicationObserver
      */
     public function created(LoanApplication $loanApplication)
     {
-        $admins = Role::find(1)->users;
+        //$admins = Role::find(1)->users;
 
         //Notification::send($admins, new NewApplicationNotification($loanApplication));
     }

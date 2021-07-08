@@ -19,7 +19,10 @@ class AuditLogService
             $current = json_decode($log->properties, true);
             unset($current['status'], $current['id']);
 
+            //dd($current);
+
             if (isset($previous)) {
+                //dd($previous);
                 $differences   = array_diff_assoc($current, $previous);
                 $value         = [
                     'user'    => $log->user->name,
@@ -27,6 +30,7 @@ class AuditLogService
                     'comment' => null,
                     'changes' => []
                 ];
+                //dd($differences);
 
                 foreach ($differences as $key => $difference) {
                     $previousValue = $previous[$key] ?? null;

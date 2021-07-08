@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFirebaseidToLoanApplication extends Migration
+class CreateSaccoFilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class AddFirebaseidToLoanApplication extends Migration
      */
     public function up()
     {
-        Schema::table('loan_applications', function (Blueprint $table) {
-            //
-            $table->string('firebaseid')->nullable()->unique();
+        Schema::create('sacco_files', function (Blueprint $table) {
+            $table->increments('id');
+            $table->uuid('uuid')->nullable();
+            $table->string('title');
+            $table->string('cover')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -26,9 +29,6 @@ class AddFirebaseidToLoanApplication extends Migration
      */
     public function down()
     {
-        Schema::table('loan_applications', function (Blueprint $table) {
-            //
-            $table->dropColumn('firebaseid');
-        });
+        Schema::dropIfExists('sacco_files');
     }
 }

@@ -66,7 +66,7 @@ class LoanApplicationsController extends Controller
         if(!$newLoan){
             return false;
         } else {
-            return redirect()->route('admin.loan-applications.index')->with('message','Loan was created successfully!');;
+            return redirect()->route('admin.loan-applications.index')->with('message','Loan was created successfully!');
         }
     }
 
@@ -78,14 +78,14 @@ class LoanApplicationsController extends Controller
             '403 Forbidden'
         );
 
-        $statuses = Status::whereIn('id', [1, 8, 9])->pluck('name', 'id');
+        $statuses = Status::whereIn('id', [1, 8, 9, 10])->pluck('name', 'id');
 
         $loanApplication->load('status');
 
         //dd('edit'.$loanApplication);
-        //getting data from cfo to ceo to approve to send to client money(updater method below)
+        //getting data from cfo to ceo to approve to send to client money(update method below)
 
-        return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'))->with('message','Loan was updated succesfully');;
+        return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'))->with('message','Loan was updated succesfully');
     }
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
@@ -117,7 +117,7 @@ class LoanApplicationsController extends Controller
 
         }
 
-        return redirect()->route('admin.loan-applications.index')->with('message','Loan was updated successfully!');;
+        return redirect()->route('admin.loan-applications.index')->with('message','Loan was updated successfully!');
     }
 
     public function show(LoanApplication $loanApplication)
@@ -128,8 +128,10 @@ class LoanApplicationsController extends Controller
         $defaultStatus = Status::find(1);
         $user          = auth()->user();
         $logs          = AuditLogService::generateLogs($loanApplication);
+        $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
+        //dd($remaining);
 
-        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs'));
+        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining'));
     }
 
     public function destroy(LoanApplication $loanApplication)

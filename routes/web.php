@@ -1,6 +1,6 @@
 <?php
 
-Route::redirect('/', '/login');
+Route::redirect('/', '/index');
 Route::get('/home', function () {
     if (session('status')) {
         return redirect()->route('admin.loan-applications.index')->with('status', session('status'));
@@ -19,6 +19,9 @@ Route::get('/index', 'Front\FrontendController@index')->name('index');
 // Route::get('/portfolio', 'Front\FrontendController@portfolio')->name('portfolio');
 // Route::get('/services', 'Front\FrontendController@services')->name('services');
 // Route::get('/pricing', 'Front\FrontendController@pricing')->name('pricing');
+
+//file download
+Route::get('files/{uuid}/download', 'Front\FrontendController@download')->name('files.download');
 
 Auth::routes();
 // Admin
@@ -57,6 +60,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Comments
     Route::delete('comments/destroy', 'CommentsController@massDestroy')->name('comments.massDestroy');
     Route::resource('comments', 'CommentsController');
+
+    //file upload
+    Route::post('files/upload', 'HomeController@store')->name('files.store');
+    Route::get('files/create', 'HomeController@createfile')->name('files.create');
+
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
 // Change password

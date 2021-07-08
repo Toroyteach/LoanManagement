@@ -41,10 +41,38 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.loanApplication.fields.status') }}
+                            {{ trans('cruds.loanApplication.fields.loantype') }}
                         </th>
                         <td>
-                            {{ $user->is_user && $loanApplication->status_id < 8 ? $defaultStatus->name : $loanApplication->status->name }}
+                            {{ $loanApplication->loan_type }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                        </th>
+                        <td>
+                            {{ $remaining }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.loanApplication.fields.duration') }}
+                        </th>
+                        <td>
+                            {{ $loanApplication->duration }} Months
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.loanApplication.fields.paymentstatus') }}
+                        </th>
+                        <td>
+                            @if ($loanApplication->repaid_status)
+                            <span class="badge badge-success">Paid</span>
+                            @else
+                            <span class="badge badge-danger">Not Paid</span>
+                            @endif
                         </td>
                     </tr>
                     @if($user->is_admin)

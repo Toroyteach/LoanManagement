@@ -36,9 +36,9 @@
                     <select class="custom-select" name="loan_type" required>
                         <option value="" selected>Select Loan Type</option>
                         <option value="Emergency">Emergency</option>
-                        <option value="School Fees">School Fess</option>
+                        <option value="SchoolFees">School Fess</option>
                         <option value="Development">Development</option>
-                        <option value="Top Up">Top Up</option>
+                        <option value="TopUp">Top Up</option>
                     </select>
                     <div class="invalid-feedback">Select Loan Type</div>
                 </div>

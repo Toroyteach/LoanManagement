@@ -4,9 +4,9 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
 
-<div class="col-md-10 ">
-    <div class="row ">
-        <div class="col-xl-3 col-lg-6">
+<div class="container-fluid">
+    <div class="row justify-content-md-center">
+        <div class="col-xl-4 col-lg-4 col-md-4">
             <div class="card l-bg-cherry">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
@@ -33,7 +33,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-6">
+        <div class="col-xl-4 col-lg-4 col-md-4">
             <div class="card l-bg-blue-dark">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
@@ -56,7 +56,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-6">
+        <div class="col-xl-4 col-lg-4 col-md-4">
             <div class="card l-bg-green-dark">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="col-xl-3 col-lg-6">
+        <!-- <div class="col-xl-4 col-lg-6">
             <div class="card l-bg-orange-dark">
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
@@ -105,20 +105,22 @@
     </div>
 </div>
 <div class="container-fluid">
-    <div class="row d-flex justify-content-between">
-        <div class="card bg-default col-md-5">
+    <div class="row justify-content-around">
+        <div class="card bg-default col-md-6">
             <div class="card-body">
+            <h5 class="card-title">Loans</h5>
                 <div class="chart">
                     <!-- Chart wrapper -->
-                    <canvas id="myChart" width="400" height="400"></canvas>
+                    <canvas id="myChart" width="400" height="200"></canvas>
                 </div>
             </div>
         </div>
-        <div class="card bg-default col-md-5">
+        <div class="card bg-default col-md-4 align-self-end">
             <div class="card-body">
+            <h5 class="card-title">Loan Types Share</h5>
                 <div class="chart">
                     <!-- Chart wrapper -->
-                    <canvas id="myChart2" width="400" height="400"></canvas>
+                    <canvas id="myChart2" width="400" height="200"></canvas>
                 </div>
             </div>
         </div>
@@ -133,14 +135,16 @@
 
 $(document).ready(function(){
 
+    //const labels = Utils.months({count: 7});
     var ctx = document.getElementById('myChart').getContext('2d');
+    var data = {!! $line !!};
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
             datasets: [{
-                label: 'My First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
+                label: 'Loans Disbursed this Month',
+                data: data,
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1
@@ -156,25 +160,22 @@ $(document).ready(function(){
     });
 
     var ctx2 = document.getElementById('myChart2').getContext('2d');
+    var data = {!! $pie !!}
     var myChart2 = new Chart(ctx2, {
-        type: 'line',
+        type: 'pie',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: ['Emergency', 'SchoolFees', 'Development', 'TopUp'],
             datasets: [{
-                label: 'My First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
+                label: 'Loan type share',
+                data: data,
+                backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(54, 162, 235)',
+                'rgb(255, 205, 86)'
+                ],
+                hoverOffset: 4
             }]
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
     });
 
 });

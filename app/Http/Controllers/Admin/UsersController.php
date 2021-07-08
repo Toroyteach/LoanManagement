@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Kreait\Firebase\Auth;
 use Image;
+use Illuminate\Support\Str;
 
 class UsersController extends Controller
 {
@@ -54,12 +55,21 @@ class UsersController extends Controller
         //dd($request->all());
         //created users account table as well
 
+        if(!$this->checkUserDetails($request->number)){
+            return redirect()->back()->with('error','Failed to create user Firebase details conflict');
+        }
+
+
         $user = User::create($request->all());
         UsersAccount::create([
             'total_amount' => '0.00',
             'user_id' => $user->id,
         ]);
+
+        $uid = Str::random(20);
+
         $user->name = $request->firstname.' '.$request->lastname;
+        $user->firebaseid = $uid;
         $user->save();
         $user->roles()->sync($request->input('roles', []));
 
@@ -104,6 +114,7 @@ class UsersController extends Controller
             'displayName' => $user->firstname.' '.$user->lastname,
             'photoUrl' => '',
             'disabled' => false,
+            'uid' => $uid,
         ];
         //check if you can add extra field idno. you cant
 
@@ -112,7 +123,7 @@ class UsersController extends Controller
         $newUser = $this->createUser($userProperties);
 
         if(!$newUser){
-            dd('error creating new user');
+            //dd('error creating new user');
         } else {
             return redirect()->route('admin.users.index')->with('message','User created successfully!');
 
@@ -154,7 +165,11 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $auth = app('firebase.auth');
+        $auth->deleteUser($user->firebaseid);
         $user->delete();
+
+        //call firebase method to remove user from firestore
 
         return back();
     }
@@ -171,5 +186,23 @@ class UsersController extends Controller
         $auth = app('firebase.auth');
         $auth->createUser($user);
         return $auth;
+    }
+
+    protected function checkUserDetails($params)
+    {
+
+        $auth = app('firebase.auth');
+
+        try {
+
+            $user = $auth->getUserByPhoneNumber('+'.$params);
+
+        } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
+
+            //echo $e->getMessage();
+            return true;
+
+        }
+
     }
 }

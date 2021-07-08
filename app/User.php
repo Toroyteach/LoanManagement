@@ -37,7 +37,9 @@ class User extends Authenticatable
         'name',
         'firstname',
         'lastname',
+        'middlename',
         'email',
+        'nationalid',
         'number',
         'email_verified_at',
         'password',
@@ -47,6 +49,9 @@ class User extends Authenticatable
         'created_at',
         'updated_at',
         'deleted_at',
+        'dateofbirth',
+        'joinedsacco',
+        'firebaseid',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

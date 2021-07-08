@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFirstnameLastnameToUsersTable extends Migration
+class AddDobWhenjoinedLastnameNationalid extends Migration
 {
     /**
      * Run the migrations.
@@ -15,9 +15,10 @@ class AddFirstnameLastnameToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->string('firstname');
-            $table->string('lastname');
-            $table->string('firebaseid')->nullable()->unique();
+            $table->date('dateofbirth')->nullable();
+            $table->date('joinedsacco')->nullable();
+            $table->string('middlename')->nullable()->after('firstname')->unique();
+            $table->string('nationalid')->after('email')->unique();
         });
     }
 
@@ -30,8 +31,6 @@ class AddFirstnameLastnameToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropColumn('firstname');
-            $table->dropColumn('lastname');
         });
     }
 }

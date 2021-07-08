@@ -40,8 +40,8 @@
   <section id="topbar" class="d-none d-lg-block">
     <div class="container clearfix">
       <div class="contact-info float-left">
-        <i class="icofont-envelope"></i><a href="mailto:contact@example.com">info@mtangazajisacco.co.ke</a>
-        <i class="icofont-phone"></i> +254 31 8823
+        <i class="icofont-envelope"></i><a href="mailto:contact@example.com">mtangazajisacco@gmail.com</a>
+        <i class="icofont-phone"></i> +254 726616120
       </div>
       <div class="social-links float-right">
         <a href="#" class="twitter"><i class="icofont-twitter"></i></a>
@@ -86,7 +86,7 @@
         <div class="carousel-inner" role="listbox">
 
           <!-- Slide 1 -->
-          <div class="carousel-item active" style="background-image: url('{{ asset ( 'frontend/assets/img/slide/slide-1.jpg')}}');">
+          <div class="carousel-item active" style="background-image: url('{{ asset ( 'frontend/assets/img/slide/mtangaza2.jpg')}}');">
             <div class="carousel-container">
               <div class="carousel-content container">
                 <h2 class="animate__animated animate__fadeInDown">Mtangazaji <span>Sacco</span></h2>
@@ -97,7 +97,7 @@
           </div>
 
           <!-- Slide 2 -->
-          <div class="carousel-item" style="background-image: url('{{ asset ( 'frontend/assets/img/slide/slide-2.jpg')}}');">
+          <div class="carousel-item" style="background-image: url('{{ asset ( 'frontend/assets/img/slide/mtangaza3.jpg')}}');">
             <div class="carousel-container">
               <div class="carousel-content container">
                 <h2 class="animate__animated animate__fadeInDown"></h2>
@@ -141,7 +141,7 @@
 
         <div class="row no-gutters">
           <div class="col-lg-6 video-box">
-            <img src="{{ asset ( 'frontend/assets/img/about.jpg')}}" class="img-fluid" alt="">
+            <img src="{{ asset ( 'frontend/assets/img/slide/mtangaza1.jpg')}}" class="img-fluid" alt="">
           </div>
 
           <div class="col-lg-6 d-flex flex-column justify-content-center about-content">
@@ -153,13 +153,19 @@
 
             <div class="icon-box " data-aos="fade-up" data-aos-delay="100">
               <h4 class="title"><a href="">Loan Application Form</a></h4>
-              &nbsp;&nbsp;<div class="icon"><i class="bx bx-download"></i></div>
+              <div class="icon"><a href=""></a><i class="bx bx-download"></i></a></div>
               <!-- <p class="description">Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident</p> -->
             </div>
 
             <div class="icon-box " data-aos="fade-up" data-aos-delay="100">
               <h4 class="title"><a href="">Membership Form</a></h4>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="icon"><i class="bx bx-download"></i></div>
+              <div class="icon"><a href=""></a><i class="bx bx-download"></i></a></div>
+              <!-- <p class="description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque</p> -->
+            </div>
+
+            <div class="icon-box " data-aos="fade-up" data-aos-delay="100">
+              <h4 class="title">Society By Laws</h4>
+              <div class="icon"><a href="{{ route('files.download', $file[0]->uuid) }}"><i class="bx bx-download"></i></a></div>
               <!-- <p class="description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque</p> -->
             </div>
 
@@ -338,7 +344,7 @@
             <div class="info-box">
               <i class="bx bx-envelope"></i>
               <h3>Email Us</h3>
-              <p>info@mtangazajisacco.co.ke<br>contact@mtangazajisacco.co.ke</p>
+              <p><br>mtangazajisacco@gmail.com</p>
             </div>
           </div>
 
@@ -346,7 +352,7 @@
             <div class="info-box ">
               <i class="bx bx-phone-call"></i>
               <h3>Call Us</h3>
-              <p>+1 5589 55488 55<br>+1 6678 254445 41</p>
+              <p>+254726616120</p>
             </div>
           </div>
 
@@ -403,8 +409,8 @@
             <h4>Contact us</h4>
             <p>
               NBI 30456-00100, Nairobi<br><br>
-              <strong>Phone:</strong> +1 5589 55488 55<br>
-              <strong>Email:</strong> info@mtangazajisacco.co.ke<br>
+              <strong>Phone:</strong> +254726616120<br>
+              <strong>Email:</strong> mtangazajisacco@gmail.com<br>
             </p>
           </div>
 

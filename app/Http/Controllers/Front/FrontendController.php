@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\SaccoFile;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -11,12 +12,16 @@ class FrontendController extends Controller
 
     public function index()
     {
-        return view('onepage.index');
+        $file = SaccoFile::where('title', 'bylaws')->get();
+        return view('onepage.index', compact('file'));
     }
 
-    public function about()
+    public function download($uuid)
     {
-        return view('frontend.pages.about');
+        
+        $book = SaccoFIle::where('uuid', $uuid)->firstOrFail();
+        $pathToFile = storage_path('app/files/' . $book->cover);
+        return response()->download($pathToFile);
     }
 
     public function team()

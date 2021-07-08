@@ -28,10 +28,26 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.user.fields.name') }}
+                            {{ trans('cruds.user.fields.firstname') }}
                         </th>
                         <td>
-                            {{ $user->name }}
+                            {{ $user->firstname }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.middlename') }}
+                        </th>
+                        <td>
+                            {{ $user->middlename }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.lastname') }}
+                        </th>
+                        <td>
+                            {{ $user->lastname }}
                         </td>
                     </tr>
                     <tr>
@@ -48,6 +64,22 @@
                         </th>
                         <td>
                             {{ $user->email_verified_at }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.dob') }}
+                        </th>
+                        <td>
+                            {{ $user->dateofbirth }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.dojoined') }}
+                        </th>
+                        <td>
+                            {{ $user->joinedsacco }}
                         </td>
                     </tr>
                     <tr>

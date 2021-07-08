@@ -59,6 +59,16 @@
                 </a>
             </li>
         @endcan
+        @can('upload_access')
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route("admin.files.create") }}" class="c-sidebar-nav-link {{ request()->is('admin/statuses') || request()->is('admin/statuses/*') ? 'active' : '' }}">
+                    <i class="fas fa-upload c-sidebar-nav-icon">
+
+                    </i>
+                    Upload File
+                </a>
+            </li>
+        @endcan
 
         @can('loan_application_access')  
             <li class="c-sidebar-nav-dropdown">

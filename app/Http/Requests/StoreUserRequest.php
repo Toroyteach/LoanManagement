@@ -25,9 +25,19 @@ class StoreUserRequest extends FormRequest
             'lastname'     => [
                 'required',
             ],
+            'nationalid'     => [
+                'required', 'integer', 'unique:users', 'digits_between:6,8',
+            ],
             'email'    => [
                 'required',
                 'unique:users',
+            ],
+            'dateofbirth'    => [
+                'required',
+            ],
+            'idno'    => [
+                'required',
+                'unique:users', 'digits:6',
             ],
             'password' => [
                 'required',

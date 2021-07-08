@@ -27,6 +27,7 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.0",
         "lcobucci/clock": "^1.2.0",
+        "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-oracle": "^9.9"
     },
     "require-dev": {
@@ -50,8 +51,8 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
-	    "Database\\Factories\\": "database/factories/",
-	    "Database\\Seeders\\": "database/seeders/"
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeds/"
         }
     },
     "autoload-dev": {

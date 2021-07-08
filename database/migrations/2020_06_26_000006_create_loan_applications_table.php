@@ -11,6 +11,7 @@ class CreateLoanApplicationsTable extends Migration
         Schema::create('loan_applications', function (Blueprint $table) {
             $table->increments('id');
             $table->decimal('loan_amount', 15, 2);
+            $table->enum('loan_type', ['Emergency', 'SchoolFees', 'Development', 'TopUp']);
             $table->longText('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
