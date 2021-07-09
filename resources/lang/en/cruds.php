@@ -7,6 +7,7 @@ return [
     ],
     'permission'      => [
         'title'          => 'Permissions',
+        'user_view'      => 'View Profile',
         'title_singular' => 'Permission',
         'fields'         => [
             'id'                => 'ID',

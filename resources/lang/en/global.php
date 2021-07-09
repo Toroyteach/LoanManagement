@@ -101,6 +101,8 @@ return [
     'attachment'                           => 'Attachment',
     'axis'                                 => 'Axis',
     'back_to_list'                         => 'Back to list',
+    'dashboard'                            => 'Back to Dashboard',
+    'edit_profile'                         => 'Edit Profile',
     'basic_crm'                            => 'Basic CRM',
     'budget'                               => 'Budget',
     'calendar_sources'                     => 'Calendar sources',

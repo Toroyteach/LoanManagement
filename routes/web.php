@@ -65,6 +65,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('files/upload', 'HomeController@store')->name('files.store');
     Route::get('files/create', 'HomeController@createfile')->name('files.create');
 
+    //show individual user details
+    Route::get('user/show', 'UsersController@getUser')->name('user.show');
+
+    //files download from the user
+    Route::get('files/{uuid}/download', 'UsersController@download')->name('files.download');
+
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
 // Change password

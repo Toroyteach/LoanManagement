@@ -152,14 +152,14 @@
             </div>
 
             <div class="icon-box " data-aos="fade-up" data-aos-delay="100">
-              <h4 class="title"><a href="">Loan Application Form</a></h4>
-              <div class="icon"><a href=""></a><i class="bx bx-download"></i></a></div>
+              <h4 class="title">Loan Application Form</h4>
+              <div class="icon"><a href="#"></a><i class="bx bx-download"></i></a></div>
               <!-- <p class="description">Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident</p> -->
             </div>
 
             <div class="icon-box " data-aos="fade-up" data-aos-delay="100">
-              <h4 class="title"><a href="">Membership Form</a></h4>
-              <div class="icon"><a href=""></a><i class="bx bx-download"></i></a></div>
+              <h4 class="title">Membership Application Form</h4>
+              <div class="icon"><a href="{{ route('files.download', $file[2]->uuid) }}"><i class="bx bx-download"></i></a></div>
               <!-- <p class="description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque</p> -->
             </div>
 

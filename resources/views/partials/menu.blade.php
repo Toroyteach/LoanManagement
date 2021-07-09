@@ -16,6 +16,16 @@
                     {{ trans('cruds.userManagement.title') }}
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
+                    @can('view_self_user')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.user.show") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/show') || request()->is('admin/user/show/*') ? 'active' : '' }}">
+                                <i class="fa-fw fas fa-user c-sidebar-nav-icon">
+
+                                </i>
+                                {{ trans('cruds.permission.user_view') }}
+                            </a>
+                        </li>
+                    @endcan
                     @can('permission_access')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route("admin.permissions.index") }}" class="c-sidebar-nav-link {{ request()->is('admin/permissions') || request()->is('admin/permissions/*') ? 'active' : '' }}">
@@ -73,7 +83,7 @@
         @can('loan_application_access')  
             <li class="c-sidebar-nav-dropdown">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">
-                    <i class="fa-fw fas fa-users c-sidebar-nav-icon">
+                    <i class="fa-fw fas fa-money c-sidebar-nav-icon">
 
                     </i>
                     Loan Management

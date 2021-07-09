@@ -12,7 +12,7 @@ class FrontendController extends Controller
 
     public function index()
     {
-        $file = SaccoFile::where('title', 'bylaws')->get();
+        $file = SaccoFile::get();
         return view('onepage.index', compact('file'));
     }
 

@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Kreait\Firebase\Auth;
 use Image;
 use Illuminate\Support\Str;
+use App\SaccoFile;
 
 class UsersController extends Controller
 {
@@ -159,6 +160,27 @@ class UsersController extends Controller
         $user->load('roles');
 
         return view('admin.users.show', compact('user'));
+    }
+
+    public function getUser()
+    {
+        abort_if(Gate::denies('view_self_user'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $user = User::findorFail(\Auth::user()->id);
+
+        $files = SaccoFile::get();
+
+        //dd($files);
+
+        return view('admin.users.usershow', compact('user', 'files'));
+    }
+
+    public function download($uuid)
+    {
+        
+        $book = SaccoFIle::where('uuid', $uuid)->firstOrFail();
+        $pathToFile = storage_path('app/files/' . $book->cover);
+        return response()->download($pathToFile);
     }
 
     public function destroy(User $user)

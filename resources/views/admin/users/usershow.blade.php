@@ -8,11 +8,18 @@
 
     <div class="card-body">
         <div class="form-group">
-            <div class="form-group">
-                <a class="btn btn-default" href="{{ route('admin.users.index') }}">
-                    {{ trans('global.back_to_list') }}
-                </a>
-            </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <a class="btn btn-primary" href="{{ route('admin.dashboard') }}">
+                            {{ trans('global.dashboard') }}
+                        </a>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <a class="btn btn-warning" href="{{ route('profile.password.edit') }}">
+                            {{ trans('global.edit_profile') }}
+                        </a>
+                    </div>
+                </div>
             <div class="container_fluid" style="width:200px;height:auto">
                 <img src="{{ asset( 'images/'.$user->avatar ) }}" class="img-thumbnail" alt="profile image"> 
             </div><br>
@@ -94,10 +101,22 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="form-group">
-                <a class="btn btn-primary" href="{{ route('admin.users.index') }}">
-                    {{ trans('global.back_to_list') }}
-                </a>
+            <div class="container-fluid">
+                <h2 class="section-title"> Downloadable Forms</h2>
+            </div><br>
+            <div class="row">
+                <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="title">Society By Laws</h4>
+                    <div class="icon"><a href="{{ route('admin.files.download', $files[0]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                </div>
+                <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="title">Holiday Savings Form</h4>
+                    <div class="iconr"><a href="{{ route('admin.files.download', $files[1]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                </div>
+                <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="title">Loan Application Form</h4>
+                    <div class="icon"><a href="{{ route('admin.files.download', $files[2]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                </div>
             </div>
         </div>
     </div>
