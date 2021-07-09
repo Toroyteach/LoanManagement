@@ -32,6 +32,7 @@ class AddFirstnameLastnameToUsersTable extends Migration
             //
             $table->dropColumn('firstname');
             $table->dropColumn('lastname');
+            $table->dropColumn('firebaseid');
         });
     }
 }

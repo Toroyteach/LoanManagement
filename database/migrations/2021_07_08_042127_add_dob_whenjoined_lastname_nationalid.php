@@ -31,6 +31,10 @@ class AddDobWhenjoinedLastnameNationalid extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
+            $table->dropColumn('dateofbirth');
+            $table->dropColumn('joinedsacco');
+            $table->dropColumn('middlename');
+            $table->dropColumn('nationalid');
         });
     }
 }

@@ -187,6 +187,10 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        if(!$user->firebaseid){
+            return redirect()->back()->with('error','Failed to Delete user Firebase details missing');
+        }
+
         $auth = app('firebase.auth');
         $auth->deleteUser($user->firebaseid);
         $user->delete();
