@@ -39,6 +39,7 @@ class User extends Authenticatable
         'lastname',
         'middlename',
         'email',
+        'address',
         'nationalid',
         'number',
         'email_verified_at',
@@ -116,5 +117,11 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    public function userAccount()
+    {
+        return $this->hasOne(UsersAccount::class);
+
     }
 }

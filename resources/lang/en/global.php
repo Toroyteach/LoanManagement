@@ -272,4 +272,5 @@ return [
     'courses'                              => 'Courses',
     'calendar'                             => 'Calendar',
     'messenger'                            => 'Messenger',
+    'monthlyupdate'                        => 'Update Monthly Contribution',
 ];

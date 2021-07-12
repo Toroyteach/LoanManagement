@@ -13,7 +13,7 @@ Route::get('/home', function () {
 });
 
 Route::get('/index', 'Front\FrontendController@index')->name('index');
-// Route::get('/about', 'Front\FrontendController@about')->name('about');
+Route::get('/seed', 'Front\FrontendController@team');
 // Route::get('/team', 'Front\FrontendController@team')->name('team');
 // Route::get('/contact', 'Front\FrontendController@contact')->name('contact');
 // Route::get('/portfolio', 'Front\FrontendController@portfolio')->name('portfolio');
@@ -70,6 +70,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     //files download from the user
     Route::get('files/{uuid}/download', 'UsersController@download')->name('files.download');
+
+    //update monthly contribution
+    Route::post('/updatemonthlycontribution','UsersController@updateMonthlyContribution')->name('monthly.update');
 
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {

@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="form-group col-md-6">
                     <label for="middlename">{{ trans('cruds.user.fields.middlename') }}</label>
-                    <input class="form-control {{ $errors->has('middlename') ? 'is-invalid' : '' }}" type="text" name="middlename" id="middlename" value="{{ old('middlename') }}">
+                    <input class="form-control {{ $errors->has('middlename') ? 'is-invalid' : '' }}" type="text" name="middlename" id="middlename" value="{{ old('middlename', '') }}">
                     @if($errors->has('middlename'))
                         <div class="invalid-feedback">
                             {{ $errors->first('middlename') }}
@@ -45,7 +45,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label class="required" for="nationalid">{{ trans('cruds.user.fields.nationalid') }}</label>
-                    <input class="form-control {{ $errors->has('nationalid') ? 'is-invalid' : '' }}" type="number" name="nationalid" id="nationalid" value="{{ old('nationalid') }}" required>
+                    <input class="form-control {{ $errors->has('nationalid') ? 'is-invalid' : '' }}" type="number" name="nationalid" id="nationalid" value="{{ old('nationalid', '') }}" required>
                     @if($errors->has('nationalid'))
                         <div class="invalid-feedback">
                             {{ $errors->first('nationalid') }}
@@ -58,7 +58,7 @@
             <div class="row">
                 <div class="form-group col-md-6">
                     <label class="required" for="email">{{ trans('cruds.user.fields.email') }}</label>
-                    <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email') }}" required>
+                    <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email', '') }}" required>
                     @if($errors->has('email'))
                         <div class="invalid-feedback">
                             {{ $errors->first('email') }}
@@ -80,8 +80,8 @@
 
             <div class="row">
                 <div class="form-group col-md-6">
-                    <label class="required" for="password">Phone Number</label>
-                    <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="254..." value="254" name="number" id="number" required>
+                    <label class="required" for="number">Phone Number</label>
+                    <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="254..." value="{{ old('number', '') }}" name="number" id="number" required>
                     @if($errors->has('number'))
                         <div class="invalid-feedback">
                             {{ $errors->first('number') }}
@@ -90,7 +90,7 @@
                 </div>
                 <div class="form-group col-md-6" data-provide="datepicker">
                     <label class="required" for="dateofbirth">Date Of Birth</label>
-                    <input class="form-control {{ $errors->has('dateofbirth') ? 'is-invalid' : '' }}" type="date" name="dateofbirth" id="dateofbirth" required>
+                    <input class="form-control {{ $errors->has('dateofbirth') ? 'is-invalid' : '' }}" type="date" value="{{ old('dateofbirth', '') }}" name="dateofbirth" id="dateofbirth" required>
                     @if($errors->has('dateofbirth'))
                         <div class="invalid-feedback">
                             {{ $errors->first('dateofbirth') }}
@@ -101,8 +101,29 @@
 
             <div class="row">
                 <div class="form-group col-md-6">
+                    <label class="required" for="address">Address</label>
+                    <input class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" type="address" placeholder="Enter address" value="{{ old('address', '') }}" name="address" id="address" required>
+                    @if($errors->has('address'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('address') }}
+                        </div>
+                    @endif
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="required" for="amount">Registration Amount</label>
+                    <input class="form-control {{ $errors->has('amount') ? 'is-invalid' : '' }}" type="number" placeholder="Enter amount" value="" name="amount" id="amount" required>
+                    @if($errors->has('amount'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('amount') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6">
                     <label class="required" for="password">Account No</label>
-                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="" placeholder="enter 6 digits" name="idno" id="idno" required>
+                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', '') }}" placeholder="enter 6 digits" name="idno" id="idno" required>
                     @if($errors->has('idno'))
                         <div class="invalid-feedback">
                             {{ $errors->first('idno') }}
@@ -112,7 +133,7 @@
 
                 <div class="form-group col-md-6">
                     <label class="required" for="password">Profile Image</label>
-                    <input class="form-control {{ $errors->has('avatar') ? 'is-invalid' : '' }}" type="file" value="" name="avatar" id="avatar" required>
+                    <input class="form-control {{ $errors->has('avatar') ? 'is-invalid' : '' }}" type="file" value="{{ old('avatar', '') }}" name="avatar" id="avatar" required>
                     @if($errors->has('avatar'))
                         <div class="invalid-feedback">
                             {{ $errors->first('avatar') }}

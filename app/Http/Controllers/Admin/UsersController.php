@@ -16,6 +16,7 @@ use Kreait\Firebase\Auth;
 use Image;
 use Illuminate\Support\Str;
 use App\SaccoFile;
+use App\LoanApplication;
 
 class UsersController extends Controller
 {
@@ -63,7 +64,7 @@ class UsersController extends Controller
 
         $user = User::create($request->all());
         UsersAccount::create([
-            'total_amount' => '0.00',
+            'total_amount' => $request->amount,
             'user_id' => $user->id,
         ]);
 
@@ -158,8 +159,9 @@ class UsersController extends Controller
         abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user->load('roles');
+        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->get('loan_amount');
 
-        return view('admin.users.show', compact('user'));
+        return view('admin.users.show', compact('user', 'currentLoanAmount'));
     }
 
     public function getUser()
@@ -167,12 +169,14 @@ class UsersController extends Controller
         abort_if(Gate::denies('view_self_user'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user = User::findorFail(\Auth::user()->id);
+        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->get('loan_amount');
+
 
         $files = SaccoFile::get();
 
         //dd($files);
 
-        return view('admin.users.usershow', compact('user', 'files'));
+        return view('admin.users.usershow', compact('user', 'files', 'currentLoanAmount'));
     }
 
     public function download($uuid)
@@ -202,6 +206,8 @@ class UsersController extends Controller
 
     public function massDestroy(MassDestroyUserRequest $request)
     {
+        abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         User::whereIn('id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
@@ -229,6 +235,26 @@ class UsersController extends Controller
             return true;
 
         }
+
+    }
+
+    protected function updateMonthlyContribution(Request $request)
+    {
+
+        abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        //handle logic to update monthly amount
+
+        $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->first();
+        $amount->increment('total_amount', $request->amount);
+
+        if(!$amount){
+
+            return response()->json(array('response' => false, 'failure' => 'Sorry '.$amount->user->firstname.' was not credited'), 200);
+
+        }
+
+        return response()->json(array('response' => true, 'message' => 'Success '.$amount->user->firstname.' was credited '.$request->amount), 200);
 
     }
 }

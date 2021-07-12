@@ -32,6 +32,12 @@ class StoreUserRequest extends FormRequest
                 'required',
                 'unique:users',
             ],
+            'address'    => [
+                'required',
+            ],
+            'amount'    => [
+                'required', 'integer', 'gt:1000',
+            ],
             'dateofbirth'    => [
                 'required',
             ],

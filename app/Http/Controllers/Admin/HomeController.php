@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\LoanApplication;
+use App\UsersAccount;
 use App\SaccoFile;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
@@ -26,6 +27,7 @@ class HomeController
             //logic to return data for the chart js of loan and loan types
             $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
 
         } else {
 
@@ -36,12 +38,13 @@ class HomeController
                     //logic to return data for the chart js of loan and loan types
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
 
         }
 
         //dd($pie, $line);
 
-        return view('admin.loanApplications.dashboard', compact('loan', 'user', 'loan_pending', 'amount_paid', 'line', 'pie'));
+        return view('admin.loanApplications.dashboard', compact('loan', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'opening_balance'));
     }
 
     public function createfile()

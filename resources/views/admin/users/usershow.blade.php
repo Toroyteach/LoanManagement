@@ -21,7 +21,7 @@
                     </div>
                 </div>
             <div class="container_fluid" style="width:200px;height:auto">
-                <img src="{{ asset( 'images/'.$user->avatar ) }}" class="img-thumbnail" alt="profile image"> 
+                <img src="{{ asset( 'images/'.$user->avatar ) }}" class="img-thumbnail rouded" alt="profile image"> 
             </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
@@ -91,6 +91,22 @@
                     </tr>
                     <tr>
                         <th>
+                            {{ trans('cruds.user.fields.accountbal') }}
+                        </th>
+                        <td>
+                            {{ $user->userAccount->total_amount }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.currentloan') }}
+                        </th>
+                        <td>
+                            {{ $currentLoanAmount }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.user.fields.roles') }}
                         </th>
                         <td>
@@ -107,15 +123,27 @@
             <div class="row">
                 <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
                     <h4 class="title">Society By Laws</h4>
-                    <div class="icon"><a href="{{ route('admin.files.download', $files[0]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                        @if(!$files->isEmpty())
+                        <div class="icon"><a href="{{ route('admin.files.download', $files[0]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>                                   
+                        @else
+                        <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                        @endif
                 </div>
                 <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
                     <h4 class="title">Holiday Savings Form</h4>
-                    <div class="iconr"><a href="{{ route('admin.files.download', $files[1]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                        @if(!$files->isEmpty())
+                        <div class="icon"><a href="{{ route('admin.files.download', $files[1]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>                                   
+                        @else
+                        <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                        @endif
                 </div>
                 <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="title">Loan Application Form</h4>
-                    <div class="icon"><a href="{{ route('admin.files.download', $files[2]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                    <h4 class="title">Loan Applications Form</h4>
+                        @if(!$files->isEmpty())
+                        <div class="icon"><a href="{{ route('admin.files.download', $files[2]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>                                   
+                        @else
+                        <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
+                        @endif
                 </div>
             </div>
         </div>

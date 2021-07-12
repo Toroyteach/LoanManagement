@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNextKinTable extends Migration
+class CreateMonthlyDebitsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreateNextKinTable extends Migration
      */
     public function up()
     {
-        Schema::create('next_kin', function (Blueprint $table) {
+        Schema::create('monthly_debits', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('phone');
-            $table->string('relationship');
+            $table->decimal('amount', 15, 2);
+            $table->string('comment');
+            $table->string('cfo');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('useraccount_id')->unsigned();
+            $table->foreign('useraccount_id')->references('id')->on('users_accounts');
         });
     }
 
@@ -30,6 +32,6 @@ class CreateNextKinTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('next_kin');
+        Schema::dropIfExists('monthly_debits');
     }
 }
