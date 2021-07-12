@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Role;
 use App\User;
 use App\UsersAccount;
+use App\Services\AuditLogService;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +55,7 @@ class UsersController extends Controller
                     'regex:/(254)[0-9]{9}/'
                 )
         ]);
-        //dd($request->all());
+        dd($request->all());
         //created users account table as well
 
         if(!$this->checkUserDetails($request->number)){
@@ -159,7 +160,9 @@ class UsersController extends Controller
         abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user->load('roles');
-        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->get('loan_amount');
+        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->first();
+        $userAccount = UsersAccount::where('user_id', $user->id)->first();
+        //$logs        = AuditLogService::generateLogs($userAccount);
 
         return view('admin.users.show', compact('user', 'currentLoanAmount'));
     }
@@ -169,12 +172,12 @@ class UsersController extends Controller
         abort_if(Gate::denies('view_self_user'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user = User::findorFail(\Auth::user()->id);
-        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->get('loan_amount');
+        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->first();
 
 
         $files = SaccoFile::get();
 
-        //dd($files);
+        //dd($currentLoanAmount);
 
         return view('admin.users.usershow', compact('user', 'files', 'currentLoanAmount'));
     }
@@ -246,7 +249,8 @@ class UsersController extends Controller
         //handle logic to update monthly amount
 
         $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->first();
-        $amount->increment('total_amount', $request->amount);
+        $amountToAdd = $request->amount;
+        $amount->update(['total_amount' => $amount->total_amount + $amountToAdd]);
 
         if(!$amount){
 

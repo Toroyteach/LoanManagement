@@ -53,6 +53,7 @@ return [
             'accountbal'               => 'Account Balance',
             'address'                  => 'Address',
             'currentloan'              => 'Current Loan Amount',
+            'currentloantype'          => 'Current Loan Type',
             'dojoined'                 => 'Date of Joining Sacco',
             'nationalid_helper'                => '',
             'id_helper'                => '',

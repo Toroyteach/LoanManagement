@@ -116,7 +116,39 @@
                             {{ trans('cruds.user.fields.currentloan') }}
                         </th>
                         <td>
-                            {{ $currentLoanAmount }}
+                            @if(!empty($currentLoanAmount))
+                                @if ($currentLoanAmount->status_id === 1)
+                                    <span class="badge badge-primary">0.00</span>
+                                @elseif($currentLoanAmount->status_id === 8)
+                                    <span class="badge badge-warning">{{ $currentLoanAmount->loan_amount }}</span>
+                                @elseif($currentLoanAmount->status_id === 10)
+                                    <span class="badge badge-success">{{ $currentLoanAmount->loan_amount }}</span>
+                                @else
+                                    <span class="badge badge-danger">0.00</span>
+                                @endif
+                            @else
+                                ksh0.00
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.currentloantype') }}
+                        </th>
+                        <td>
+                            @if(!empty($currentLoanAmount))
+                                @if(Auth::user()->getIsAdminAttribute())
+                                    <span class="badge  badge-pill badge-info">{{ $currentLoanAmount->loan_type }}</span>
+                                @else
+                                    @if ($currentLoanAmount->status_id === 8)
+                                    <span class="badge  badge-pill badge-info">{{ $currentLoanAmount->loan_type }}</span>
+                                    @else
+                                    
+                                    @endif
+                                @endif
+                            @else
+                            
+                            @endif
                         </td>
                     </tr>
                 </tbody>
@@ -133,6 +165,7 @@
                     </a>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

@@ -65,13 +65,25 @@
                     </tr>
                     <tr>
                         <th>
+                            Loan Status
+                        </th>
+                        <td>
+                            {{ $user->is_user && $loanApplication->status_id < 8 ? $defaultStatus->name : $loanApplication->status->name }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.loanApplication.fields.paymentstatus') }}
                         </th>
                         <td>
-                            @if ($loanApplication->repaid_status)
-                            <span class="badge badge-success">Paid</span>
+                            @if($loanApplication->status_id === 8)
+                                @if ($loanApplication->repaid_status)
+                                <span class="badge badge-success">Paid</span>
+                                @else
+                                <span class="badge badge-danger">Not Paid</span>
+                                @endif
                             @else
-                            <span class="badge badge-danger">Not Paid</span>
+                                
                             @endif
                         </td>
                     </tr>

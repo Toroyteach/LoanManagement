@@ -39,7 +39,7 @@ class StoreUserRequest extends FormRequest
                 'required', 'integer', 'gt:1000',
             ],
             'dateofbirth'    => [
-                'required',
+                'required', 'before:-18 years',
             ],
             'idno'    => [
                 'required',
@@ -59,6 +59,14 @@ class StoreUserRequest extends FormRequest
                 'required',
                 'array',
             ],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'idno.digits:6'                  => 'My custom error',
+            'dateofbirth.before:-18 years'   => 'Date of Birth must be older than 18 years'
         ];
     }
 }

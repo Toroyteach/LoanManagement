@@ -29,7 +29,7 @@ class HomeController
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
 
-        } else {
+        } else if(\Auth::user()->getIsAdminAttribute() || \Auth::user()->getIsCfoAttribute()){
 
             $loan = LoanApplication::where('status_id', '>' , 7)->sum('loan_amount');
             $loan_pending = LoanApplication::where('repaid_status', '=', 0)->where('status_id', '>' , 7)->sum('loan_amount');
@@ -38,6 +38,18 @@ class HomeController
                     //logic to return data for the chart js of loan and loan types
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
+
+        } else {
+            
+            $loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '>' , 7)->sum('loan_amount');
+            //dd(LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount'));
+            $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '>' , 7)->sum('loan_amount');
+            $amount_paid = LoanApplication::sum('repaid_amount');
+            $user = 'user';
+            //logic to return data for the chart js of loan and loan types
+            $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
 
         }
@@ -71,11 +83,11 @@ class HomeController
 
         if($userType == 'Admin'){
             for ($x = 0; $x <= 3; $x++) {
-                $loanTypeValues[$x] = LoanApplication::where('loan_type', $loanTypeKey[$x])->where('status_id', '>' , 7)->sum('loan_amount');
+                $loanTypeValues[$x] = LoanApplication::where('loan_type', $loanTypeKey[$x])->where('status_id', '=' , 8)->sum('loan_amount');
             }
         } else {
             for ($x = 0; $x <= 3; $x++) {
-                $loanTypeValues[$x] = LoanApplication::where('loan_type', $loanTypeKey[$x])->where('created_by_id', $id)->where('status_id', '>' , 7)->sum('loan_amount');
+                $loanTypeValues[$x] = LoanApplication::where('loan_type', $loanTypeKey[$x])->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
 
@@ -88,11 +100,11 @@ class HomeController
 
         if($userType == 'Admin'){
             for ($x = 0; $x <= 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x)->sum('loan_amount');
+                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         } else {
             for ($x = 0; $x <= 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x)->where('created_by_id', $id)->sum('loan_amount');
+                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
         

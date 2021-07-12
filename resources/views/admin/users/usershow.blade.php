@@ -102,7 +102,19 @@
                             {{ trans('cruds.user.fields.currentloan') }}
                         </th>
                         <td>
-                            {{ $currentLoanAmount }}
+                            @if(!empty($currentLoanAmount))
+                                @if ($currentLoanAmount->status_id === 1)
+                                    <span class="badge badge-primary">0.00</span>
+                                @elseif($currentLoanAmount->status_id === 8)
+                                    <span class="badge badge-warning">{{ $currentLoanAmount->loan_amount }}</span>
+                                @elseif($currentLoanAmount->status_id === 10)
+                                    <span class="badge badge-success">{{ $currentLoanAmount->loan_amount }}</span>
+                                @else
+                                    <span class="badge badge-danger">0.00</span>
+                                @endif
+                            @else
+                                ksh0.00
+                            @endif
                         </td>
                     </tr>
                     <tr>
