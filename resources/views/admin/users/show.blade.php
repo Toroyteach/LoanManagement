@@ -74,7 +74,7 @@
                             {{ trans('cruds.user.fields.address') }}
                         </th>
                         <td>
-                            {{ $user->email_address }}
+                            {{ $user->address }}
                         </td>
                     </tr>
                     <tr>
@@ -159,11 +159,19 @@
                         {{ trans('global.back_to_list') }}
                     </a>
                 </div>
-                <div class="form-group col-md-6">
-                    <a class="btn btn-success" onclick="submitMonthly()">
-                        {{ trans('global.monthlyupdate') }}
-                    </a>
-                </div>
+                    @if($user->userAccount->updated_at > \Carbon\Carbon::now()->format('M'))
+                        <div class="form-group col-md-6">
+                            <a class="btn btn-success" onclick="submitMonthly()">
+                                {{ trans('global.monthlyupdate') }}
+                            </a>
+                        </div>
+                    @else
+                        <div class="form-group col-md-6">
+                            <a class="btn btn-warning" disabled>
+                                {{ trans('global.monthlyupdatedisable') }}
+                            </a>
+                        </div>
+                    @endif
             </div>
 
         </div>

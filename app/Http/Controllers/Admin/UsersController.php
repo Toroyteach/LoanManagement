@@ -18,10 +18,13 @@ use Image;
 use Illuminate\Support\Str;
 use App\SaccoFile;
 use App\LoanApplication;
+use App\Traits\UploadAble;
+use App\NextKin;
 
 class UsersController extends Controller
 {
     // protected $auth;
+    use uploadAble;
 
     // public function __construct(Auth $auth)
     // {
@@ -55,12 +58,14 @@ class UsersController extends Controller
                     'regex:/(254)[0-9]{9}/'
                 )
         ]);
-        dd($request->all());
+        //dd($request->all());
         //created users account table as well
 
         if(!$this->checkUserDetails($request->number)){
             return redirect()->back()->with('error','Failed to create user Firebase details conflict');
         }
+
+        //get next of kin information
 
 
         $user = User::create($request->all());
@@ -68,6 +73,15 @@ class UsersController extends Controller
             'total_amount' => $request->amount,
             'user_id' => $user->id,
         ]);
+
+        $nextKin = [
+            'name' => $request->kinname,
+            'phone' => $request->kinphone,
+            'relationship' => $request->kinrelationship,
+            'user_id' => $user->id,
+        ];
+
+        NextKin::create($nextKin);
 
         $uid = Str::random(20);
 
@@ -88,22 +102,6 @@ class UsersController extends Controller
     		$user->avatar = $filename;
     		$user->save();
     	}
-
-        // if($request->hasFile('avatar')){
-        //     $avatar = $request->file('avatar');
-        //     $filename = time() . '.' . $avatar->getClientOriginalExtension();
-    
-        //     //Fullsize
-        //     $avatar->move(public_path().'img/profile/',$filename);
-        //     $path = public_path('img/profile/' . $filename);
-    
-        //     $image_resize = Image::make(public_path().'/img/profile/'.$filename);
-        //     $image_resize->fit(300, 300);
-        //     $image_resize->save($path);
-
-        //     $user->avatar = $filename;
-        //     $user->save();
-        // }
         
         //dd('user created');
         //create base64 username/email and password 
@@ -247,16 +245,19 @@ class UsersController extends Controller
         abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //handle logic to update monthly amount
+        $thisMonth = \Carbon\Carbon::now()->format('M');
 
-        $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->first();
-        $amountToAdd = $request->amount;
-        $amount->update(['total_amount' => $amount->total_amount + $amountToAdd]);
+        $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->whereDate('updated_at', '<', $thisMonth)->first();
+
 
         if(!$amount){
 
-            return response()->json(array('response' => false, 'failure' => 'Sorry '.$amount->user->firstname.' was not credited'), 200);
+            return response()->json(array('response' => false, 'failure' => 'Sorry user was already was already credited this month'), 200);
 
         }
+
+        $amountToAdd = $request->amount;
+        $amount->update(['total_amount' => $amount->total_amount + $amountToAdd]);
 
         return response()->json(array('response' => true, 'message' => 'Success '.$amount->user->firstname.' was credited '.$request->amount), 200);
 

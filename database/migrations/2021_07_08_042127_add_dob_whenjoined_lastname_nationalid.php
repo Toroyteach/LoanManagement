@@ -17,7 +17,7 @@ class AddDobWhenjoinedLastnameNationalid extends Migration
             //
             $table->date('dateofbirth')->nullable();
             $table->date('joinedsacco')->nullable();
-            $table->string('middlename')->nullable()->after('firstname')->unique();
+            $table->string('middlename')->nullable()->after('firstname');
             $table->string('nationalid')->after('email')->unique();
         });
     }

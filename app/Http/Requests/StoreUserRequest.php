@@ -28,6 +28,9 @@ class StoreUserRequest extends FormRequest
             'nationalid'     => [
                 'required', 'integer', 'unique:users', 'digits_between:6,8',
             ],
+            'number'     => [
+                'required', 'integer', 'unique:users', 'digits:12', 'regex:/(254)[0-9]{9}/',
+            ],
             'email'    => [
                 'required',
                 'unique:users',
@@ -40,6 +43,9 @@ class StoreUserRequest extends FormRequest
             ],
             'dateofbirth'    => [
                 'required', 'before:-18 years',
+            ],
+            'joinedsacco'    => [
+                'required',
             ],
             'idno'    => [
                 'required',
@@ -59,13 +65,22 @@ class StoreUserRequest extends FormRequest
                 'required',
                 'array',
             ],
+            'kinname' => [
+                'required',
+            ],
+            'kinphone'  => [
+                'required', 'integer',
+            ],
+            'kinrelationship' => [
+                'required',
+            ],
         ];
     }
 
     public function messages()
     {
         return [
-            'idno.digits:6'                  => 'My custom error',
+            'idno.digits:6'                  => 'Member Number must be 6 digits',
             'dateofbirth.before:-18 years'   => 'Date of Birth must be older than 18 years'
         ];
     }

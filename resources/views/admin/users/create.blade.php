@@ -142,23 +142,70 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
-                <div style="padding-bottom: 4px">
-                    <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                    <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                </div>
-                <select class="form-control select2 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
-                    @foreach($roles as $id => $roles)
-                        <option value="{{ $id }}" {{ in_array($id, old('roles', [])) ? 'selected' : '' }}>{{ $roles }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('roles'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('roles') }}
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
+                    <div style="padding-bottom: 4px">
+                        <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
+                        <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
                     </div>
-                @endif
-                <span class="help-block">{{ trans('cruds.user.fields.roles_helper') }}</span>
+                    <select class="form-control select2 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
+                        @foreach($roles as $id => $roles)
+                            <option value="{{ $id }}" {{ in_array($id, old('roles', [])) ? 'selected' : '' }}>{{ $roles }}</option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('roles'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('roles') }}
+                        </div>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.user.fields.roles_helper') }}</span>
+                </div>
+                <div class="form-group col-md-6" data-provide="datepicker">
+                    <label for="joinedsacco">Date Joined Sacco</label>
+                    <input class="form-control {{ $errors->has('joinedsacco') ? 'is-invalid' : '' }}" type="date" value="{{ old('joinedsacco', '') }}" name="joinedsacco" id="joinedsacco" required>
+                    @if($errors->has('joinedsacco'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('joinedsacco') }}
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="card-header">
+                Next Of Kin Registration
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label class="required" for="kinname">Next of Kin Name</label>
+                    <input class="form-control {{ $errors->has('kinname') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinname', '') }}" placeholder="enter 6 digits" name="kinname" id="kinname" required>
+                    @if($errors->has('kinname'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('kinname') }}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label class="required" for="kinphone">Next of Kin Number</label>
+                    <input class="form-control {{ $errors->has('kinphone') ? 'is-invalid' : '' }}" type="number" value="{{ old('kinphone', '') }}" name="kinphone" id="kinphone" required>
+                    @if($errors->has('kinphone'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('kinphone') }}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label class="required" for="kinrelationship">Next of Kin Relationship</label>
+                    <input class="form-control {{ $errors->has('kinrelationship') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinrelationship', '') }}" name="kinrelationship" id="kinrelationship" required>
+                    @if($errors->has('kinrelationship'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('kinrelationship') }}
+                        </div>
+                    @endif
+                </div>
             </div>
 
             <div class="form-group">

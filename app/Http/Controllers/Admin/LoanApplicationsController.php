@@ -298,7 +298,7 @@ class LoanApplicationsController extends Controller
         // get repaymnet set date
         // $this add repayment plus 3 months
         //check repaymtn dat passed $this
-        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('status_id', '>', 8)->where('repaid_status', 0)->whereDate('repayment_date', '<=', $now)->get();
+        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('status_id', '=', 8)->where('repaid_status', 0)->whereDate('repayment_date', '<=', $now)->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
         //dd($loanApplications);

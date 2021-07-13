@@ -273,4 +273,5 @@ return [
     'calendar'                             => 'Calendar',
     'messenger'                            => 'Messenger',
     'monthlyupdate'                        => 'Update Monthly Contribution',
+    'monthlyupdatedisable'                 => 'Already Submitted Monthly Amount',
 ];
