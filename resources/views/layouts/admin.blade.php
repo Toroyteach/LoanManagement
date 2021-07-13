@@ -68,8 +68,11 @@
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
-                    </a>
+                    @if(!empty(Auth::user()->avata))
+                        <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
+                       @else
+                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
+                       @endif                    </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                       <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
                       <a class="dropdown-item" href="{{ route('profile.password.edit') }}">Edit Profile</a>

@@ -21,8 +21,11 @@
                     </div>
                 </div>
             <div class="container_fluid" style="width:200px;height:auto">
-                <img src="{{ asset( 'images/'.$user->avatar ) }}" class="img-thumbnail rouded" alt="profile image"> 
-            </div><br>
+                       @if(Auth::user()->avatar != 'default.jpg')
+                        <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
+                       @else
+                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
+                       @endif            </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>

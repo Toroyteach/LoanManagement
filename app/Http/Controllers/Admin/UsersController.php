@@ -247,12 +247,15 @@ class UsersController extends Controller
         //handle logic to update monthly amount
         $thisMonth = \Carbon\Carbon::now()->format('M');
 
-        $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->whereDate('updated_at', '<', $thisMonth)->first();
+        $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->first();
 
+        if(date('m',strtotime($amount->user->joinedsacco )) == date('m')){
 
-        if(!$amount){
+            if(date('m',strtotime($amount->updated_at )) == date('m')){
+                
+                return response()->json(array('response' => false, 'failure' => 'Sorry user was already was already credited this month'), 200);
 
-            return response()->json(array('response' => false, 'failure' => 'Sorry user was already was already credited this month'), 200);
+            }
 
         }
 

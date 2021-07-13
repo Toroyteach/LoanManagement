@@ -9,8 +9,11 @@
     <div class="card-body">
         <div class="form-group">
             <div class="container_fluid" style="width:200px;height:auto">
-                <img src="{{ asset( 'images/'.$user->avatar ) }}" class="img-thumbnail" alt="profile image"> 
-            </div><br>
+            @if($user->avatar != 'default.jpg')
+                        <img src="{{ asset( 'images/'.$user->avatar ) }}" width="40" height="40" class="rounded-circle">
+                       @else
+                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
+                       @endif            </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>
@@ -159,21 +162,28 @@
                         {{ trans('global.back_to_list') }}
                     </a>
                 </div>
-                    @if($user->userAccount->updated_at > \Carbon\Carbon::now()->format('M'))
-                        <div class="form-group col-md-6">
-                            <a class="btn btn-success" onclick="submitMonthly()">
-                                {{ trans('global.monthlyupdate') }}
-                            </a>
-                        </div>
-                    @else
+                    @if($user->userAccount->joinedsacco < \Carbon\Carbon::now()->format('M'))
+                        @if($user->userAccount->updated_at == \Carbon\Carbon::now()->format('M'))
+                            <div class="form-group col-md-6">
+                                <a class="btn btn-success" onclick="submitMonthly()">
+                                    {{ trans('global.monthlyupdate') }}
+                                </a>
+                            </div>
+                        @else
                         <div class="form-group col-md-6">
                             <a class="btn btn-warning" disabled>
                                 {{ trans('global.monthlyupdatedisable') }}
                             </a>
                         </div>
+                        @endif
+                    @else
+                            <div class="form-group col-md-6">
+                                <a class="btn btn-success" onclick="submitMonthly()">
+                                    {{ trans('global.monthlyupdate') }}
+                                </a>
+                            </div>
                     @endif
             </div>
-
         </div>
     </div>
 </div>

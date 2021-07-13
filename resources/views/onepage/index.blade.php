@@ -58,9 +58,9 @@
     <div class="container">
 
       <div class="logo float-left">
-        <h2 class="text-light"><a href="index.html">Mtangazaji<span> Sacco</span></a></h2>
+        <!-- <h2 class="text-light"><a href="index.html">Mtangazaji<span> Sacco</span></a></h2> -->
         <!-- Uncomment below if you prefer to use an image logo -->
-        <!-- <a href="index.html"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+        <a href=""><img src="{{ asset ( 'onepage/logo.jpeg')}}" width="100%" height="200" alt="" class="img-responsive"></a>
       </div>
 
       <nav class="nav-menu float-right d-none d-lg-block">
@@ -153,7 +153,7 @@
 
             <div class="icon-box " data-aos="fade-up" data-aos-delay="100">
               <h4 class="title">Loan Application Form</h4>
-              <div class="icon"><a href="{{ route('files.download', $file[2]->uuid) }}"><i class="bx bx-download"></i></a></div>
+              <div class="icon"><a href="{{ route('files.download', $file[1]->uuid) }}"><i class="bx bx-download"></i></a></div>
               <!-- <p class="description">Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident</p> -->
             </div>
 

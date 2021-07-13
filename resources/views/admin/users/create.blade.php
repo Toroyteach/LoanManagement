@@ -174,7 +174,7 @@
 
             <div class="card-header">
                 Next Of Kin Registration
-            </div>
+            </div><br><br>
 
             <div class="row">
                 <div class="form-group col-md-4">
@@ -189,7 +189,7 @@
 
                 <div class="form-group col-md-4">
                     <label class="required" for="kinphone">Next of Kin Number</label>
-                    <input class="form-control {{ $errors->has('kinphone') ? 'is-invalid' : '' }}" type="number" value="{{ old('kinphone', '') }}" name="kinphone" id="kinphone" required>
+                    <input class="form-control {{ $errors->has('kinphone') ? 'is-invalid' : '' }}" type="number" value="{{ old('kinphone', '') }}"  placeholder="254*********" name="kinphone" id="kinphone" required>
                     @if($errors->has('kinphone'))
                         <div class="invalid-feedback">
                             {{ $errors->first('kinphone') }}
