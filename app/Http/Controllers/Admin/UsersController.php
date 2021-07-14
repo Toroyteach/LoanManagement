@@ -251,18 +251,18 @@ class UsersController extends Controller
 
         if(date('m',strtotime($amount->user->joinedsacco )) == date('m')){
 
-            if(date('m',strtotime($amount->updated_at )) == date('m')){
+            return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$amount->user->firstname.' this month He just joined this month'), 200);
+
+        } else if(date('m',strtotime($amount->updated_at )) == date('m')){
                 
-                return response()->json(array('response' => false, 'failure' => 'Sorry user was already was already credited this month'), 200);
-
-            }
-
+            return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$amount->user->firstname.' He was already credited'), 200);
         }
-
+        dd('credited');
         $amountToAdd = $request->amount;
         $amount->update(['total_amount' => $amount->total_amount + $amountToAdd]);
 
         return response()->json(array('response' => true, 'message' => 'Success '.$amount->user->firstname.' was credited '.$request->amount), 200);
 
     }
+
 }

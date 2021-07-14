@@ -98,6 +98,7 @@ class LoanApplicationsController extends Controller
         $userData->increment('total_amount', $loanApplication->loan_amount);
         //dd($userData);
         //when updating the paymnent status of the loan to send money to user
+        //update firebase data as well
 
         if($request->status_id == 8){
 

@@ -162,27 +162,27 @@
                         {{ trans('global.back_to_list') }}
                     </a>
                 </div>
-                    @if($user->userAccount->joinedsacco < \Carbon\Carbon::now()->format('M'))
-                        @if($user->userAccount->updated_at == \Carbon\Carbon::now()->format('M'))
+                    @can('update_monthly_contribution')
+                        @if( $user->joinedsacco == \Carbon\Carbon::now()->month )
                             <div class="form-group col-md-6">
-                                <a class="btn btn-success" onclick="submitMonthly()">
-                                    {{ trans('global.monthlyupdate') }}
+                                <a class="btn btn-warning" disabled>
+                                    {{ trans('global.monthlyupdatedisablejoined') }}
+                                </a>
+                            </div>
+                        @elseif( $user->userAccount->updated_at  )
+                            <div class="form-group col-md-6">
+                                <a class="btn btn-danger" disabled>
+                                    {{ trans('global.monthlyupdatedisable') }}
                                 </a>
                             </div>
                         @else
-                        <div class="form-group col-md-6">
-                            <a class="btn btn-warning" disabled>
-                                {{ trans('global.monthlyupdatedisable') }}
-                            </a>
-                        </div>
+                                <div class="form-group col-md-6">
+                                    <a class="btn btn-success" onclick="submitMonthly()">
+                                        {{ trans('global.monthlyupdate') }}
+                                    </a>
+                                </div>
                         @endif
-                    @else
-                            <div class="form-group col-md-6">
-                                <a class="btn btn-success" onclick="submitMonthly()">
-                                    {{ trans('global.monthlyupdate') }}
-                                </a>
-                            </div>
-                    @endif
+                    @endcan
             </div>
         </div>
     </div>
@@ -198,7 +198,7 @@
         swal.fire({
             title: "Monthly Credit",
             icon: 'question',
-            text: "{{ $user->firstname }} will be credited ksh 20000. Please ensure and then confirm!",
+            text: "{{ $user->firstname }} will be credited ksh 20000. Please ensure this, then confirm!",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",

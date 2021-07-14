@@ -274,4 +274,5 @@ return [
     'messenger'                            => 'Messenger',
     'monthlyupdate'                        => 'Update Monthly Contribution',
     'monthlyupdatedisable'                 => 'Already Submitted Monthly Amount',
+    'monthlyupdatedisablejoined'           => 'Cannot submit Monthly amount. User joined this month',
 ];
