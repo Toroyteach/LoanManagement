@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersAccountsTable extends Migration
+class CreateSaccoAccountsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateUsersAccountsTable extends Migration
      */
     public function up()
     {
-        Schema::create('users_accounts', function (Blueprint $table) {
+        Schema::create('sacco_accounts', function (Blueprint $table) {
             $table->increments('id');
-            $table->decimal('total_amount', 15, 2);
+            $table->decimal('opening_bal', 15, 2);
+            $table->decimal('deposit_bal', 15, 2);
+            $table->string('created_by');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
@@ -30,6 +32,6 @@ class CreateUsersAccountsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users_accounts');
+        Schema::dropIfExists('sacco_accounts');
     }
 }

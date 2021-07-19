@@ -42,10 +42,10 @@ class StoreUserRequest extends FormRequest
                 'required', 'integer', 'gt:1000',
             ],
             'dateofbirth'    => [
-                'required', 'before:-18 years',
+                'required', 'date', 'before:-18 years',
             ],
             'joinedsacco'    => [
-                'required',
+                'required', 'date', 'after_or_equal:dateofbirth'
             ],
             'idno'    => [
                 'required',

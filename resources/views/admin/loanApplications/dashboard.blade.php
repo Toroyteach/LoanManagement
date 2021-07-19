@@ -89,7 +89,11 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
+                            @if(Auth::user()->getIsUserAttribute())
                                 ksh{{ $opening_balance['total_amount'] }}
+                            @else
+                                ksh{{ $opening_balance }}
+                            @endif
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">

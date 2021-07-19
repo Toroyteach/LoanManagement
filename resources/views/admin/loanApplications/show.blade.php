@@ -48,12 +48,41 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>
-                            {{ trans('cruds.loanApplication.fields.amountremaining') }}
-                        </th>
-                        <td>
-                            {{ $remaining }}
-                        </td>
+
+                            @if(Auth::user()->getIsUserAttribute())
+                                @if($loanApplication->status_id === 8)
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                    </th>
+                                    <td>
+                                        {{ $remaining }}
+                                    </td>
+                                @else
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                    </th>
+                                    <td>
+                                        <span class="badge badge-warning">null</span>
+                                    </td>
+                                @endif
+                            @else
+                                @if($loanApplication->status_id === 8)
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                    </th>
+                                    <td>
+                                        {{ $remaining }}
+                                    </td>
+                                @else
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                    </th>
+                                    <td>
+                                        <span class="badge badge-danger">{{ $loanApplication->status->name }}</span>
+                                    </td>
+                                @endif
+                            @endif
+
                     </tr>
                     <tr>
                         <th>
@@ -83,7 +112,7 @@
                                 <span class="badge badge-danger">Not Paid</span>
                                 @endif
                             @else
-                                
+                                null
                             @endif
                         </td>
                     </tr>

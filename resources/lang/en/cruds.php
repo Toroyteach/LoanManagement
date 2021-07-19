@@ -4,6 +4,7 @@ return [
     'userManagement'  => [
         'title'          => 'User management',
         'title_singular' => 'User management',
+        'profile'        => 'View Profile',
     ],
     'permission'      => [
         'title'          => 'Permissions',

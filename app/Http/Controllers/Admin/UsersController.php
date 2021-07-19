@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Role;
 use App\User;
 use App\UsersAccount;
+use App\SaccoAccount;
 use App\Services\AuditLogService;
 use Gate;
 use Illuminate\Http\Request;
@@ -20,16 +21,16 @@ use App\SaccoFile;
 use App\LoanApplication;
 use App\Traits\UploadAble;
 use App\NextKin;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
 {
-    // protected $auth;
-    use uploadAble;
 
-    // public function __construct(Auth $auth)
-    // {
-    //     $this->auth = $auth;
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function index()
     {
@@ -70,8 +71,16 @@ class UsersController extends Controller
 
         $user = User::create($request->all());
         UsersAccount::create([
-            'total_amount' => $request->amount,
+            'total_amount' => 0.00,
             'user_id' => $user->id,
+        ]);
+
+        //add/deposit on the sacco account
+        SaccoAccount::create([
+            'opening_bal' =>  0.00,
+            'deposit_bal' =>  $request->amount,
+            'created_by' =>   \Auth::user()->id,
+            'user_id' =>  $user->id,
         ]);
 
         $nextKin = [
@@ -93,14 +102,37 @@ class UsersController extends Controller
             	// Handle the user upload of avatar
     	if($request->hasFile('avatar')){
             
-    		$avatar = $request->file('avatar');
-    		$filename = time() . '.' . $avatar->getClientOriginalExtension();
-    		//Image::make($avatar)->resize(300, 300)->save( public_path('/uploads/avatars/' . $filename ) );
+    		// $avatar = $request->file('avatar');
+    		// $filename = time() . '.' . $avatar->getClientOriginalExtension();
+    		// //Image::make($avatar)->resize(300, 300)->save( public_path('/uploads/avatars/' . $filename ) );
         
-            $avatar->move(public_path('images'), $filename);
+            // $avatar->move(public_path('images'), $filename);
 
-    		$user->avatar = $filename;
-    		$user->save();
+    		// $user->avatar = $filename;
+    		// $user->save();
+
+            $this->validate($request, [
+                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            ]);
+            // Get image file
+            $image = $request->file('avatar');
+            // Make a image name based on user name and current timestamp
+            $name = Str::slug($request->input('lastname')).'_'.time();
+            // Define folder path
+            $folder = '/uploads/users/images/';
+            // Make a file path where image will be stored [ folder path + file name + file extension]
+            $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
+            // Upload image
+            //$this->uploadOne($image, $folder, 'public', $name);
+            $request->avatar->storeAs($filePath, $name . "." . $image->getClientOriginalExtension(), 'public');
+            // Set user profile image path in database to filePath
+            $user->avatar = $filePath;
+            $user->save();
+            //$request->avatar = $filePath;
+            //dd($filePath);
+            //$input['profile_image'] = $filePath;
+            //dd($input);
+
     	}
         
         //dd('user created');
@@ -241,6 +273,7 @@ class UsersController extends Controller
 
     protected function updateMonthlyContribution(Request $request)
     {
+        //ajax request to update database on users monthly contribution
 
         abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -257,12 +290,20 @@ class UsersController extends Controller
                 
             return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$amount->user->firstname.' He was already credited'), 200);
         }
-        dd('credited');
+        //dd('credited');
         $amountToAdd = $request->amount;
         $amount->update(['total_amount' => $amount->total_amount + $amountToAdd]);
 
         return response()->json(array('response' => true, 'message' => 'Success '.$amount->user->firstname.' was credited '.$request->amount), 200);
 
+    }
+
+    public function uploadOne(UploadedFile $file, $folder = null, $disk = 'public', $filename = null)
+    {
+        $name = !is_null($filename) ? $filename : Str::random(25);
+        dd($file, $folder, $disk, $filename, $name);
+
+        return $file->storeAs($folder, $name . "." . $file->getClientOriginalExtension(), $disk );
     }
 
 }

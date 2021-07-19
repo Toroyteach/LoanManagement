@@ -94,7 +94,7 @@ class LoanApplicationsController extends Controller
         $loanApplication->update($request->only('loan_amount', 'description', 'status_id'));
         //dd('update'.$loanApplication);
 
-        $userData = UsersAccount::where('user_id', 43)->firstOrFail();
+        $userData = UsersAccount::where('user_id', $request->created_by_id)->firstOrFail();
         $userData->increment('total_amount', $loanApplication->loan_amount);
         //dd($userData);
         //when updating the paymnent status of the loan to send money to user

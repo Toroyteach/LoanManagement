@@ -13,7 +13,12 @@
                     <i class="fa-fw fas fa-users c-sidebar-nav-icon">
 
                     </i>
-                    {{ trans('cruds.userManagement.title') }}
+                    @if(Auth::user()->getIsUserAttribute())
+                        {{ trans('cruds.userManagement.profile') }}
+                    @else
+                        {{ trans('cruds.userManagement.title') }}
+                    @endif
+
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
                     @can('view_self_user')
@@ -22,7 +27,7 @@
                                 <i class="fa-fw fas fa-user c-sidebar-nav-icon">
 
                                 </i>
-                                {{ trans('cruds.permission.user_view') }}
+                                Profile
                             </a>
                         </li>
                     @endcan

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 use App\LoanApplication;
 use App\UsersAccount;
+use App\SaccoAccount;
 use App\SaccoFile;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
@@ -22,12 +23,12 @@ class HomeController
             $loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '>' , 7)->sum('loan_amount');
             //dd(LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount'));
             $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '>' , 7)->sum('loan_amount');
-            $amount_paid = LoanApplication::sum('repaid_amount');
+            $amount_paid = LoanApplication::where('created_by_id', \Auth::user()->id)->sum('repaid_amount');
             $user = 'user';
             //logic to return data for the chart js of loan and loan types
             $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
+            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first('total_amount');
 
         } else if(\Auth::user()->getIsAdminAttribute() || \Auth::user()->getIsCfoAttribute()){
 
@@ -38,7 +39,7 @@ class HomeController
                     //logic to return data for the chart js of loan and loan types
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
+            $opening_balance = SaccoAccount::sum('deposit_bal');
 
         } else {
             
@@ -46,7 +47,7 @@ class HomeController
             //dd(LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount'));
             $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '>' , 7)->sum('loan_amount');
             $amount_paid = LoanApplication::sum('repaid_amount');
-            $user = 'user';
+            $user = 'user';//other than admin or cfo or user
             //logic to return data for the chart js of loan and loan types
             $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );

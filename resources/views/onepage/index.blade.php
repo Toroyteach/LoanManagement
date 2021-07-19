@@ -60,7 +60,7 @@
       <div class="logo float-left">
         <!-- <h2 class="text-light"><a href="index.html">Mtangazaji<span> Sacco</span></a></h2> -->
         <!-- Uncomment below if you prefer to use an image logo -->
-        <a href=""><img src="{{ asset ( 'onepage/logo.jpeg')}}" width="100%" height="200" alt="" class="img-responsive"></a>
+        <a href=""><img src="{{ asset ( 'onepage/logo.jpeg')}}" width="100" height="200" alt="" class="img-responsive"></a>
       </div>
 
       <nav class="nav-menu float-right d-none d-lg-block">
