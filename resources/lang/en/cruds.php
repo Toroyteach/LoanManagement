@@ -2,8 +2,8 @@
 
 return [
     'userManagement'  => [
-        'title'          => 'User management',
-        'title_singular' => 'User management',
+        'title'          => 'User Management',
+        'title_singular' => 'User Management',
         'profile'        => 'View Profile',
     ],
     'permission'      => [
@@ -84,6 +84,7 @@ return [
             'updated_at_helper'        => '',
             'deleted_at'               => 'Deleted at',
             'deleted_at_helper'        => '',
+            'memberno'                => 'Member Number',
         ],
     ],
     'auditLog'        => [
@@ -112,6 +113,7 @@ return [
     ],
     'status'          => [
         'title'          => 'Statuses',
+        'dashboard'      => 'Dashboard',
         'title_singular' => 'Status',
         'fields'         => [
             'id'                => 'ID',
@@ -134,7 +136,9 @@ return [
             'paymentstatus'      => 'Payment Status',
             'amountremaining'    => 'Amount Remaining',
             'duration'           => 'Duration',
+            'expectedpaydate'    => 'Deadline Payment',
             'loantype'           => 'Loan Type',
+            'datecreated'        => 'Date Created',
             'id_helper'          => '',
             'loan_amount'        => 'Loan Amount',
             'loan_amount_helper' => '',

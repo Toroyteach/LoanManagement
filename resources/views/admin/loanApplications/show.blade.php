@@ -94,6 +94,14 @@
                     </tr>
                     <tr>
                         <th>
+                            {{ trans('cruds.loanApplication.fields.expectedpaydate') }}
+                        </th>
+                        <td>
+                            {{ $loanApplication->repayment_date }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             Loan Status
                         </th>
                         <td>
@@ -116,13 +124,21 @@
                             @endif
                         </td>
                     </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.loanApplication.fields.datecreated') }}
+                        </th>
+                        <td>
+                            {{ \Carbon\Carbon::parse($loanApplication->created_at)->toDateString() }}
+                        </td>
+                    </tr>
                     @if($user->is_admin)
                         <tr>
                             <th>
                                 {{ trans('cruds.loanApplication.fields.analyst') }}
                             </th>
                             <td>
-                                {{ $loanApplication->analyst->name ?? '' }}
+                                {{ $loanApplication->analyst->name ?? 'Not Processed' }}
                             </td>
                         </tr>
                         <tr>
@@ -130,7 +146,7 @@
                                 {{ trans('cruds.loanApplication.fields.cfo') }}
                             </th>
                             <td>
-                                {{ $loanApplication->cfo->name ?? '' }}
+                                {{ $loanApplication->cfo->name ?? 'Not Processed' }}
                             </td>
                         </tr>
                     @endif

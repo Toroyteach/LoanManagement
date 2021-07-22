@@ -109,6 +109,10 @@
                         </div>
                     @endif
                 </div>
+
+            </div>
+
+            <div class="row">
                 <div class="form-group col-md-6">
                     <label class="required" for="amount">Registration Amount</label>
                     <input class="form-control {{ $errors->has('amount') ? 'is-invalid' : '' }}" type="number" placeholder="Enter amount" value="" name="amount" id="amount" required>
@@ -118,6 +122,17 @@
                         </div>
                     @endif
                 </div>
+
+                <div class="form-group col-md-6">
+                    <label class="required" for="monthly_amount">Monthly Contribution Amount</label>
+                    <input class="form-control {{ $errors->has('monthly_amount') ? 'is-invalid' : '' }}" type="number" placeholder="Enter monthly contribution amount" value="" name="monthly_amount" id="monthly_amount" required>
+                    @if($errors->has('monthly_amount'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('monthly_amount') }}
+                        </div>
+                    @endif
+                </div>
+
             </div>
 
             <div class="row">

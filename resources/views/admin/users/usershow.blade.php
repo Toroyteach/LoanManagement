@@ -20,22 +20,14 @@
                         </a>
                     </div>
                 </div>
-            <div class="container_fluid" style="width:200px;height:auto">
+            <div class="container_fluid" style="width:300px;height:auto">
                        @if(Auth::user()->avatar != 'default.jpg')
-                        <img src="{{ asset( 'images/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
+                        <img src="{{ asset( 'uploads/avatars/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
                        @else
                         <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
                        @endif            </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
-                    <tr>
-                        <th>
-                            {{ trans('cruds.user.fields.id') }}
-                        </th>
-                        <td>
-                            {{ $user->id }}
-                        </td>
-                    </tr>
                     <tr>
                         <th>
                             {{ trans('cruds.user.fields.firstname') }}
@@ -70,10 +62,10 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.user.fields.email_verified_at') }}
+                            {{ trans('cruds.user.fields.memberno') }}
                         </th>
                         <td>
-                            {{ $user->email_verified_at }}
+                            {{ $user->idno }}
                         </td>
                     </tr>
                     <tr>
@@ -97,7 +89,7 @@
                             {{ trans('cruds.user.fields.accountbal') }}
                         </th>
                         <td>
-                            {{ $user->userAccount->total_amount }}
+                            ksh {{ $user->userAccount->total_amount }}
                         </td>
                     </tr>
                     <tr>
@@ -107,16 +99,16 @@
                         <td>
                             @if(!empty($currentLoanAmount))
                                 @if ($currentLoanAmount->status_id === 1)
-                                    <span class="badge badge-primary">0.00</span>
+                                    ksh 0.00
                                 @elseif($currentLoanAmount->status_id === 8)
-                                    <span class="badge badge-warning">{{ $currentLoanAmount->loan_amount }}</span>
+                                    ksh {{ $currentLoanAmount->loan_amount }}
                                 @elseif($currentLoanAmount->status_id === 10)
-                                    <span class="badge badge-success">{{ $currentLoanAmount->loan_amount }}</span>
+                                    ksh {{ $currentLoanAmount->loan_amount }}
                                 @else
-                                    <span class="badge badge-danger">0.00</span>
+                                    ksh 0.00
                                 @endif
                             @else
-                                ksh0.00
+                                ksh 0.00
                             @endif
                         </td>
                     </tr>
@@ -159,6 +151,23 @@
                         @else
                         <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
                         @endif
+                </div>
+            </div> <br>
+            <div class="container-fluid">
+                <h2 class="section-title"> Statements</h2>
+            </div><br>
+            <div class="row">
+                <div class="icon-box col-md-6 text-center" data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="title">Monthly Contribution</h4>
+                        <div class="icon">
+                            <a class="btn btn-primary" href="{{ route('admin.users.pdf', 'monthly') }}">Download PDF</a>
+                        </div>                                   
+                </div>
+                <div class="icon-box col-md-6 text-center" data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="title">Loan Application</h4>
+                    <div class="icon">
+                            <a class="btn btn-primary" href="{{ route('admin.users.pdf', 'loan') }}">Download PDF</a>
+                        </div> 
                 </div>
             </div>
         </div>

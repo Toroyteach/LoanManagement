@@ -58,6 +58,19 @@
                     </tr>
                     <tr>
                         <th>
+                            {{ trans('cruds.user.fields.email_verified_at') }}
+                        </th>
+                        <td>
+                            @if(empty($user->email_verified_at))
+                                <span class="badge badge-danger"> Not Verified</span>
+                            @else
+                                {{ $user->email_verified_at }}
+                            @endif
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.user.fields.nationalid') }}
                         </th>
                         <td>
@@ -102,7 +115,7 @@
                         </th>
                         <td>
                             @foreach($user->roles as $key => $roles)
-                                <span class="label label-info">{{ $roles->title }}</span>
+                                <span class="badge badge-success">{{ $roles->title }}</span>
                             @endforeach
                         </td>
                     </tr>
@@ -111,7 +124,7 @@
                             {{ trans('cruds.user.fields.accountbal') }}
                         </th>
                         <td>
-                            {{ $user->userAccount->total_amount }}
+                            ksh {{ $user->userAccount->total_amount }}
                         </td>
                     </tr>
                     <tr>
@@ -121,13 +134,13 @@
                         <td>
                             @if(!empty($currentLoanAmount))
                                 @if ($currentLoanAmount->status_id === 1)
-                                    <span class="badge badge-primary">0.00</span>
+                                    ksh 0.00
                                 @elseif($currentLoanAmount->status_id === 8)
-                                    <span class="badge badge-warning">{{ $currentLoanAmount->loan_amount }}</span>
+                                    ksh {{ $currentLoanAmount->loan_amount }}
                                 @elseif($currentLoanAmount->status_id === 10)
-                                    <span class="badge badge-success">{{ $currentLoanAmount->loan_amount }}</span>
+                                    ksh {{ $currentLoanAmount->loan_amount }}
                                 @else
-                                    <span class="badge badge-danger">0.00</span>
+                                    ksh0.00
                                 @endif
                             @else
                                 ksh0.00
@@ -150,7 +163,7 @@
                                     @endif
                                 @endif
                             @else
-                            
+                            null
                             @endif
                         </td>
                     </tr>
@@ -163,20 +176,20 @@
                     </a>
                 </div>
                     @can('update_monthly_contribution')
-                        @if( $user->joinedsacco == \Carbon\Carbon::now()->month )
-                            <div class="form-group col-md-6">
+                        @if(empty($user->monthlySavings->modified_at))
+                        <div class="form-group col-md-6">
+                                    <a class="btn btn-success" onclick="submitMonthly()">
+                                        {{ trans('global.monthlyupdate') }}
+                                    </a>
+                                </div>
+                        @elseif(\Carbon\Carbon::parse($user->monthlySavings->modified_at)->format('d F Y') === \Carbon\Carbon::now()->format('d F Y'))
+                        <div class="form-group col-md-6">
                                 <a class="btn btn-warning" disabled>
-                                    {{ trans('global.monthlyupdatedisablejoined') }}
-                                </a>
-                            </div>
-                        @elseif( $user->userAccount->updated_at  )
-                            <div class="form-group col-md-6">
-                                <a class="btn btn-danger" disabled>
                                     {{ trans('global.monthlyupdatedisable') }}
                                 </a>
                             </div>
                         @else
-                                <div class="form-group col-md-6">
+                        <div class="form-group col-md-6">
                                     <a class="btn btn-success" onclick="submitMonthly()">
                                         {{ trans('global.monthlyupdate') }}
                                     </a>
@@ -198,7 +211,7 @@
         swal.fire({
             title: "Monthly Credit",
             icon: 'question',
-            text: "{{ $user->firstname }} will be credited ksh 20000. Please ensure this, then confirm!",
+            text: "{{ $user->firstname }} will be credited ksh {{ $user->monthlysavings->monthly_amount }}. Please ensure this, then confirm!",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",
@@ -213,7 +226,7 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         user_id: "{{ $user->id }}",
-                        amount: 20000
+                        amount: "{{ $user->monthlysavings->monthly_amount }}"
                         },
                     dataType: 'JSON',
                     success: function (results) {

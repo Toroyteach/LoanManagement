@@ -7,6 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link href="{{ asset ( 'onepage/logo.jpeg')}}" rel="icon">
+    <link href="{{ asset ( 'onepage/logo.jpeg')}}" rel="apple-touch-icon">
+
     <title>{{ trans('panel.site_title') }}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet" />

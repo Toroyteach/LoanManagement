@@ -41,6 +41,9 @@ class StoreUserRequest extends FormRequest
             'amount'    => [
                 'required', 'integer', 'gt:1000',
             ],
+            'monthly_amount'    => [
+                'required', 'integer', 'gt:1000',
+            ],
             'dateofbirth'    => [
                 'required', 'date', 'before:-18 years',
             ],

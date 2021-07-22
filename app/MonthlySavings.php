@@ -2,30 +2,25 @@
 
 namespace App;
 
-use App\Traits\Auditable;
-use App\Traits\MultiTenantModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Auditable;
 
-class UsersAccount extends Model
+class MonthlySavings extends Model
 {
     //
     use SoftDeletes, Auditable;
 
-    const UPDATED_AT = 'updated_at';
+    public $table = 'monthly_savings';
 
-    public $table = 'users_accounts';
+    protected $fillable = [
+        'total_contributed', 'monthly_amount', 'user_id', 'next_payment_date', 'overpayment_amount', 'created_by', 'modified_at',
+    ]; 
 
     protected $dates = [
         'created_at',
         'updated_at',
-        'delted_at',
-    ];
-
-    protected $fillable = [
-        'total_amount',
-        'user_id',
-        'modified_at',
+        'deleted_at',
     ];
 
     public function user()

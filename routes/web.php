@@ -1,5 +1,6 @@
 <?php
 
+
 Route::get('/', 'Front\FrontendController@index');
 Route::get('/home', function () {
     if (session('status')) {
@@ -73,6 +74,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     //update monthly contribution
     Route::post('/updatemonthlycontribution','UsersController@updateMonthlyContribution')->name('monthly.update');
+
+    //get pdf for statements
+    Route::get('/users/pdf/{id}', 'UsersController@createPdf')->name('users.pdf');
 
 });
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {

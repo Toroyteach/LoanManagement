@@ -90,13 +90,10 @@ class LoanApplicationsController extends Controller
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
     {
-        //dd($request->all());
-        $loanApplication->update($request->only('loan_amount', 'description', 'status_id'));
-        //dd('update'.$loanApplication);
+        $loanApplication->update($request->only('status_id'));
 
-        $userData = UsersAccount::where('user_id', $request->created_by_id)->firstOrFail();
+        $userData = UsersAccount::where('user_id', $loanApplication->created_by_id)->firstOrFail();
         $userData->increment('total_amount', $loanApplication->loan_amount);
-        //dd($userData);
         //when updating the paymnent status of the loan to send money to user
         //update firebase data as well
 

@@ -14,13 +14,17 @@
                     @if( $user == 'admin' )
                         <h5 class="card-title mb-0">Total Approved Balance</h5>
                     @else
-                        <h5 class="card-title mb-0">Total Account Balance</h5>
+                        <h5 class="card-title mb-0">Monthly contribution</h5>
                     @endif
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
-                                ksh{{ $loan }}
+                                @if( $user == 'admin' )
+                                    <h2 class="d-flex align-items-center mb-0">ksh{{ $savings }}</h2>
+                                @else
+                                    <h2 class="d-flex align-items-center mb-0">ksh{{ $savings['total_contributed'] }}</h2>
+                                @endif
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">
@@ -84,16 +88,16 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Opening Balance</h5>
+                        @if( $user == 'admin' )
+                            <h5 class="card-title mb-0">Total Approved Loan</h5>
+                        @else
+                            <h5 class="card-title mb-0">Approved Loan Balance</h5>
+                        @endif
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
-                            @if(Auth::user()->getIsUserAttribute())
-                                ksh{{ $opening_balance['total_amount'] }}
-                            @else
-                                ksh{{ $opening_balance }}
-                            @endif
+                                ksh{{ $approved_loan }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">

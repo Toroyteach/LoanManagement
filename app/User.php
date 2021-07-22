@@ -124,4 +124,9 @@ class User extends Authenticatable
         return $this->hasOne(UsersAccount::class);
 
     }
+
+    public function monthlySavings()
+    {
+        return $this->hasOne(MonthlySavings::class);
+    }
 }

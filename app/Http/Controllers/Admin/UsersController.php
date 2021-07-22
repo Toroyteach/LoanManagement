@@ -10,6 +10,7 @@ use App\Role;
 use App\User;
 use App\UsersAccount;
 use App\SaccoAccount;
+use App\MonthlySavings;
 use App\Services\AuditLogService;
 use Gate;
 use Illuminate\Http\Request;
@@ -23,6 +24,8 @@ use App\Traits\UploadAble;
 use App\NextKin;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
+use PDF;
 
 class UsersController extends Controller
 {
@@ -83,14 +86,21 @@ class UsersController extends Controller
             'user_id' =>  $user->id,
         ]);
 
-        $nextKin = [
+        MonthlySavings::create([
+            'total_contributed' =>  0.00,
+            'monthly_amount' =>  $request->monthly_amount,
+            'created_by' =>   \Auth::user()->id,
+            'user_id' =>  $user->id,
+            'next_payment_date' => Carbon::createFromFormat('Y-m-d H:i:s', $user->created_at)->firstOfMonth()->addDays(4)->addMonths(1)->format('Y-m-d'),
+            'overpayment_amount' => 0.00,
+        ]);
+
+        NextKin::create([
             'name' => $request->kinname,
             'phone' => $request->kinphone,
             'relationship' => $request->kinrelationship,
             'user_id' => $user->id,
-        ];
-
-        NextKin::create($nextKin);
+        ]);
 
         $uid = Str::random(20);
 
@@ -104,34 +114,35 @@ class UsersController extends Controller
             
     		// $avatar = $request->file('avatar');
     		// $filename = time() . '.' . $avatar->getClientOriginalExtension();
-    		// //Image::make($avatar)->resize(300, 300)->save( public_path('/uploads/avatars/' . $filename ) );
+    		// //Image::make($avatar)->resize(300, 300)->save('./uploads/avatars/' . $filename);
         
-            // $avatar->move(public_path('images'), $filename);
+            // $avatar->move(public_path('/uploads/avatars/'), $filename);
+            // //Storage::disk('public')->put($filename, $avatar);
 
     		// $user->avatar = $filename;
     		// $user->save();
 
-            $this->validate($request, [
-                'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-            ]);
-            // Get image file
-            $image = $request->file('avatar');
-            // Make a image name based on user name and current timestamp
-            $name = Str::slug($request->input('lastname')).'_'.time();
-            // Define folder path
-            $folder = '/uploads/users/images/';
-            // Make a file path where image will be stored [ folder path + file name + file extension]
-            $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
-            // Upload image
-            //$this->uploadOne($image, $folder, 'public', $name);
-            $request->avatar->storeAs($filePath, $name . "." . $image->getClientOriginalExtension(), 'public');
-            // Set user profile image path in database to filePath
-            $user->avatar = $filePath;
-            $user->save();
-            //$request->avatar = $filePath;
-            //dd($filePath);
-            //$input['profile_image'] = $filePath;
-            //dd($input);
+            // $this->validate($request, [
+            //     'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            // ]);
+            // // Get image file
+            // $image = $request->file('avatar');
+            // // Make a image name based on user name and current timestamp
+            // $name = Str::slug($request->input('lastname')).'_'.time();
+            // // Define folder path
+            // $folder = '/uploads/users/images/';
+            // // Make a file path where image will be stored [ folder path + file name + file extension]
+            // $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
+            // // Upload image
+            // //$this->uploadOne($image, $folder, 'public', $name);
+            // $request->avatar->storeAs($filePath, $name . "." . $image->getClientOriginalExtension(), 'public');
+            // // Set user profile image path in database to filePath
+            // $user->avatar = $filePath;
+            // $user->save();
+            // //$request->avatar = $filePath;
+            // //dd($filePath);
+            // //$input['profile_image'] = $filePath;
+            // //dd($input);
 
     	}
         
@@ -212,6 +223,26 @@ class UsersController extends Controller
         return view('admin.users.usershow', compact('user', 'files', 'currentLoanAmount'));
     }
 
+    public function createPdf($id)
+    {
+        if($id == 'monthly'){
+
+            $data = MonthlySavings::where('user_id', \Auth::user()->id)->get();
+
+        } else if($id == 'loan'){
+
+            $data = LoanApplication::where('created_by_id', \Auth::user()->id)->get();
+
+        }
+
+        // share data to view
+        view()->share('employee',$data);
+        $pdf = PDF::loadView('admin.pdf.pdf_view',compact('data'));
+  
+        // download PDF file with download method
+        return $pdf->stream($id.'_statement.pdf');
+    }
+
     public function download($uuid)
     {
         
@@ -278,23 +309,27 @@ class UsersController extends Controller
         abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //handle logic to update monthly amount
-        $thisMonth = \Carbon\Carbon::now()->format('M');
 
-        $amount = UsersAccount::where('user_id', $request->user_id)->with('user')->first();
+        $account = MonthlySavings::where('user_id', $request->user_id)->with('user')->first();
 
-        if(date('m',strtotime($amount->user->joinedsacco )) == date('m')){
+        //dd(date('m'),date('m',strtotime($account->updated_at )) == date('m'));
 
-            return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$amount->user->firstname.' this month He just joined this month'), 200);
+        if(empty($account->modified_at)){
+            //dd('update first time');
+            $amountToAdd = $request->amount;
+            $account->update(['total_contributed' => $account->total_amount + $amountToAdd]);
+            $account->update(['modified_at' => Carbon::now()->toDateTimeString()]);
+            return response()->json(array('response' => true, 'message' => 'Success '.$account->user->firstname.' was credited '.$request->amount), 200);
 
-        } else if(date('m',strtotime($amount->updated_at )) == date('m')){
-                
-            return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$amount->user->firstname.' He was already credited'), 200);
+        }else if(date('m',strtotime($account->modified_at )) == date('m')){
+            return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$account->user->firstname.' He was already credited'), 200);
         }
         //dd('credited');
         $amountToAdd = $request->amount;
-        $amount->update(['total_amount' => $amount->total_amount + $amountToAdd]);
+        $account->update(['total_contributed' => $account->total_amount + $amountToAdd]);
+        $account->update(['modified_at' => Carbon::now()->toDateTimeString()]);
 
-        return response()->json(array('response' => true, 'message' => 'Success '.$amount->user->firstname.' was credited '.$request->amount), 200);
+        return response()->json(array('response' => true, 'message' => 'Success '.$account->user->firstname.' was credited '.$request->amount), 200);
 
     }
 

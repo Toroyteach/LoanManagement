@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 use App\LoanApplication;
-use App\UsersAccount;
+use App\MonthlySavings;
 use App\SaccoAccount;
 use App\SaccoFile;
 use Illuminate\Http\Request;
@@ -20,44 +20,33 @@ class HomeController
         //get and send loan details
         if(\Auth::user()->getIsUserAttribute()){
 
-            $loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '>' , 7)->sum('loan_amount');
-            //dd(LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount'));
-            $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '>' , 7)->sum('loan_amount');
+            $approved_loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '=' , 8)->sum('loan_amount');// approved loan
+            //dd($approved_loan);
+            $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('loan_amount');// 
             $amount_paid = LoanApplication::where('created_by_id', \Auth::user()->id)->sum('repaid_amount');
             $user = 'user';
-            //logic to return data for the chart js of loan and loan types
+                    //logic to return data for the chart js of loan and loan types for user
             $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first('total_amount');
-
-        } else if(\Auth::user()->getIsAdminAttribute() || \Auth::user()->getIsCfoAttribute()){
-
-            $loan = LoanApplication::where('status_id', '>' , 7)->sum('loan_amount');
-            $loan_pending = LoanApplication::where('repaid_status', '=', 0)->where('status_id', '>' , 7)->sum('loan_amount');
-            $amount_paid = LoanApplication::sum('repaid_amount');
-            $user = 'admin';
-                    //logic to return data for the chart js of loan and loan types
-            $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $opening_balance = SaccoAccount::sum('deposit_bal');
+            $savings = MonthlySavings::where('user_id', \Auth::user()->id)->first('total_contributed'); //monthly savings
+            //dd($line);
 
         } else {
-            
-            $loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '>' , 7)->sum('loan_amount');
-            //dd(LoanApplication::where('created_by_id', \Auth::user()->id)->sum('loan_amount'));
-            $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '>' , 7)->sum('loan_amount');
-            $amount_paid = LoanApplication::sum('repaid_amount');
-            $user = 'user';//other than admin or cfo or user
-            //logic to return data for the chart js of loan and loan types
-            $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $opening_balance = UsersAccount::where('user_id', \Auth::user()->id)->first();
+
+            $approved_loan = LoanApplication::where('status_id', '=' , 8)->sum('loan_amount');
+            $loan_pending = LoanApplication::where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('loan_amount');//loan which havent been paid back
+            $amount_paid = LoanApplication::sum('repaid_amount');// amount paied back
+            $user = 'admin';
+                    //logic to return data for the chart js of loan and loan types for admin
+            $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $savings = SaccoAccount::sum('deposit_bal'); //total amount in sacco
 
         }
 
         //dd($pie, $line);
 
-        return view('admin.loanApplications.dashboard', compact('loan', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'opening_balance'));
+        return view('admin.loanApplications.dashboard', compact('savings', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'approved_loan'));
     }
 
     public function createfile()
@@ -100,14 +89,16 @@ class HomeController
         $monthlyValues = array();
 
         if($userType == 'Admin'){
-            for ($x = 0; $x <= 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x)->where('status_id', '=' , 8)->sum('loan_amount');
+            for ($x = 0; $x < 11; $x++) {
+                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         } else {
-            for ($x = 0; $x <= 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
+            for ($x = 0; $x < 11; $x++) {
+                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
+
+        //dd($monthlyValues);
         
         return $monthlyValues;
     }

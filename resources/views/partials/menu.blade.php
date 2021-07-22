@@ -7,6 +7,12 @@
     </div>
 
     <ul class="c-sidebar-nav">
+            <li class="c-sidebar-nav-item">
+                <a href="{{ route('admin.dashboard') }}" class="c-sidebar-nav-link {{ request()->is('admin/dashboard') || request()->is('admin/dashboard') ? 'active' : '' }}">
+                    <i class="fa-fw fas fa-chart-line c-sidebar-nav-icon"></i>
+                    {{ trans('cruds.status.dashboard') }}
+                </a>
+            </li>
         @can('user_management_access')  
             <li class="c-sidebar-nav-dropdown">
                 <a class="c-sidebar-nav-dropdown-toggle" href="#">

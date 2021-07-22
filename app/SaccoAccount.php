@@ -11,9 +11,15 @@ class SaccoAccount extends Model
     //
     use SoftDeletes, Auditable;
 
-    protected $table = 'sacco_accounts';
+    public $table = 'sacco_accounts';
 
     protected $fillable = [
         'opening_bal', 'deposit_bal', 'user_id', 'created_by'
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 }
