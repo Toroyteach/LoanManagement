@@ -92,12 +92,13 @@ class LoanApplicationsController extends Controller
     {
         $loanApplication->update($request->only('status_id'));
 
-        $userData = UsersAccount::where('user_id', $loanApplication->created_by_id)->firstOrFail();
-        $userData->increment('total_amount', $loanApplication->loan_amount);
         //when updating the paymnent status of the loan to send money to user
         //update firebase data as well
 
         if($request->status_id == 8){
+
+            $userData = UsersAccount::where('user_id', $loanApplication->created_by_id)->firstOrFail();
+            $userData->increment('total_amount', $loanApplication->loan_amount);
 
             $data = [
                 'user_id' => $loanApplication->created_by_id, 

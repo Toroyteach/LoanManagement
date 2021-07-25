@@ -176,6 +176,11 @@ class UsersController extends Controller
         // return redirect()->route('admin.users.index');
     }
 
+    public function createUserAccounts($params)
+    {
+
+    }
+
     public function edit(User $user)
     {
         abort_if(Gate::denies('user_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -213,34 +218,48 @@ class UsersController extends Controller
         abort_if(Gate::denies('view_self_user'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user = User::findorFail(\Auth::user()->id);
-        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->first();
+        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('status_id', '=', '8')->where('repaid_status', 0)->sum('loan_amount');
+        $totalmonthlysavings = MonthlySavings::where('user_id', $user->id)->sum('total_contributed');
+        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('created_by_id', $user->id)->get();
 
 
         $files = SaccoFile::get();
 
         //dd($currentLoanAmount);
 
-        return view('admin.users.usershow', compact('user', 'files', 'currentLoanAmount'));
+        return view('admin.users.usershow', compact('user', 'files', 'currentLoanAmount', 'totalmonthlysavings', 'loanApplications'));
     }
 
     public function createPdf($id)
     {
+
+        $user = \Auth::user();
+
         if($id == 'monthly'){
 
-            $data = MonthlySavings::where('user_id', \Auth::user()->id)->get();
+            $type = 'monthly';
 
         } else if($id == 'loan'){
 
-            $data = LoanApplication::where('created_by_id', \Auth::user()->id)->get();
+            $type = 'loan';
 
         }
 
         // share data to view
-        view()->share('employee',$data);
-        $pdf = PDF::loadView('admin.pdf.pdf_view',compact('data'));
+        $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
+        $monthlystatement = MonthlySavings::where('user_id', $user->id)->first();
+        //dd($loanstatements);
   
         // download PDF file with download method
-        return $pdf->stream($id.'_statement.pdf');
+        if($user and ($monthlystatement or $loanstatement)){
+
+            //view()->share('employee',$data);
+            $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'));
+
+            return $pdf->stream($id.'_statement.pdf');
+        }
+
+        return back()->with('error', 'No values to prepare statement for');
     }
 
     public function download($uuid)

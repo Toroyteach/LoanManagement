@@ -3,7 +3,7 @@ runtime: php
 env: flex
  #let app engine know we use flexible environment
 manual_scaling:
-        instances: 2
+        instances: 1
 
 runtime_config:
  document_root: public

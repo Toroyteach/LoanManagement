@@ -7,6 +7,7 @@ use App\SaccoAccount;
 use App\SaccoFile;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
+use Carbon\Carbon;
 
 class HomeController
 {
@@ -17,6 +18,12 @@ class HomeController
 
     public function dashboard()
     {
+
+        $daysInCurrentMonth = cal_days_in_month(CAL_GREGORIAN, Carbon::now()->format('m'), Carbon::now()->format('Y'));
+        //dd($daysInCurrentMonth);
+        $days = json_encode((range(1, $daysInCurrentMonth)));
+
+
         //get and send loan details
         if(\Auth::user()->getIsUserAttribute()){
 
@@ -26,7 +33,7 @@ class HomeController
             $amount_paid = LoanApplication::where('created_by_id', \Auth::user()->id)->sum('repaid_amount');
             $user = 'user';
                     //logic to return data for the chart js of loan and loan types for user
-            $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $line = json_encode($this->getLineGraphData('user', $days, \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $savings = MonthlySavings::where('user_id', \Auth::user()->id)->first('total_contributed'); //monthly savings
             //dd($line);
@@ -34,24 +41,29 @@ class HomeController
         } else {
 
             $approved_loan = LoanApplication::where('status_id', '=' , 8)->sum('loan_amount');
+            //dd($approved_loan);
             $loan_pending = LoanApplication::where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('loan_amount');//loan which havent been paid back
             $amount_paid = LoanApplication::sum('repaid_amount');// amount paied back
             $user = 'admin';
                     //logic to return data for the chart js of loan and loan types for admin
-            $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            $line = json_encode($this->getLineGraphData('Admin', $days, \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $savings = SaccoAccount::sum('deposit_bal'); //total amount in sacco
+            //dd($savings);
 
         }
 
-        //dd($pie, $line);
-
-        return view('admin.loanApplications.dashboard', compact('savings', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'approved_loan'));
+        return view('admin.loanApplications.dashboard', compact('savings', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'approved_loan', 'days'));
     }
 
     public function createfile()
     {
         return view('admin.files.create');
+    }
+
+    public function createArrayDays($days)
+    {
+        $days = array(range(1, $days));
     }
 
     public function store(Request $request)
@@ -84,21 +96,24 @@ class HomeController
         return $loanTypeValues;
     }
 
-    public function getLineGraphData($userType, $id)
+    public function getLineGraphData($userType, $days, $id)
     {
         $monthlyValues = array();
+        $dateToAdd = Carbon::now();
+        //dd($dateToAdd->toDateTime()->addDays('1'));
+        //dd(LoanApplication::whereMonth('created_at', date('m'))->whereDate('created_at', $dateToAdd->addDays('1'))->where('status_id', '=' , 8)->sum('loan_amount'));
 
         if($userType == 'Admin'){
-            for ($x = 0; $x < 11; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('status_id', '=' , 8)->sum('loan_amount');
+            for ($x = 0; $x <= 12; $x++) {
+                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->sum('loan_amount');
             }
         } else {
-            for ($x = 0; $x < 11; $x++) {
+            for ($x = 0; $x <= 12; $x++) {
                 $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
 
-        //dd($monthlyValues);
+        //  dd($monthlyValues);
         
         return $monthlyValues;
     }

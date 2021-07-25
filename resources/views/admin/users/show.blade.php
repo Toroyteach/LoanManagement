@@ -124,7 +124,7 @@
                             {{ trans('cruds.user.fields.accountbal') }}
                         </th>
                         <td>
-                            ksh {{ $user->userAccount->total_amount }}
+                            ksh {{ $user->userAccount['total_amount'] }}
                         </td>
                     </tr>
                     <tr>
@@ -182,7 +182,7 @@
                                         {{ trans('global.monthlyupdate') }}
                                     </a>
                                 </div>
-                        @elseif(\Carbon\Carbon::parse($user->monthlySavings->modified_at)->format('d F Y') === \Carbon\Carbon::now()->format('d F Y'))
+                        @elseif(\Carbon\Carbon::parse($user->monthlySavings->modified_at)->format('F Y') === \Carbon\Carbon::now()->format('F Y'))
                         <div class="form-group col-md-6">
                                 <a class="btn btn-warning" disabled>
                                     {{ trans('global.monthlyupdatedisable') }}

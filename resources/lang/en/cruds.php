@@ -85,6 +85,8 @@ return [
             'deleted_at'               => 'Deleted at',
             'deleted_at_helper'        => '',
             'memberno'                => 'Member Number',
+            'totalmonthlysavings'     => 'Total Monthly Savings',
+            'monthlyamount'     => 'Monthly Contribution Amount',
         ],
     ],
     'auditLog'        => [

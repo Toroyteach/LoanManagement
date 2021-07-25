@@ -12,7 +12,7 @@
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
                     @if( $user == 'admin' )
-                        <h5 class="card-title mb-0">Total Approved Balance</h5>
+                        <h5 class="card-title mb-0">Sacco Total Amount</h5>
                     @else
                         <h5 class="card-title mb-0">Monthly contribution</h5>
                     @endif
@@ -179,6 +179,7 @@ $(document).ready(function(){
                 backgroundColor: [
                 'rgb(255, 99, 132)',
                 'rgb(54, 162, 235)',
+                'rgb(34,139,34)',
                 'rgb(255, 205, 86)'
                 ],
                 hoverOffset: 4

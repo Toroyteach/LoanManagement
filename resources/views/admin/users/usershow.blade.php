@@ -89,7 +89,23 @@
                             {{ trans('cruds.user.fields.accountbal') }}
                         </th>
                         <td>
-                            ksh {{ $user->userAccount->total_amount }}
+                            ksh {{ $user->userAccount['total_amount'] }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.totalmonthlysavings') }}
+                        </th>
+                        <td>
+                            ksh {{ $totalmonthlysavings }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.user.fields.monthlyamount') }}
+                        </th>
+                        <td>
+                            ksh {{ $user->monthlySavings['monthly_amount'] }}
                         </td>
                     </tr>
                     <tr>
@@ -98,15 +114,7 @@
                         </th>
                         <td>
                             @if(!empty($currentLoanAmount))
-                                @if ($currentLoanAmount->status_id === 1)
-                                    ksh 0.00
-                                @elseif($currentLoanAmount->status_id === 8)
-                                    ksh {{ $currentLoanAmount->loan_amount }}
-                                @elseif($currentLoanAmount->status_id === 10)
-                                    ksh {{ $currentLoanAmount->loan_amount }}
-                                @else
-                                    ksh 0.00
-                                @endif
+                                ksh {{ $currentLoanAmount }}
                             @else
                                 ksh 0.00
                             @endif
@@ -123,7 +131,70 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>
+            </table><br>
+
+            <div class="container-fluid">
+                <h2 class="section-title"> My Loans</h2>
+            </div>
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
+                        <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
+                            <thead>
+                                <tr>
+                                    <th width="10">
+
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.id') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.loan_amount') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.description') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.status') }}
+                                    </th>
+                                    <th>
+                                        Loan Type
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($loanApplications as $key => $loanApplication)
+                                    <tr data-entry-id="{{ $loanApplication->id }}">
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            {{ 1+$key++ }}
+                                        </td>
+                                        <td>
+                                            {{ $loanApplication->loan_amount ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $loanApplication->description ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                        </td>
+                                        <td>
+                                            {{ $loanApplication->loan_type }}
+                                        </td>
+
+
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><br>
+
+
             <div class="container-fluid">
                 <h2 class="section-title"> Downloadable Forms</h2>
             </div><br>

@@ -127,6 +127,6 @@ class User extends Authenticatable
 
     public function monthlySavings()
     {
-        return $this->hasOne(MonthlySavings::class);
+        return $this->hasOne(MonthlySavings::class, 'user_id');
     }
 }
