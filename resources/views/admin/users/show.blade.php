@@ -197,6 +197,73 @@
                         @endif
                     @endcan
             </div>
+
+            <div class="container-fluid">
+                <h2 class="section-title"> Current Loans</h2>
+            </div>
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
+                        <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
+                            <thead>
+                                <tr>
+                                    <th width="10">
+
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.id') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.loan_amount') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.description') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.status') }}
+                                    </th>
+                                    <th>
+                                        Loan Type
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($loanApplications as $key => $loanApplication)
+                                    <tr data-entry-id="{{ $loanApplication->id }}">
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            {{ 1+$key++ }}
+                                        </td>
+                                        <td>
+                                            {{ $loanApplication->loan_amount ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $loanApplication->description ?? '' }}
+                                        </td>
+                                        <td>
+                                            @if(in_array($loanApplication->status_id, [7, 4, 9]))
+                                                Rejected
+                                            @else
+                                                {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{ $loanApplication->loan_type }}
+                                        </td>
+
+                                    </tr>
+                                @empty
+                                No Current Records
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><br>
+
         </div>
     </div>
 </div>

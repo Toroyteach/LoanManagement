@@ -138,7 +138,7 @@
             <div class="row">
                 <div class="form-group col-md-6">
                     <label class="required" for="password">Account No</label>
-                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', '') }}" placeholder="enter 6 digits" name="idno" id="idno" required>
+                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', '') }}" placeholder="Enter 6 digits" name="idno" id="idno" required>
                     @if($errors->has('idno'))
                         <div class="invalid-feedback">
                             {{ $errors->first('idno') }}
@@ -194,7 +194,7 @@
             <div class="row">
                 <div class="form-group col-md-4">
                     <label class="required" for="kinname">Next of Kin Name</label>
-                    <input class="form-control {{ $errors->has('kinname') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinname', '') }}" placeholder="enter 6 digits" name="kinname" id="kinname" required>
+                    <input class="form-control {{ $errors->has('kinname') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinname', '') }}" placeholder="Enter Name" name="kinname" id="kinname" required>
                     @if($errors->has('kinname'))
                         <div class="invalid-feedback">
                             {{ $errors->first('kinname') }}

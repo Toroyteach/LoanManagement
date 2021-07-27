@@ -69,7 +69,11 @@
                                 {{ $loanApplication->description ?? '' }}
                             </td>
                             <td>
-                                {{ $user->is_user && $loanApplication->status_id < 8 ? $defaultStatus->name : $loanApplication->status->name }}
+                                @if(in_array($loanApplication->status_id, [7, 4, 9]))
+                                    Rejected
+                                @else
+                                    {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                @endif
                             </td>
                             <td>
                                 {{ $loanApplication->loan_type }}
@@ -80,25 +84,34 @@
                             <td>
                                 {{ $loanApplication->created_by->idno }}
                             </td>
-                            @if($user->is_admin)
+                            @if($user->is_admin || $user->is_cfo)
                                 <td>
-                                    {{ $loanApplication->cfo->name ?? '' }}
+                                    
+                                    @if(in_array($loanApplication->status_id, [7, 4, 9]))
+                                        Rejected
+                                    @else
+                                        {{ $loanApplication->cfo->name ?? '' }}
+                                    @endif
                                 </td>
                             @endif
                             <td>
-                                @if($user->is_admin && in_array($loanApplication->status_id, [1, 3, 4]))
-                                    <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
-                                        Send to
-                                        @if($loanApplication->status_id == 1)
-                                            analyst
-                                        @else
-                                            CFO
-                                        @endif
-                                    </a>
-                                @elseif(($user->is_analyst && $loanApplication->status_id == 2) || ($user->is_cfo && $loanApplication->status_id == 5))
-                                    <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
-                                        Submit analysis
-                                    </a>
+                                @if(in_array($loanApplication->status_id, [7, 4, 9])) 
+
+                                @else
+                                    @if($user->is_admin && in_array($loanApplication->status_id, [1, 3, 4]))
+                                        <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
+                                                Send to
+                                                @if($loanApplication->status_id == 1)
+                                                    analyst
+                                                @else
+                                                    CFO
+                                                @endif
+                                        </a>
+                                    @elseif(($user->is_analyst && $loanApplication->status_id == 2) || ($user->is_cfo && $loanApplication->status_id == 5))
+                                        <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                            Submit analysis
+                                        </a>
+                                    @endif    
                                 @endif
 
                                 @can('loan_application_show')

@@ -49,7 +49,7 @@
     <tbody>
       <tr>
         <td class="center">1</td>
-        <td class="left strong">{{ \Carbon\Carbon::parse($monthlystatement->modified_at)->format('D F Y') }}</td>
+        <td class="left strong">{{ \Carbon\Carbon::parse($monthlystatement->modified_at)->format('m-d-Y H:i:s') }}</td>
         <td class="left">ksh {{ $monthlystatement->total_contributed }}</td>
       </tr>
     </tbody>
@@ -75,7 +75,7 @@
       <tr>
         @foreach($loanstatements as $id => $loan)
         <td class="center">{{ $id++ }}</td>
-        <td class="left strong">{{ \Carbon\Carbon::parse($loan->created_at)->format('D F Y') }}</td>
+        <td class="left strong">{{ \Carbon\Carbon::parse($loan->created_at)->format('m-d-Y H:i:s') }}</td>
         <td class="left">{{$loan->loan_type}}</td>
         <td class="right">{{$loan->description}}</td>
         <td class="left">{{$user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>

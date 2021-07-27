@@ -104,8 +104,16 @@
                         <th>
                             Loan Status
                         </th>
-                        <td>
-                            {{ $user->is_user && $loanApplication->status_id < 8 ? $defaultStatus->name : $loanApplication->status->name }}
+                        <td>                            
+                            @if(in_array($loanApplication->status_id, [7, 4, 9]))
+                                Rejected
+                            @else
+                                @if($user->getIsAdminAttribute && $user->getIsCfoAttribute)
+                                    $loanApplication->status->name
+                                $else
+                                    {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                @endif
+                            @endif
                         </td>
                     </tr>
                     <tr>

@@ -208,9 +208,10 @@ class UsersController extends Controller
         $user->load('roles');
         $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->first();
         $userAccount = UsersAccount::where('user_id', $user->id)->first();
+        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('created_by_id', $user->id)->get();
         //$logs        = AuditLogService::generateLogs($userAccount);
 
-        return view('admin.users.show', compact('user', 'currentLoanAmount'));
+        return view('admin.users.show', compact('user', 'currentLoanAmount', 'loanApplications'));
     }
 
     public function getUser()

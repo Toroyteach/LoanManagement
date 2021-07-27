@@ -134,7 +134,7 @@
             </table><br>
 
             <div class="container-fluid">
-                <h2 class="section-title"> My Loans</h2>
+                <h2 class="section-title">Loans</h2>
             </div>
             <div class="card">
 
@@ -164,7 +164,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($loanApplications as $key => $loanApplication)
+                                @forelse($loanApplications as $key => $loanApplication)
                                     <tr data-entry-id="{{ $loanApplication->id }}">
                                         <td>
 
@@ -179,7 +179,11 @@
                                             {{ $loanApplication->description ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                            @if(in_array($loanApplication->status_id, [7, 4, 9]))
+                                                Rejected
+                                            @else
+                                                {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                            @endif
                                         </td>
                                         <td>
                                             {{ $loanApplication->loan_type }}
@@ -187,7 +191,11 @@
 
 
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        No Records to show
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
