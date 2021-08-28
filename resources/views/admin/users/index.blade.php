@@ -9,6 +9,7 @@
         </div>
     </div>
 @endcan
+
 <div class="card">
     <div class="card-header">
         {{ trans('cruds.user.title_singular') }} {{ trans('global.list') }}
@@ -82,6 +83,18 @@
                                     <a class="btn btn-xs btn-primary" href="{{ route('admin.users.show', $user->id) }}">
                                         {{ trans('global.view') }}
                                     </a>
+                                @endcan
+
+                                @can('user_disable')
+                                    @if($user->status)
+                                        <a class="btn btn-xs btn-info" href="{{ route('admin.users.disable', $user->id) }}">
+                                            {{ trans('global.disable') }}
+                                        </a>
+                                    @else
+                                        <a class="btn btn-xs btn-warning" href="{{ route('admin.users.disable', $user->id) }}">
+                                            {{ trans('global.enable') }}
+                                        </a>
+                                    @endif
                                 @endcan
 
                                 @can('user_edit')

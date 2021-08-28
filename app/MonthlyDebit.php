@@ -8,7 +8,7 @@ use App\Traits\Auditable;
 
 class MonthlyDebit extends Model
 {
-    use SoftDeletes, Auditable;
+    use SoftDeletes;
     //
     public $table = 'monthhly_debits';
 

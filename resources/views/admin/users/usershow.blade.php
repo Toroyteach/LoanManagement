@@ -15,14 +15,14 @@
                         </a>
                     </div>
                     <div class="form-group col-md-6">
-                        <a class="btn btn-warning" href="{{ route('profile.password.edit') }}">
+                        <a class="btn btn-warning" href="{{ route('admin.users.profile', $user->id) }}">
                             {{ trans('global.edit_profile') }}
                         </a>
                     </div>
                 </div>
             <div class="container_fluid" style="width:300px;height:auto">
                        @if(Auth::user()->avatar != 'default.jpg')
-                        <img src="{{ asset( 'uploads/avatars/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
+                        <img src="{{ asset( 'img/uploads/profileavatar/'.Auth::user()->avatar ) }}" width="40" height="40" class="rounded-circle">
                        @else
                         <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
                        @endif            </div><br>
@@ -105,7 +105,7 @@
                             {{ trans('cruds.user.fields.monthlyamount') }}
                         </th>
                         <td>
-                            ksh {{ $user->monthlySavings['monthly_amount'] }}
+                            ksh {{ $user->monthlySavings['monthly_amount'] }}   
                         </td>
                     </tr>
                     <tr>
@@ -133,12 +133,12 @@
                 </tbody>
             </table><br>
 
-            <div class="container-fluid">
-                <h2 class="section-title">Loans</h2>
-            </div>
-            <div class="card">
 
-                <div class="card-body">
+            <div class="container-fluid">
+                <h2 class="section-title"> Next of Kin</h2>
+            </div>
+
+            <div class="card-body">
                     <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
                         <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
                             <thead>
@@ -150,43 +150,33 @@
                                         {{ trans('cruds.loanApplication.fields.id') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.loan_amount') }}
+                                        Kin Name
                                     </th>
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.description') }}
+                                        Phone Number
                                     </th>
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.status') }}
-                                    </th>
-                                    <th>
-                                        Loan Type
+                                        Relationship
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($loanApplications as $key => $loanApplication)
-                                    <tr data-entry-id="{{ $loanApplication->id }}">
+                                @forelse($kins as $key => $kin)
+                                    <tr data-entry-id="">
                                         <td>
 
                                         </td>
                                         <td>
-                                            {{ 1+$key++ }}
+                                            {{ $key+1 }}
                                         </td>
                                         <td>
-                                            {{ $loanApplication->loan_amount ?? '' }}
+                                            {{ $kin->name ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $loanApplication->description ?? '' }}
+                                            {{ $kin->phone ?? '' }}
                                         </td>
                                         <td>
-                                            @if(in_array($loanApplication->status_id, [7, 4, 9]))
-                                                Rejected
-                                            @else
-                                                {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
-                                            @endif
-                                        </td>
-                                        <td>
-                                            {{ $loanApplication->loan_type }}
+                                            {{ $kin->relationship ?? '' }}
                                         </td>
 
 
@@ -202,53 +192,6 @@
                 </div>
             </div><br>
 
-
-            <div class="container-fluid">
-                <h2 class="section-title"> Downloadable Forms</h2>
-            </div><br>
-            <div class="row">
-                <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="title">Society By Laws</h4>
-                        @if(!$files->isEmpty())
-                        <div class="icon"><a href="{{ route('admin.files.download', $files[0]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>                                   
-                        @else
-                        <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
-                        @endif
-                </div>
-                <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="title">Holiday Savings Form</h4>
-                        @if(!$files->isEmpty())
-                        <div class="icon"><a href="{{ route('admin.files.download', $files[1]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>                                   
-                        @else
-                        <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
-                        @endif
-                </div>
-                <div class="icon-box col-md-4 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="title">Loan Applications Form</h4>
-                        @if(!$files->isEmpty())
-                        <div class="icon"><a href="{{ route('admin.files.download', $files[2]->uuid) }}"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>                                   
-                        @else
-                        <div class="icon"><a href="#"><i class="bx bx-download" style="font-size: 32px;"></i></a></div>
-                        @endif
-                </div>
-            </div> <br>
-            <div class="container-fluid">
-                <h2 class="section-title"> Statements</h2>
-            </div><br>
-            <div class="row">
-                <div class="icon-box col-md-6 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="title">Monthly Contribution</h4>
-                        <div class="icon">
-                            <a class="btn btn-primary" href="{{ route('admin.users.pdf', 'monthly') }}">Download PDF</a>
-                        </div>                                   
-                </div>
-                <div class="icon-box col-md-6 text-center" data-aos="fade-up" data-aos-delay="100">
-                    <h4 class="title">Loan Application</h4>
-                    <div class="icon">
-                            <a class="btn btn-primary" href="{{ route('admin.users.pdf', 'loan') }}">Download PDF</a>
-                        </div> 
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -256,3 +199,73 @@
 
 
 @endsection
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+
+
+    function updateMonthlyAmount($id) {
+
+
+            swal.fire({
+            title: "Update Monthly Contribution",
+            icon: 'warning',
+            text: "Are you sure you want to update your monthly contribution. Please ensure this, then confirm!",
+            input: 'range',
+            inputAttributes: {
+                min: 1000,
+                max: 20000,
+                step: 500,
+            },
+            inputValue: "{{ $user->monthlysavings->monthly_amount ?? '' }}",
+            inputLabel: "Amount",
+            showCancelButton: !0,
+            confirmButtonText: "Yes, Submit",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: !0
+            }).then(function (e) {
+
+
+                if (e.isConfirmed) {
+
+                    const value = document.getElementById("swal2-input").value; 
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ route('admin.monthly.update.amount') }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            user_id: "{{ $user->id }}",
+                            amount: value
+                            },
+                        dataType: 'JSON',
+                        success: function (results) {
+                            if (results.response === true) {
+
+                                swal.fire("Done!", results.message, "success");
+                                // refresh page after 2 seconds
+                                setTimeout(function(){
+                                    location.reload();
+                                },3000);
+
+                            } else if(results.response === false) {
+
+                                swal.fire("Error!", results.failure, "error");
+
+                            }
+                        }
+                    });
+
+                } else {
+                    
+                    e.dismiss;
+                }
+
+            }, function (dismiss) {
+                return false;
+            })
+
+
+    }
+
+</script>

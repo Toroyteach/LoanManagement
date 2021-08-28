@@ -21,27 +21,27 @@ class StatusesTableSeeder extends Seeder
             ],
             [
                 'id'   => 2,
-                'name' => 'Analyst processing',
+                'name' => 'Accountant Processing',
             ],
             [
                 'id'   => 3,
-                'name' => 'Analyst approved',
+                'name' => 'Accountant Approved',
             ],
             [
                 'id'   => 4,
-                'name' => 'Analyst rejected',
+                'name' => 'Accountant Rejected',
             ],
             [
                 'id'   => 5,
-                'name' => 'CFO processing',
+                'name' => 'Credit Committee Processing',
             ],
             [
                 'id'   => 6,
-                'name' => 'CFO approved',
+                'name' => 'Credit Committee Approved',
             ],
             [
                 'id'   => 7,
-                'name' => 'CFO rejected',
+                'name' => 'Credit Committee Rejected',
             ],
             [
                 'id'   => 8,
@@ -54,6 +54,10 @@ class StatusesTableSeeder extends Seeder
             [
                 'id'   => 10,
                 'name' => 'Paid',
+            ],
+            [
+                'id'   => 11,
+                'name' => 'Defaulted',
             ],
         ];
 

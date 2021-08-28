@@ -26,6 +26,9 @@
                             {{ trans('cruds.loanApplication.fields.id') }}
                         </th>
                         <th>
+                            Loan Id
+                        </th>
+                        <th>
                             {{ trans('cruds.loanApplication.fields.loan_amount') }}
                         </th>
                         <th>
@@ -43,11 +46,11 @@
                         <th>
                             Member No
                         </th>
-                        @if($user->is_admin)
-                            <th>
-                                Approved By
-                            </th>
-                        @endif
+                            @if($user->is_admin)
+                                <th>
+                                    Approved By
+                                </th>
+                            @endif
                         <th>
                             &nbsp;
                         </th>
@@ -60,7 +63,10 @@
 
                             </td>
                             <td>
-                                {{ $key++ }}
+                                {{ $key+1 }}
+                            </td>
+                            <td>
+                                {{ $loanApplication->loan_entry_number ?? '' }}
                             </td>
                             <td>
                                 {{ $loanApplication->loan_amount ?? '' }}
@@ -69,11 +75,19 @@
                                 {{ $loanApplication->description ?? '' }}
                             </td>
                             <td>
-                                @if(in_array($loanApplication->status_id, [7, 4, 9]))
-                                    Rejected
+                            @if(in_array($loanApplication->status_id, [7, 4, 9]))
+                                <span class="badge badge-danger">Rejected</span>
+                            @else
+                                @if($user->is_admin)
+                                 <span class="badge badge-info"> {{ $loanApplication->status->name }} </span>
                                 @else
-                                    {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                    @if(in_array($loanApplication->status_id, [1,2,3,5,6]))
+                                        <span class="badge badge-info">{{ $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}</span>
+                                    @else
+                                        <span class="badge badge-success">{{ $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}</span>
+                                    @endif
                                 @endif
+                            @endif
                             </td>
                             <td>
                                 {{ $loanApplication->loan_type }}
@@ -98,35 +112,49 @@
                                 @if(in_array($loanApplication->status_id, [7, 4, 9])) 
 
                                 @else
-                                    @if($user->is_admin && in_array($loanApplication->status_id, [1, 3, 4]))
-                                        <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
-                                                Send to
+                                    @if(($user->is_accountant or $user->is_admin) && in_array($loanApplication->status_id, [1, 2, 3]))
+                                        
                                                 @if($loanApplication->status_id == 1)
-                                                    analyst
+                                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                                    Submit Analysis
+                                                    <!-- here the accountant sets the loan to status 3(approved) or 4(rejected) then its moved to next stage 5(creditcommittee processing) -->
+                                                </a>
+                                                @elseif($loanApplication->status_id == 2)
+                                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                                    Submit analysis
+                                                    <!-- here the credit committee sets the loan to status 6(approved) or 7(rejected) from 5(processing)-->
+                                                    <!-- then it is sent back to the accountant -->
+                                                </a>
                                                 @else
-                                                    CFO
+                                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
+                                                    Send to Credit Committee 
+                                                    <!-- here the credit committee is sent the loan to be able to porcess it -->
+                                                </a>
                                                 @endif
-                                        </a>
-                                    @elseif(($user->is_analyst && $loanApplication->status_id == 2) || ($user->is_cfo && $loanApplication->status_id == 5))
+
+                                    @elseif(($user->is_creditcommittee && $loanApplication->status_id == 3) || ($user->is_creditcommittee && $loanApplication->status_id == 5))
+                                                <!-- status 3 and 5 are more less the same  -->
                                         <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
                                             Submit analysis
+                                            <!-- here the credit committee sets the loan to status 6(approved) or 7(rejected) from 5(processing)-->
+                                            <!-- then it is sent back to the accountant -->
                                         </a>
                                     @endif    
                                 @endif
 
-                                @can('loan_application_show')
+                                @can('loan_application_show')<br>
                                     <a class="btn btn-xs btn-primary" href="{{ route('admin.loan-applications.show', $loanApplication->id) }}">
                                         {{ trans('global.view') }}
                                     </a>
                                 @endcan
 
-                                @if(Gate::allows('loan_application_edit') && in_array($loanApplication->status_id, [6,7]))
-                                    <a class="btn btn-xs btn-info" href="{{ route('admin.loan-applications.edit', $loanApplication->id) }}">
-                                        {{ trans('global.edit') }}
+                                @if((Gate::allows('loan_application_edit') && ($user->is_admin or $user->is_accountant)) && $loanApplication->status_id == 6)<br>
+                                    <a class="btn btn-xs btn-warning" href="{{ route('admin.loan-applications.edit', $loanApplication->id) }}">
+                                        Finalize
                                     </a>
                                 @endif
 
-                                @can('loan_application_delete')
+                                @can('loan_application_delete')<br>
                                     <form action="{{ route('admin.loan-applications.destroy', $loanApplication->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                                         <input type="hidden" name="_method" value="DELETE">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -184,7 +212,6 @@
 
   $.extend(true, $.fn.dataTable.defaults, {
     orderCellsTop: true,
-    order: [[ 1, 'desc' ]],
     pageLength: 100,
   });
 

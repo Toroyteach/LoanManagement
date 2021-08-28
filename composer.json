@@ -20,6 +20,7 @@
         "grpc/grpc": "^1.38",
         "guzzlehttp/guzzle": "^6.3",
         "intervention/image": "^2.5",
+        "jeremykenedy/laravel2step": "^2.1",
         "kreait/firebase-php": "^5.19.0",
         "kreait/laravel-firebase": "^3.1.0",
         "laravel/dusk": "^5.9",
@@ -28,6 +29,9 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.0",
         "lcobucci/clock": "^1.2.0",
+        "livewire/livewire": "^2.5",
+        "realrashid/sweet-alert": "^4.0",
+        "smodav/ipay": "^1.1",
         "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-oracle": "^9.9"
     },

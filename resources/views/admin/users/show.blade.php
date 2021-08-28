@@ -9,11 +9,12 @@
     <div class="card-body">
         <div class="form-group">
             <div class="container_fluid" style="width:200px;height:auto">
-            @if($user->avatar != 'default.jpg')
+                    @if($user->avatar != 'default.jpg')
                         <img src="{{ asset( 'images/'.$user->avatar ) }}" width="40" height="40" class="rounded-circle">
-                       @else
+                    @else
                         <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
-                       @endif            </div><br>
+                    @endif            
+            </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <tr>
@@ -163,7 +164,7 @@
                                     @endif
                                 @endif
                             @else
-                            null
+                                null
                             @endif
                         </td>
                     </tr>
@@ -215,6 +216,9 @@
                                         {{ trans('cruds.loanApplication.fields.id') }}
                                     </th>
                                     <th>
+                                        Loan Id
+                                    </th>
+                                    <th>
                                         {{ trans('cruds.loanApplication.fields.loan_amount') }}
                                     </th>
                                     <th>
@@ -238,6 +242,9 @@
                                             {{ 1+$key++ }}
                                         </td>
                                         <td>
+                                            {{ $loanApplication->loan_entry_number ?? '' }}
+                                        </td>
+                                        <td>
                                             {{ $loanApplication->loan_amount ?? '' }}
                                         </td>
                                         <td>
@@ -245,9 +252,13 @@
                                         </td>
                                         <td>
                                             @if(in_array($loanApplication->status_id, [7, 4, 9]))
-                                                Rejected
+                                                <span class="badge badge-danger">Rejected</span>
                                             @else
-                                                {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                                @if($loanApplication->status_id === 8)
+                                                    <span class="badge badge-success">{{ $loanApplication->status->name }}</span>
+                                                @else
+                                                    <span class="badge badge-info">{{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}</span>
+                                                @endif
                                             @endif
                                         </td>
                                         <td>
@@ -264,21 +275,77 @@
                 </div>
             </div><br>
 
+            <div class="container-fluid">
+                <h2 class="section-title"> Next of Kin</h2>
+            </div>
+
+            <div class="card-body">
+                    <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
+                        <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
+                            <thead>
+                                <tr>
+                                    <th width="10">
+
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.loanApplication.fields.id') }}
+                                    </th>
+                                    <th>
+                                        Kin Name
+                                    </th>
+                                    <th>
+                                        Phone Number
+                                    </th>
+                                    <th>
+                                        Relationship
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($kins as $key => $kin)
+                                    <tr>
+                                        <td>
+
+                                        </td>
+                                        <td>
+                                            {{ $key+1 }}
+                                        </td>
+                                        <td>
+                                            {{ $kin->name ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $kin->phone ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $kin->relationship ?? '' }}
+                                        </td>
+
+
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        No Records to show
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><br>
+
         </div>
     </div>
 </div>
 @endsection
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
 
 
-    function submitMonthly(id) {
+    function submitMonthly() {
 
         swal.fire({
             title: "Monthly Credit",
             icon: 'question',
-            text: "{{ $user->firstname }} will be credited ksh {{ $user->monthlysavings->monthly_amount }}. Please ensure this, then confirm!",
+            text: "{{ $user->firstname }} will be credited ksh {{ $user->monthlysavings->monthly_amount ?? '' }}. Please ensure this, then confirm!",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",
@@ -293,7 +360,7 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         user_id: "{{ $user->id }}",
-                        amount: "{{ $user->monthlysavings->monthly_amount }}"
+                        amount: "{{ $user->monthlysavings->monthly_amount ?? '' }}"
                         },
                     dataType: 'JSON',
                     success: function (results) {

@@ -7,18 +7,28 @@ use App\SaccoAccount;
 use App\SaccoFile;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
+use App\Notifications\MonthlyContributionNotification;
+use Illuminate\Support\Facades\Notification;
+use Carbon\Carbon;
+use App\User; 
+use App\TwoStepAuthTable;
+use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\Controller;
+use App\CreateGuarantorLoanRequest;
 
-class HomeController
+class HomeController extends Controller
 {
     public function index()
     {
         return redirect()->route('admin.loan-applications.index');
     }
 
+
+
     public function dashboard()
     {
         //get and send loan details
-        if(\Auth::user()->getIsUserAttribute()){
+        if(\Auth::user()->getIsMemberAttribute()){
 
             $approved_loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '=' , 8)->sum('loan_amount');// approved loan
             //dd($approved_loan);
@@ -40,13 +50,36 @@ class HomeController
                     //logic to return data for the chart js of loan and loan types for admin
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+            //dd($line);
             $savings = SaccoAccount::sum('deposit_bal'); //total amount in sacco
 
         }
 
+        //dd($this->getTopMemebersLoans());
+        $membersTopLoans = $this->getTopMembersLoans();
+
+
+        $members = array();
+        $membersActiveLoans = array();
+        $membersAquiredLoans = array();
+
+        foreach($membersTopLoans as $key => $value){
+
+            array_push($members , $value['name']);
+            array_push($membersActiveLoans , $value[0]['current']);
+            array_push($membersAquiredLoans , $value['sum(loan_amount)']);
+
+        }
+
+        $members_json = json_encode($members, JSON_UNESCAPED_SLASHES);
+        $membersActiveLoans_json = json_encode($membersActiveLoans, JSON_UNESCAPED_SLASHES);
+        $membersAquiredLoans_json = json_encode($membersAquiredLoans, JSON_UNESCAPED_SLASHES);
+
+        //dd(json_encode($members, JSON_UNESCAPED_SLASHES), $membersActiveLoans, $membersAquiredLoans);
+
         //dd($pie, $line);
 
-        return view('admin.loanApplications.dashboard', compact('savings', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'approved_loan'));
+        return view('admin.dashboard', compact('savings', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'approved_loan', 'members_json', 'membersActiveLoans_json', 'membersAquiredLoans_json'));
     }
 
     public function createfile()
@@ -89,11 +122,11 @@ class HomeController
         $monthlyValues = array();
 
         if($userType == 'Admin'){
-            for ($x = 0; $x < 11; $x++) {
+            for ($x = 0; $x < 12; $x++) {
                 $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         } else {
-            for ($x = 0; $x < 11; $x++) {
+            for ($x = 0; $x < 12; $x++) {
                 $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
@@ -102,26 +135,75 @@ class HomeController
         
         return $monthlyValues;
 
-        // $monthlyValues = array();
-        // $dateToAdd = Carbon::now();
-        // $time = strtotime("2010.12.11");
-        // $d = new DateTime('first day of this month');
-        // $id = 1;
-        // dd(date("d/m/Y", strtotime('today'.' + '.$id.' days')));
-        // dd(LoanApplication::whereDate('created_at', date("d/m/Y", strtotime('today'.' + 1 days')))->where('status_id', '=' , 8)->sum('loan_amount'));
+    }
 
-        // if($userType == 'Admin'){
-        //     for ($x = 0; $days <= 31; $x++) {
-        //         $monthlyValues[$x] = LoanApplication::whereDate('created_at',  date('Y-m-d', strtotime("2021-07-24". ' + 1 days')))->sum('loan_amount');
-        //     }
-        // } else {
-        //     for ($x = 0; $days <= 12; $x++) {
-        //         $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
-        //     }
-        // }
+    public function notifications()
+    {
+        $notifications = auth()->user()->unreadNotifications;
 
-        //   dd($monthlyValues);
-        
-        // return $monthlyValues;
+        return view('admin.notifications.notification', compact('notifications'));
+    }
+
+    public function markNotification(Request $request)
+    {
+        auth()->user()
+            ->unreadNotifications
+            ->when($request->input('id'), function ($query) use ($request) {
+                return $query->where('id', $request->input('id'));
+            })
+            ->markAsRead();
+
+            return response()->json(['success'=>'request submitted successfully', 'status' => true]);
+    }
+
+    public function requestGurantor(Request $request)
+    {
+
+        $gurantorRequest = CreateGuarantorLoanRequest::where('user_id', auth()->user()->id)->where('request_id', 20)->firstOrFail();
+
+        $gurantorRequest->request_status = $request->choice;
+
+        //dd($gurantorRequest->request_status);
+
+        if($gurantorRequest->isDirty('request_status')){
+
+            auth()->user()->unreadNotifications->when($request->input('id'), function ($query) use ($request) {
+                return $query->where('id', $request->input('id'));
+            })->markAsRead();
+
+            $gurantorRequest->save();
+
+            return response()->json(['success'=>'request submitted successfully', 'status' => true]);
+
+        }
+
+        return response()->json(['success'=>'request has failed', 'status' => false]);
+    }
+
+    public function getTopMembersLoans()
+    {
+
+        $usersLoan = User::join('loan_applications', 'loan_applications.created_by_id', '=', 'users.id')
+        ->selectRaw('users.id, users.name, sum(loan_amount)')
+        ->groupBy('users.id', 'users.name')
+        ->orderByDesc('sum(loan_amount)')
+        ->limit(10)
+        ->get(['users.id', 'users.name', 'loan_applications.loan_amount']);
+
+        $dataResults = $usersLoan->toArray();
+        //dd($dataResults);
+
+        foreach($dataResults as $key => $user){
+
+            $memberCurrentLoan = LoanApplication::where('created_by_id', $user['id'])
+            ->where('repaid_status', 0)
+            ->where('status_id', ([ 8, 11]))
+            ->sum('loan_amount');
+
+            array_push($dataResults[$key], ['current' => '-'.$memberCurrentLoan]);
+
+        }
+
+        return $dataResults;
     }
 }

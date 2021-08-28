@@ -9,7 +9,7 @@
     <div class="card-body">
         <div class="form-group">
             <div class="form-group">
-                <a class="btn btn-default" href="{{ route('admin.loan-applications.index') }}">
+                <a class="btn btn-info" href="{{ route('admin.loan-applications.index') }}">
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>
@@ -17,10 +17,18 @@
                 <tbody>
                     <tr>
                         <th>
-                            {{ trans('cruds.loanApplication.fields.id') }}
+                            Loan Id
                         </th>
                         <td>
                             {{ $loanApplication->id }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.loanApplication.fields.id') }}
+                        </th>
+                        <td>
+                            {{ $loanApplication->loan_entry_number }}
                         </td>
                     </tr>
                     <tr>
@@ -49,7 +57,7 @@
                     </tr>
                     <tr>
 
-                            @if(Auth::user()->getIsUserAttribute())
+                            @if(Auth::user()->getIsMemberAttribute())
                                 @if($loanApplication->status_id === 8)
                                     <th>
                                         {{ trans('cruds.loanApplication.fields.amountremaining') }}
@@ -78,7 +86,7 @@
                                         {{ trans('cruds.loanApplication.fields.amountremaining') }}
                                     </th>
                                     <td>
-                                        <span class="badge badge-danger">{{ $loanApplication->status->name }}</span>
+                                        <span class="badge badge-warning">{{ $loanApplication->status->name }} loan</span>
                                     </td>
                                 @endif
                             @endif
@@ -97,7 +105,23 @@
                             {{ trans('cruds.loanApplication.fields.expectedpaydate') }}
                         </th>
                         <td>
-                            {{ $loanApplication->repayment_date }}
+                            @if($loanApplication->status_id === 8)
+                                @if( \Carbon\Carbon::now()->diffInDays($loanApplication->repayment_date, false) < 5 )
+                                    <span class="badge badge-danger">{{ \Carbon\Carbon::parse($loanApplication->repayment_date)->diffForHumans() }}</span>
+                                @else
+                                    <span class="badge badge-info">{{ \Carbon\Carbon::parse($loanApplication->repayment_date)->diffForHumans() }}</span>
+                                @endif
+                            @else
+                                @if(!$user->is_member)
+                                    @if(in_array($loanApplication->status_id, [7, 4, 9])) 
+                                        <span class="badge badge-danger">Loan Rejected</span>
+                                    @else
+                                        <span class="badge badge-warning">Loan not yet Approved</span>
+                                    @endif
+                                @else
+                                    null
+                                @endif
+                            @endif
                         </td>
                     </tr>
                     <tr>
@@ -106,12 +130,12 @@
                         </th>
                         <td>                            
                             @if(in_array($loanApplication->status_id, [7, 4, 9]))
-                                Rejected
+                                <span class="badge badge-danger">Rejected</span>
                             @else
-                                @if($user->getIsAdminAttribute && $user->getIsCfoAttribute)
-                                    $loanApplication->status->name
-                                $else
-                                    {{ $user->is_user && $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}
+                                @if(!$user->is_member)
+                                 <span class="badge badge-info"> {{ $loanApplication->status->name }} </span>
+                                @else
+                                 <span class="badge badge-success">{{ $loanApplication->status_id < 8 ? 'Processing' : $loanApplication->status->name }}</span>
                                 @endif
                             @endif
                         </td>
@@ -140,7 +164,7 @@
                             {{ \Carbon\Carbon::parse($loanApplication->created_at)->toDateString() }}
                         </td>
                     </tr>
-                    @if($user->is_admin)
+                    @if(!$user->is_member)
                         <tr>
                             <th>
                                 {{ trans('cruds.loanApplication.fields.analyst') }}
@@ -161,64 +185,80 @@
                 </tbody>
             </table>
 
-            @if($user->is_admin && count($logs))
-                <h3>Logs</h3>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Changes</th>
-                            <th>Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($logs as $log)
+            @if(!$user->is_member && count($logs))
+                @can('audit_log_show')
+                    <h3>Logs</h3>
+                    <table class="table table-bordered table-striped">
+                        <thead>
                             <tr>
-                                <td>
-                                    {{ $log['user'] }}
-                                </td>
-                                <td>
-                                    <ul>
-                                        @foreach($log['changes'] as $change)
-                                            <li>
-                                                {!! $change !!}
-                                            </li>
-                                        @endforeach
-                                        @if($log['comment'])
-                                            <li>
-                                                <b>Comment</b>: {{ $log['comment'] }}
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </td>
-                                <td>
-                                    {{ $log['time'] }}
-                                </td>
+                                <th>User</th>
+                                <th>Changes</th>
+                                <th>Time</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($logs as $log)
+                                <tr>
+                                    <td>
+                                        {{ $log['user'] }}
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            @foreach($log['changes'] as $change)
+                                                <li>
+                                                    {!! $change !!}
+                                                </li>
+                                            @endforeach
+                                            @if($log['comment'])
+                                                <li>
+                                                    <b>Comment</b>: {{ $log['comment'] }}
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {{ $log['time'] }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endcan
             @endif
 
             <div class="form-group">
-                @if($user->is_admin && in_array($loanApplication->status_id, [1, 3, 4]))
-                    <a class="btn btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
-                        Send to
-                        @if($loanApplication->status_id == 1)
-                            analyst
-                        @else
-                            CFO
-                        @endif
-                    </a>
-                @elseif(($user->is_analyst && $loanApplication->status_id == 2) || ($user->is_cfo && $loanApplication->status_id == 5))
-                    <a class="btn btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
-                        Submit analysis
-                    </a>
-                @endif
+                            @if(($user->is_accountant or $user->is_admin) && in_array($loanApplication->status_id, [1, 2, 3]))
+                                        
+                                                @if($loanApplication->status_id == 1)
+                                                <a class="btn btn-md btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                                    Submit Analysis
+                                                    <!-- here the accountant sets the loan to status 3(approved) or 4(rejected) then its moved to next stage 5(creditcommittee processing) -->
+                                                </a>
+                                                @elseif($loanApplication->status_id == 2)
+                                                <a class="btn btn-md btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                                    Submit analysis
+                                                    <!-- here the credit committee sets the loan to status 6(approved) or 7(rejected) from 5(processing)-->
+                                                    <!-- then it is sent back to the accountant -->
+                                                </a>
+                                                @else
+                                                <a class="btn btn-md btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
+                                                    Send to Credit Committee 
+                                                    <!-- here the credit committee is sent the loan to be able to porcess it -->
+                                                </a>
+                                                @endif
 
-                @if(Gate::allows('loan_application_edit') && in_array($loanApplication->status_id, [6,7]))
-                    <a class="btn btn-info" href="{{ route('admin.loan-applications.edit', $loanApplication->id) }}">
-                        {{ trans('global.edit') }}
+                            @elseif(($user->is_creditcommittee && $loanApplication->status_id == 3) || ($user->is_creditcommittee && $loanApplication->status_id == 5))
+                                        <!-- status 3 and 5 are more less the same  -->
+                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                    Submit analysis
+                                    <!-- here the credit committee sets the loan to status 6(approved) or 7(rejected) from 5(processing)-->
+                                    <!-- then it is sent back to the accountant -->
+                                </a>
+                            @endif  
+
+                @if((Gate::allows('loan_application_edit') and ($user->is_admin or $user->accountant)) && $loanApplication->status_id == 6)
+                    <a class="btn btn-lg btn-success" href="{{ route('admin.loan-applications.edit', $loanApplication->id) }}">
+                        Finalize Application
                     </a>
                 @endif
 
@@ -226,12 +266,12 @@
                     <form action="{{ route('admin.loan-applications.destroy', $loanApplication->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="submit" class="btn btn-danger" value="{{ trans('global.delete') }}">
+                        <input type="submit" class="btn btn-lg btn-danger" value="{{ trans('global.delete') }}">
                     </form>
                 @endcan
             </div>
             <div class="form-group">
-                <a class="btn btn-default" href="{{ route('admin.loan-applications.index') }}">
+                <a class="btn btn-lg btn-info" href="{{ route('admin.loan-applications.index') }}">
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>

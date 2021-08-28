@@ -26,6 +26,9 @@
                             {{ trans('cruds.loanApplication.fields.id') }}
                         </th>
                         <th>
+                            Loan Id
+                        </th>
+                        <th>
                             {{ trans('cruds.loanApplication.fields.loan_amount') }}
                         </th>
                         <th>
@@ -43,7 +46,7 @@
                         <th>
                             Member No
                         </th>
-                        @if($user->is_admin)
+                        @if(!$user->is_member)
                             <th>
                                 Approved By
                             </th>
@@ -57,7 +60,10 @@
 
                             </td>
                             <td>
-                            {{ $key++ }}
+                            {{ $key+1 }}
+                            </td>
+                            <td>
+                                {{ $loanApplication->loan_entry_number ?? '' }}
                             </td>
                             <td>
                                 {{ $loanApplication->loan_amount ?? '' }}
@@ -77,12 +83,12 @@
                             <td>
                                 {{ $loanApplication->created_by->idno }}
                             </td>
-                            @if($user->is_admin)
+                            @if(!$user->is_member)
                                 <td>
-                                    {{ $loanApplication->analyst->name ?? '' }}
+                                    {{ $loanApplication->accountant->name ?? '' }}
                                 </td>
                                 <td>
-                                    {{ $loanApplication->cfo->name ?? '' }}
+                                    {{ $loanApplication->creditCommittee->name ?? '' }}
                                 </td>
                             @endif
 
@@ -102,35 +108,6 @@
 <script>
     $(function () {
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-@can('loan_application_delete')
-  let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-  let deleteButton = {
-    text: deleteButtonTrans,
-    url: "{{ route('admin.loan-applications.massDestroy') }}",
-    className: 'btn-danger',
-    action: function (e, dt, node, config) {
-      var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-          return $(entry).data('entry-id')
-      });
-
-      if (ids.length === 0) {
-        alert('{{ trans('global.datatables.zero_selected') }}')
-
-        return
-      }
-
-      if (confirm('{{ trans('global.areYouSure') }}')) {
-        $.ajax({
-          headers: {'x-csrf-token': _token},
-          method: 'POST',
-          url: config.url,
-          data: { ids: ids, _method: 'DELETE' }})
-          .done(function () { location.reload() })
-      }
-    }
-  }
-  dtButtons.push(deleteButton)
-@endcan
 
   $.extend(true, $.fn.dataTable.defaults, {
     orderCellsTop: true,

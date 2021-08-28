@@ -10,9 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UsersAccount extends Model
 {
     //
-    use SoftDeletes, Auditable;
-
-    const UPDATED_AT = 'updated_at';
+    use SoftDeletes;
 
     public $table = 'users_accounts';
 

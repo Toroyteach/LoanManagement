@@ -44,6 +44,7 @@ class User extends Authenticatable
         'number',
         'email_verified_at',
         'password',
+        'status',
         'idno',
         'avatar',
         'remember_token',
@@ -65,19 +66,24 @@ class User extends Authenticatable
         return $this->roles->contains(1);
     }
 
-    public function getIsUserAttribute()
+    public function getIsMemberAttribute()
     {
         return $this->roles->contains(2);
     }
 
-    public function getIsAnalystAttribute()
+    public function getIsAccountantAttribute()
     {
         return $this->roles->contains(3);
     }
 
-    public function getIsCfoAttribute()
+    public function getIsCreditCommitteeAttribute()
     {
         return $this->roles->contains(4);
+    }
+
+    public function getIsExecutiveAttribute()
+    {
+        return $this->roles->contains(5);
     }
 
     public function __construct(array $attributes = [])
@@ -89,7 +95,9 @@ class User extends Authenticatable
             if (!$user->roles()->get()->contains($registrationRole)) {
                 $user->roles()->attach($registrationRole);
             }
+            
         });
+
     }
 
     public function getEmailVerifiedAtAttribute($value)
@@ -125,8 +133,19 @@ class User extends Authenticatable
 
     }
 
+    public function loan()
+    {
+        return $this->hasMany(LoanApplication::class, 'created_by_id');
+
+    }
+
     public function monthlySavings()
     {
         return $this->hasOne(MonthlySavings::class, 'user_id');
+    }
+
+    public function twoStep()
+    {
+        return $this->hasOne(TwoStepAuthTable::class, 'userId');
     }
 }

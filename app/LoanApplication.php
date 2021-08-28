@@ -22,6 +22,7 @@ class LoanApplication extends Model
     ];
 
     protected $fillable = [
+        'loan_entry_number',
         'loan_amount',
         'description',
         'repaid_amount',
@@ -53,12 +54,12 @@ class LoanApplication extends Model
         return $this->belongsTo(Status::class, 'status_id');
     }
 
-    public function analyst()
+    public function accountant()
     {
         return $this->belongsTo(User::class, 'analyst_id');
     }
 
-    public function cfo()
+    public function creditCommittee()
     {
         return $this->belongsTo(User::class, 'cfo_id');
     }

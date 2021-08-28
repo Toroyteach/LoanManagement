@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Services\FirebaseService;
 
 class LoanApplicationsController extends Controller
 {
@@ -24,9 +25,19 @@ class LoanApplicationsController extends Controller
     {
         abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->get();
+        $statusId = [1, 2, 3, 5, 6];
+        $loanApplications = LoanApplication::with('status', 'accountant')->whereIn('status_id', $statusId)->orderBy('updated_at', 'ASC')->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
+        //dd($user->getIsCfoAttribute());
+        //dd($loanApplications);
+        if($user->getIsMemberAttribute()){
+
+            //modify to show application details and some news for user
+            abort_if(Gate::denies('loan_application_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+            return view('admin.loanApplications.userapplyloan');
+        }
 
         return view('admin.loanApplications.index', compact('loanApplications', 'defaultStatus', 'user'));
     }
@@ -38,21 +49,28 @@ class LoanApplicationsController extends Controller
         return view('admin.loanApplications.create');
     }
 
-    public function store(StoreLoanApplicationRequest $request)
+    public function store(StoreLoanApplicationRequest $request, FirebaseService $service)
     {
         //dd($request->all());
-        $loanApplication = LoanApplication::create($request->only('loan_amount', 'description', 'loan_type', 'duration'));
-        //dd($loanApplication);
+        $entryNumber = mt_rand(100000, 1000000);
+        $loanApplication = LoanApplication::create([
+            'loan_entry_number' => $entryNumber,
+            'loan_amount' => $request->loan_amount,
+            'description' => $request->description,
+            'loan_type' => $request->loan_type,
+            'duration' => $request->duration,
+        ]);
 
         //create fiorebase calls to insert to firebase
         $random = Str::random(20);
         //dd($random);
 
         $loanDetails = [
+            'loanentrynumber' => $entryNumber,
             'loandescription' => $loanApplication->description,
             'amount' => $loanApplication->loan_amount,
             'created_at' => $loanApplication->created_at,
-            'id' => $loanApplication->created_by_id,
+            'id' => $loanApplication->created_by->firebaseid,
             'status' => $loanApplication->status_id,
             'docID' => $random,
         ];
@@ -61,17 +79,28 @@ class LoanApplicationsController extends Controller
         $loanApplication->repayment_date = date('Y-m-d', strtotime($request->duration.' months'));
         $loanApplication->save();
         
-        $newLoan = $this->createLoan($loanDetails);
+        $newLoan = $service->createLoan($loanDetails);
+
+        //dd($newLoan);
+
 
         if(!$newLoan){
-            return false;
+
+            \Log::info("Loan application was not creatd to firebase id => ".$loanApplication->firebaseid.' loan id '.$loanApplication->id);
+
+            return redirect()->route('admin.loan-applications.index')->with('message','Loan Application Request was created successfully!');
+
         } else {
-            return redirect()->route('admin.loan-applications.index')->with('message','Loan was created successfully!');
+
+            return redirect()->route('admin.loan-applications.index')->with('success','Loan Application Request was created successfully!');
+
         }
     }
 
     public function edit(LoanApplication $loanApplication)
     {
+        //dd($loanApplication);
+        //returns view with loan to change the status to the final stage of the loan i.e rejected or approved
         abort_if(
             Gate::denies('loan_application_edit') || !in_array($loanApplication->status_id, [6,7]),
             Response::HTTP_FORBIDDEN,
@@ -83,47 +112,71 @@ class LoanApplicationsController extends Controller
         $loanApplication->load('status');
 
         //dd('edit'.$loanApplication);
-        //getting data from cfo to ceo to approve to send to client money(update method below)
+        //getting data from cfo to ceo to approve to send to client money(after submit goes to update method below)
 
-        return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'))->with('message','Loan was updated succesfully');
+        return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'));
     }
 
-    public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
+    public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication, FirebaseService $service)
     {
-        $loanApplication->update($request->only('status_id'));
+        //dd('give out the money');
+        //makes the status change to approved or rejected to give out also update firebase
 
         //when updating the paymnent status of the loan to send money to user
+
+        //dd($request, $loanApplication);
         //update firebase data as well
 
         if($request->status_id == 8){
 
-            $userData = UsersAccount::where('user_id', $loanApplication->created_by_id)->firstOrFail();
-            $userData->increment('total_amount', $loanApplication->loan_amount);
-
             $data = [
-                'user_id' => $loanApplication->created_by_id, 
                 'status' => $request->status_id,
                 'approved' => true,
-                'docId' => $loanApplication->firebaseid
             ];
 
-            $updateFirebaseLoan = $this->updateLoan($data);
+            $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
 
             if(!$updateFirebaseLoan){
-                return false;
+
+                return redirect()->back()->with('error','Loan Application was not updated successfully!');
+
             }
+
+            $loanApplication->update($request->only('status_id'));
+            
+            $userData = UsersAccount::where('user_id', $loanApplication->created_by_id)->firstOrFail();
+            $userData->increment('total_amount', $loanApplication->loan_amount);
             //dd('success');
+
+        } else if($request->status_id == 9){
+
+            //rejected by accountant
+            $data = [
+                'status' => $request->status_id,
+                'approved' => true,
+            ];
+
+            $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+
+            if(!$updateFirebaseLoan){
+
+                return redirect()->back()->with('error','Loan Application was not updated successfully!');
+
+            }
+
+            $loanApplication->update($request->only('status_id'));
+            
 
         }
 
-        return redirect()->route('admin.loan-applications.index')->with('message','Loan was updated successfully!');
+        return redirect()->route('admin.loan-applications.index')->with('success','Loan Application was updated successfully!');
     }
 
     public function show(LoanApplication $loanApplication)
     {
         abort_if(Gate::denies('loan_application_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $loanApplication->load('status', 'analyst', 'cfo', 'created_by', 'logs.user', 'comments');
+        $loanApplication->load('status', 'accountant', 'creditCommittee', 'created_by', 'logs.user', 'comments');
         $defaultStatus = Status::find(1);
         $user          = auth()->user();
         $logs          = AuditLogService::generateLogs($loanApplication);
@@ -139,6 +192,8 @@ class LoanApplicationsController extends Controller
 
         $loanApplication->delete();
 
+        //no soft deletes for firebase
+
         return back()->with('message','Loan was deleted successfully!');;
     }
 
@@ -151,114 +206,194 @@ class LoanApplicationsController extends Controller
 
     public function showSend(LoanApplication $loanApplication)
     {
-        abort_if(!auth()->user()->is_admin, Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
+        //dd('here');
+        if(!auth()->user()->is_admin){
 
-        if ($loanApplication->status_id == 1) {
-            $role = 'Analyst';
-            $users = Role::find(3)->users->pluck('name', 'id');
-        } else if (in_array($loanApplication->status_id, [3,4])) {
-            $role = 'CFO';
+            abort_if(!auth()->user()->is_accountant, Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        }
+
+        //this stage should only be used to send the loan application status to the credit commiteefor further editing
+        //loan status id is 3 by default
+
+        if (in_array($loanApplication->status_id, [3, 4, 5])) {
+
+            $role = 'Credit Committee';
             $users = Role::find(4)->users->pluck('name', 'id');
+
         } else {
+
             abort(Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         }
 
         return view('admin.loanApplications.send', compact('loanApplication', 'role', 'users'));
     }
 
-    public function send(Request $request, LoanApplication $loanApplication)
+    public function send(Request $request, LoanApplication $loanApplication, FirebaseService $service)
     {
-        abort_if(!auth()->user()->is_admin, Response::HTTP_FORBIDDEN, '403 Forbidden');
+        // once a loan is created this is first instance of sending to next processing which is from accountant to 
+        // (accountant(proccesing,approved, rejected))
+        // 1st if statement is excecuted
+
+        // once a loan is already approved then admin sends to cfo for further processing to
+        // (cfo(proccesing,approved, rejected))
+        // 2nd if statement is excecuted
+
+        //dd('send back to admin');
+        //also update firebase data here
+        if(!auth()->user()->is_admin){
+
+            abort_if(!auth()->user()->is_accountant, Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        }
 
         if ($loanApplication->status_id == 1) {
-            $column = 'analyst_id';
+            
+            $column = 'analyst_id'; //accountant_id
             $users  = Role::find(3)->users->pluck('id');
             $status = 2;
+
         } else if (in_array($loanApplication->status_id, [3,4])) {
-            $column = 'cfo_id';
+
+            $column = 'cfo_id'; //creditcommittee_id
             $users  = Role::find(4)->users->pluck('id');
             $status = 5;
+
         } else {
+
             abort(Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         }
 
         $request->validate([
             'user_id' => 'required|in:' . $users->implode(',')
         ]);
 
-        $loanApplication->update([
-            $column => $request->user_id,
-            'status_id' => $status
-        ]);
+        $data = [
+            'status' => $status,
+            'approved' => false,
+        ];
 
-        return redirect()->route('admin.loan-applications.index')->with('message', 'Loan application has been sent for analysis');
+        //dd($loanApplication);
+
+        $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+
+        if($updateFirebaseLoan){
+
+            $loanApplication->update([
+                $column => $request->user_id,
+                'status_id' => $status
+            ]);
+    
+            return redirect()->route('admin.loan-applications.index')->with('success', 'Loan Application forwaded for analysis');
+
+        }
+
+        return redirect()->back()->with('error', 'Loan Application was not processed successfuly');
+
     }
 
     public function showAnalyze(LoanApplication $loanApplication)
     {
+        //accountant and credit committee to comment on the loan status
+        //dd($loanApplication);
         $user = auth()->user();
 
-        abort_if(
-            (!$user->is_analyst || $loanApplication->status_id != 2) && (!$user->is_cfo || $loanApplication->status_id != 5),
-            Response::HTTP_FORBIDDEN,
-            '403 Forbidden'
-        );
+        if(!$user->is_admin){
+
+            abort_if((!$user->is_accountant || $loanApplication->status_id != 1) && (!$user->is_creditCommittee || !in_array($loanApplication->status_id, [5, 3])),
+                Response::HTTP_FORBIDDEN,'403 Forbidden'
+            );
+
+
+        }
 
         return view('admin.loanApplications.analyze', compact('loanApplication'));
     }
 
-    public function analyze(Request $request, LoanApplication $loanApplication)
+    public function analyze(Request $request, LoanApplication $loanApplication, FirebaseService $service)
     {
+
+        // once analyst approves or rejects a loan this is where it comes back to for further udpating
+
+        //once the cfo has approved the loan the loan comes back here to be sent to admin for final approval to be disbursed the amount
+        //dd('analysis updating');
         $user = auth()->user();
 
-        if ($user->is_analyst && $loanApplication->status_id == 2) {
+        if ($user->is_accountant && $loanApplication->status_id == 1) {
+
             $status = $request->has('approve') ? 3 : 4;
-        } else if ($user->is_cfo && $loanApplication->status_id == 5) {
+
+        } else if ($user->is_creditcommittee && in_array($loanApplication->status_id, [5, 3])) {
+
             $status = $request->has('approve') ? 6 : 7;
+
         } else {
+
             abort(Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         }
 
         $request->validate([
             'comment_text' => 'required'
         ]);
+     
+        $data = [
+            'status' => $status,
+            'approved' => false,
+        ];
 
-        $loanApplication->comments()->create([
-            'comment_text' => $request->comment_text,
-            'user_id'      => $user->id
-        ]);
+        //dd($data, $loanApplication->firebaseid);
 
-        $loanApplication->update([
-            'status_id' => $status
-        ]);
 
-        return redirect()->route('admin.loan-applications.index')->with('message', 'Analysis has been submitted');
+        $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+
+
+        if($updateFirebaseLoan){
+
+            $loanApplication->comments()->create([
+                'comment_text' => $request->comment_text,
+                'user_id'      => $user->id
+            ]);
+    
+            $loanApplication->update([
+                'status_id' => $status
+            ]);
+    
+            return redirect()->route('admin.loan-applications.index')->with('message', 'Loan Application forwaded for analysis');
+
+        }
+
+        return redirect()->back()->with('error', 'Analysis was not submitted successfully');
     }
 
     public function createLoan($params)
     {
-        $newLoan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docID']);
-        $newLoan->set([
-            'user_id' => $params['id'],
-            'description' => $params['loandescription'],
-            'amount' => $params['amount'],
-            'created_at' => $params['created_at'],
-            'status' => $params['status'],
-            'approved' => false
-        ]);
-        return $newLoan;
+        // $newLoan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docID']);
+        // $newLoan->set([
+        //     'user_id' => $params['id'],
+        //     'loanentrynumber' => $params['loanentrynumber'],
+        //     'description' => $params['loandescription'],
+        //     'amount' => $params['amount'],
+        //     'created_at' => $params['created_at'],
+        //     'status' => $params['status'],
+        //     'approved' => false
+        // ]);
+        // return $newLoan;
     }
 
     public function updateLoan($params)
     {
         //dd($params);
-        $loan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docId'])
-                ->update([
-                    ['path' => 'status', 'value' => $params['status']],
-                    ['path' => 'approved', 'value' => $params['approved']]
-                ]);
+        // $loan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docId'])
+        //         ->update([
+        //             ['path' => 'status', 'value' => $params['status']],
+        //             ['path' => 'approved', 'value' => $params['approved']]
+        //         ]);
 
-        return $loan; 
+        // return $loan; 
     }
 
     public function activeLoans()
@@ -266,7 +401,7 @@ class LoanApplicationsController extends Controller
         //return all active loans return only approvec loans
         abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('status_id', 8)->get();
+        $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('status_id', 8)->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
 
@@ -278,11 +413,24 @@ class LoanApplicationsController extends Controller
         //return all cleared loans. check repaid status
         abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('repaid_status', 1)->get();
+        $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('repaid_status', 1)->where('status_id', 10)->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
 
         return view('admin.loanApplications.clearedloans', compact('loanApplications', 'defaultStatus', 'user'));
+    }
+
+    public function rejectedLoans()
+    {
+        //return all cleared loans. check repaid status
+        abort_if(Gate::denies('loan_application_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $statusId = [4,7,9];
+        $loanApplications = LoanApplication::whereIn('status_id', $statusId)->get();
+        $rejectedStatus    = Status::find(1);
+        $user             = auth()->user();
+
+        return view('admin.loanApplications.rejectedloans', compact('loanApplications', 'rejectedStatus', 'user'));
     }
 
     public function defaultors()
@@ -292,12 +440,11 @@ class LoanApplicationsController extends Controller
 
         //only checking dates more than a month after repaid date was set.
         //creats repayment date
-        $now = Carbon::create(2021, 06, 30, 11, 59, 59, 'CAT')->addMonths(3);
         // get todays date
         // get repaymnet set date
         // $this add repayment plus 3 months
         //check repaymtn dat passed $this
-        $loanApplications = LoanApplication::with('status', 'analyst', 'cfo')->where('status_id', '=', 8)->where('repaid_status', 0)->whereDate('repayment_date', '<=', $now)->get();
+        $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('status_id', '=', 11)->where('repaid_status', 0)->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
         //dd($loanApplications);

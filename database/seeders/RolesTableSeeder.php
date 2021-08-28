@@ -16,19 +16,19 @@ class RolesTableSeeder extends Seeder
             ],
             [
                 'id'    => 2,
-                'title' => 'User',
+                'title' => 'Member',
             ],
             [
                 'id'    => 3,
-                'title' => 'Analyst',
+                'title' => 'Accountant',
             ],
             [
                 'id'    => 4,
-                'title' => 'CFO',
+                'title' => 'Credit Committee',
             ],
             [
                 'id'    => 5,
-                'title' => 'Manager',
+                'title' => 'Executive',
             ],
         ];
 

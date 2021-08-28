@@ -9,7 +9,7 @@ use App\Traits\Auditable;
 class MonthlySavings extends Model
 {
     //
-    use SoftDeletes, Auditable;
+    use SoftDeletes;
 
     public $table = 'monthly_savings';
 

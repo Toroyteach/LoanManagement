@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class SaccoAccount extends Model
 {
     //
-    use SoftDeletes, Auditable;
+    use SoftDeletes;
 
     public $table = 'sacco_accounts';
 
@@ -22,4 +22,10 @@ class SaccoAccount extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+
+    }
 }

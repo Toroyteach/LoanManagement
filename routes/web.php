@@ -27,7 +27,7 @@ Route::get('files/{uuid}/download', 'Front\FrontendController@download')->name('
 Auth::routes();
 // Admin
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth' ,'twostep']], function () {
     Route::get('/', 'HomeController@index')->name('home');
     Route::get('/dashboard', 'HomeController@dashboard')->name('dashboard');
     // Permissions
@@ -41,6 +41,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Users
     Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
     Route::resource('users', 'UsersController');
+    Route::get('users/{id}/disable', 'UsersController@disableUser')->name('users.disable');
+    Route::post('users/{user}/update', 'UsersController@updateUserProfile')->name('users.update.profile');
+    Route::get('users/{user}/profile', 'UsersController@getUserProfile')->name('users.profile');
 
     // Statuses
     Route::delete('statuses/destroy', 'StatusesController@massDestroy')->name('statuses.massDestroy');
@@ -56,6 +59,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     Route::get('status/active/loan-applications', 'LoanApplicationsController@activeLoans')->name('active.loans');
     Route::get('status/cleared/loan-applications', 'LoanApplicationsController@clearedLoans')->name('cleared.loans');
+    Route::get('status/rejected/loan-applications', 'LoanApplicationsController@rejectedLoans')->name('rejected.loans');
     Route::get('status/loan-applications/defaultors', 'LoanApplicationsController@defaultors')->name('defaultors');
 
     // Comments
@@ -75,11 +79,28 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //update monthly contribution
     Route::post('/updatemonthlycontribution','UsersController@updateMonthlyContribution')->name('monthly.update');
 
+    //update monthly contribution amount
+    Route::post('/updatemonthlycontributionamount','UsersController@updateMonthlyContributionAmount')->name('monthly.update.amount');
+
     //get pdf for statements
     Route::get('/users/pdf/{id}', 'UsersController@createPdf')->name('users.pdf');
+    Route::get('/user/statements', 'UsersController@memberStatements')->name('user.statements');
+    Route::get('/user/forms', 'UsersController@memberForms')->name('user.forms');
+    Route::get('/user/loans', 'UsersController@memberLoans')->name('user.loans');
+
+    //notification routes
+    Route::post('/mark-as-read', 'HomeController@markNotification')->name('markNotification');
+    Route::post('/mark-gurantor-request', 'HomeController@requestGurantor')->name('requestGurantor');
+    Route::get('/view/notifications', 'HomeController@notifications')->name('viewnotification');
+
+    //loan application request
+    Route::post('/loan/request', 'CreateLoanRequestController@create')->name('loanRequest');
+    Route::post('/loan/request/update', 'CreateLoanRequestController@update')->name('updateLoanRequest');
+    //ajax get first 3 characters for users
+    Route::get('autocomplete', 'CreateLoanRequestController@autocomplete')->name('autocomplete');
 
 });
-Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', 'twostep']], function () {
 // Change password
     if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php'))) {
         Route::get('password', 'ChangePasswordController@edit')->name('password.edit');

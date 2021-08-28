@@ -1,7 +1,7 @@
 <div id="sidebar" class="c-sidebar c-sidebar-fixed c-sidebar-lg-show">
 
     <div class="c-sidebar-brand d-md-down-none">
-        <a class="c-sidebar-brand-full h4" href="{{ route('admin.dashboard') }}">
+        <a class="c-sidebar-brand-full h4" href="{{ route('index') }}">
             {{ config('app.name') }}
         </a>
     </div>
@@ -19,7 +19,7 @@
                     <i class="fa-fw fas fa-users c-sidebar-nav-icon">
 
                     </i>
-                    @if(Auth::user()->getIsUserAttribute())
+                    @if(Auth::user()->getIsMemberAttribute())
                         {{ trans('cruds.userManagement.profile') }}
                     @else
                         {{ trans('cruds.userManagement.title') }}
@@ -30,10 +30,32 @@
                     @can('view_self_user')
                         <li class="c-sidebar-nav-item">
                             <a href="{{ route("admin.user.show") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/show') || request()->is('admin/user/show/*') ? 'active' : '' }}">
-                                <i class="fa-fw fas fa-user c-sidebar-nav-icon">
+                                <i class="fa-fw fas fa-id-card c-sidebar-nav-icon">
 
                                 </i>
                                 Profile
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.user.statements") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/statements') || request()->is('admin/user/statements/*') ? 'active' : '' }}">
+                                <i class="fa-fw fas fa-file-pdf c-sidebar-nav-icon"></i>
+                                Statements
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.user.forms") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/forms') || request()->is('admin/user/forms/*') ? 'active' : '' }}">
+                                <i class="fa-fw fas fa-align-left c-sidebar-nav-icon">
+
+                                </i>
+                                Forms
+                            </a>
+                        </li>
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.user.loans") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/loans') || request()->is('admin/user/loans/*') ? 'active' : '' }}">
+                                <i class="fa-fw fas fa-wallet c-sidebar-nav-icon">
+
+                                </i>
+                                My Loans
                             </a>
                         </li>
                     @endcan
@@ -97,7 +119,7 @@
                     <i class="fa-fw fas fa-money c-sidebar-nav-icon">
 
                     </i>
-                    Loan Management
+                    Loan Hub
                 </a>
                 <ul class="c-sidebar-nav-dropdown-items">
                     <li class="c-sidebar-nav-item">
@@ -105,7 +127,11 @@
                             <i class="fa-fw fas fa-file-alt c-sidebar-nav-icon">
 
                             </i>
-                            {{ trans('cruds.loanApplication.title') }}
+                            @if(Auth::user()->getIsMemberAttribute())
+                                Apply Loan
+                            @else
+                                {{ trans('cruds.loanApplication.title') }}
+                            @endif
                         </a>
                     </li>
                     @can('view_loan_status')
@@ -125,6 +151,16 @@
 
                                 </i>
                                 Cleared Loans
+                            </a>
+                        </li>
+                    @endcan
+                    @can('view_loan_status')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.rejected.loans') }}" class="c-sidebar-nav-link {{ request()->is('admin/rejected/loans') || request()->is('admin/rejected/loans/*') ? 'active' : '' }}">
+                            <i class="fas fa-money-check-alt c-sidebar-nav-icon"></i>
+
+                                </i>
+                                Rejected Loans
                             </a>
                         </li>
                     @endcan

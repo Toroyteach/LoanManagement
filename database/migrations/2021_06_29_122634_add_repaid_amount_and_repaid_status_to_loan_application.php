@@ -17,9 +17,10 @@ class AddRepaidAmountAndRepaidStatusToLoanApplication extends Migration
             //
             $table->boolean('repaid_status')->default(0)->after('loan_amount');
             $table->decimal('repaid_amount', 15, 2)->default(0)->after('loan_amount');
-            $table->enum('loan_type', ['Emergency', 'SchoolFees', 'Development', 'TopUp'])->after('loan_amount');
+            $table->enum('loan_type', ['emergency', 'education', 'development', 'instantloan'])->after('loan_amount');
             $table->date('repayment_date')->nullable()->after('created_at');
             $table->integer('duration')->unsigned();
+            $table->string('file')->nullable();
         });
     }
 
@@ -37,6 +38,7 @@ class AddRepaidAmountAndRepaidStatusToLoanApplication extends Migration
             $table->dropColumn('loan_type');
             $table->dropColumn('repayment_date');
             $table->dropColumn('duration');
+            $table->string('file')->nullable();
         });
     }
 }
