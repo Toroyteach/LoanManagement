@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\LoanApplication;
 use App\MonthlySavings;
 use App\SaccoAccount;
+use App\UserAccount;
 use App\SaccoFile;
 use Illuminate\Http\Request;
 use Webpatser\Uuid\Uuid;
@@ -23,6 +24,12 @@ class HomeController extends Controller
         return redirect()->route('admin.loan-applications.index');
     }
 
+    public function __construct()
+    {
+        //seed the records manually
+
+        dd('done');
+    }
 
 
     public function dashboard()

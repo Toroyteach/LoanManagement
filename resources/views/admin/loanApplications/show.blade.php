@@ -275,6 +275,13 @@
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>
+            @can('loan_application_repay')
+            <div class="form-group">
+                <a class="btn btn-lg btn-danger text-white" onclick="makeLoanRepaymenRequest()">
+                    Make Payment Request
+                </a>
+            </div>
+            @endcan
         </div>
     </div>
 </div>
@@ -282,3 +289,73 @@
 
 
 @endsection
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+
+
+    function makeLoanRepaymenRequest() {
+
+
+            swal.fire({
+            title: "Loan Repayment Request",
+            icon: 'warning',
+            text: "Are you sure you want to make repayment for this loan application? Please confirm then move forward",
+            input: 'range',
+            inputAttributes: {
+                min: 1000,
+                max: "{{ $loanApplication->loan_amount }}",
+                step: 500,
+            },
+            inputValue: "{{ $loanApplication->loan_amount ?? '' }}",
+            inputLabel: "Amount",
+            showCancelButton: !0,
+            confirmButtonText: "Yes, Submit",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: !0
+            }).then(function (e) {
+
+
+                if (e.isConfirmed) {
+
+                    const value = document.getElementById("swal2-input").value; 
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ route('admin.loan-applications.repay') }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            loan_id: "{{ $loanApplication->id }}",
+                            amount: value
+                            },
+                        dataType: 'JSON',
+                        success: function (results) {
+                            if (results.response === true) {
+
+                                swal.fire("Done!", results.message, "success");
+                                // refresh page after 2 seconds
+                                setTimeout(function(){
+                                    location.reload();
+                                },3000);
+
+                            } else if(results.response === false) {
+
+                                swal.fire("Error!", results.failure, "error");
+
+                            }
+                        }
+                    });
+
+                } else {
+                    
+                    e.dismiss;
+                }
+
+            }, function (dismiss) {
+                return false;
+            })
+
+
+    }
+
+</script>

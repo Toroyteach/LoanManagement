@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTwoStepAuthTablesTable extends Migration
+class CreateStepAuthTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTwoStepAuthTablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('two_step_auth_tables', function (Blueprint $table) {
+        Schema::create('multi_step_auth_tables', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('userId')->unsigned()->index();
             $table->foreign('userId')->references('id')->on('users')->onDelete('cascade');
@@ -33,6 +33,6 @@ class CreateTwoStepAuthTablesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('two_step_auth_tables');
+        Schema::dropIfExists('multi_step_auth_tables');
     }
 }

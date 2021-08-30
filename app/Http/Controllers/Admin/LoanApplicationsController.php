@@ -74,9 +74,12 @@ class LoanApplicationsController extends Controller
             'status' => $loanApplication->status_id,
             'docID' => $random,
         ];
+        
+        $repaymentDate = date('Y-m-d', strtotime($request->duration.' months'));
 
         $loanApplication->firebaseid = $random;
-        $loanApplication->repayment_date = date('Y-m-d', strtotime($request->duration.' months'));
+        $loanApplication->repayment_date = $repaymentDate;
+        $loanApplication->defaulted_date = Carbon::parse($repaymentDate)->addMonths(3);
         $loanApplication->save();
         
         $newLoan = $service->createLoan($loanDetails);
@@ -450,5 +453,55 @@ class LoanApplicationsController extends Controller
         //dd($loanApplications);
 
         return view('admin.loanApplications.defaultors', compact('loanApplications', 'defaultStatus', 'user'));
+    }
+
+    public function makeRepaymentAmount(Request $request)
+    {
+
+        //check if the paid amount is full or partial them made
+        //notify members here or use observers to notify member of the changes
+
+        $loanItem = LoanApplication::select(['last_month_amount_paid', 'date_last_amount_paid', 'loan_amount', 'repaid_status', 'created_by_id'])->find($request->loan_id);
+
+        if($loanItem->loan_amount <= $request->amount){ //greater than or equal loan amount
+
+            $newAmount = $request->amount - $loanItem->loan_amount;
+
+            if($newAmount != 0){
+                $memberAccount = UserAccount::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                $memberAccount->increment('total_amount', $newAmount);
+            }
+
+            $loanItem->last_month_amount_paid = $request->amount;
+            $loanItem->date_last_amount_paid = now();
+            $loanItem->status_id = 10;
+
+            $loanItem->save();
+
+            if($loanItem->isDirty() && $memberAccount->isDirty()){
+
+                return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated Succesfully. Memeber has fully settled Loan and Overpayment added to Member account'), 200);
+
+            }
+
+            return response()->json(array('response' => false, 'message' => 'Oops! Repayment amount was not updated '), 200);
+
+        } else { //less than loan amount
+
+    
+            $loanItem->last_month_amount_paid = $request->amount;
+            $loanItem->date_last_amount_paid = now();
+    
+            $loanItem->save();
+    
+            if($loanItem->isDirty() && $memberAccount->isDirty()){
+    
+                return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated'), 200);
+    
+            }
+    
+            return response()->json(array('response' => false, 'message' => 'Oops! Repayment amount was not updated '), 200);
+
+        }
     }
 }

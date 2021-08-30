@@ -696,7 +696,7 @@ class Request extends Component
         $this->elligibleamount = 100000;
         $this->interest = config('loantypes.'.$type.'.interest');
         $this->duration = config('loantypes.'.$type.'.max_duration');
-        $this->totalplusinterest = $this->totalWithInterest($type) + $this->amount;
+        $this->totalplusinterest = $this->totalWithInterest($type);
         $this->repaymentdate = Carbon::now()->addMonths(config('loantypes'.$type.'max_duration'));//today plus config months
 
         //dd($this->elligibleamount, $this->interest, $this->totalplusinterest,  $this->repaymentdate);
@@ -714,25 +714,68 @@ class Request extends Component
 
      }
 
-     public function totalWithInterest($type){
+     public function totalWithInterest($type)
+     {
 
         $loan_types_config = config('loantypes.'.$type);
-        $amounyRequest = $this->amount;
+        $amountRequest = $this->amount;
 
         if($type == 'emergency' || $type == 'schoolfees' || $type == 'development'){
 
-            $total = $amounyRequest * 0.1 * $loan_types_config['max_duration'];
-            $this->interestamount = $total - $amounyRequest;
+            //$interestAccumulated = $this->onReducingLoanBalance($loan_types_config['max_duration']);
+            
+            $total = $this->onReducingLoanBalance($loan_types_config['max_duration']);
+            //$this->interestamount = $total - $amountRequest;
 
         } else {
 
-            $total = $amounyRequest * 0.1 * $loan_types_config['max_duration'];
-            $this->interestamount = $total;
+            $totalAdded = $amounyRequest * 0.1 * $loan_types_config['max_duration'];
+            $this->interestamount = $totalAdded;
+            $total = $totalAdded + $amountRequest;
 
         }
 
         return $total;
 
+     }
+
+     public function onReducingLoanBalance($time)
+     {
+        
+        
+        $principal = $this->amount;
+        $rate = 0.01;
+        $accumulatedAmount = 0;
+
+        $amounpaid = 800;//from db check the amount paid in last month
+
+        for($x = 0; $x < $time; $x++){
+
+            if($x == 0){
+
+                $startingAmount = $principal;
+
+                $accumulatedAmount =  ($startingAmount * $rate) + $principal;
+
+                 //dd($accumulatedAmount);
+
+            } else {
+
+                $startingAmount = $accumulatedAmount;
+
+                $secondAmount = (($startingAmount * $rate) + $startingAmount) - $amounpaid;
+
+                unset($accumulatedAmount);
+
+                $accumulatedAmount = $secondAmount;
+
+                //dd($accumulatedAmount);
+            }
+
+
+        }
+
+        return $accumulatedAmount;
      }
 
      public function alertSuccess()

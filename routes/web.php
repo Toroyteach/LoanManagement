@@ -57,6 +57,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('loan-applications/{loan_application}/send', 'LoanApplicationsController@send')->name('loan-applications.send');
     Route::resource('loan-applications', 'LoanApplicationsController');
 
+    //Make loan Payment request
+    Route::post('/loan-application-repayment','LoanApplicationsController@makeRepaymentAmount')->name('loan-applications.repay');
+
     Route::get('status/active/loan-applications', 'LoanApplicationsController@activeLoans')->name('active.loans');
     Route::get('status/cleared/loan-applications', 'LoanApplicationsController@clearedLoans')->name('cleared.loans');
     Route::get('status/rejected/loan-applications', 'LoanApplicationsController@rejectedLoans')->name('rejected.loans');
@@ -81,6 +84,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     //update monthly contribution amount
     Route::post('/updatemonthlycontributionamount','UsersController@updateMonthlyContributionAmount')->name('monthly.update.amount');
+
 
     //get pdf for statements
     Route::get('/users/pdf/{id}', 'UsersController@createPdf')->name('users.pdf');

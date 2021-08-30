@@ -191,7 +191,7 @@
                 Next Of Kin Registration
             </div><br><br>
 
-            <div class="row">
+            <div class="row nextKinInput" id="nextKinInput">
                 <div class="form-group col-md-4">
                     <label class="required" for="kinname">Next of Kin Name</label>
                     <input class="form-control {{ $errors->has('kinname') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinname', '') }}" placeholder="Enter Name" name="kinname" id="kinname" required>
@@ -235,3 +235,19 @@
 
 
 @endsection
+
+@push('scripts')
+<script type="text/javascript">
+    function add_row()
+    {
+        $rowno = $("#nextKinInput input").length;
+        $rowno = $rowno+1;
+        $("#nextKinInput input:last").after("<tr id='row"+$rowno+"'><td><input type='text' name='name[]' placeholder='Enter Name'></td><td><input type='text' name='age[]' placeholder='Enter Age'></td><td><input type='text' name='job[]' placeholder='Enter Job'></td><td><input type='button' value='DELETE' onclick=delete_row('row"+$rowno+"')></td></tr>");
+    }
+
+    function delete_row(rowno)
+    {
+        $('#'+rowno).remove();
+    }
+</script>
+@endpush
