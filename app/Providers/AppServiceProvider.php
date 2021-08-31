@@ -38,6 +38,6 @@ class AppServiceProvider extends ServiceProvider
 
         //dd(User::find(6)->unreadNotifications);
         //observe the model class and send text notifications
-        //TwoStepAuth::observe(TwoStepAuthTableObserver::class);
+        TwoStepAuth::observe(TwoStepAuthTableObserver::class);
     }
 }

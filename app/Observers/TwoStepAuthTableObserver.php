@@ -63,7 +63,6 @@ class TwoStepAuthTableObserver
         //send token again to user after updating the previous one
         //using the sms service
 
-
         $changes = array_diff($twoStepAuthTable->getOriginal(), $twoStepAuthTable->getAttributes());
         if(array_key_exists('authCode', $changes) or array_key_exists('requestDate', $changes)){
 
