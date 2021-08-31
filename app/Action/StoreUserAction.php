@@ -5,9 +5,18 @@ namespace App\Action;
 use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse; 
+use App\User;
+use App\UsersAccount;
+use App\MonthlySavings;
+use App\NextKin;
+use App\SaccoAccount;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class StoreUserAction
 {
+
+    protected $route;
 
     public function execute(Request $request, FirebaseService $service) : RedirectResponse
     {
@@ -125,12 +134,17 @@ class StoreUserAction
 
         if(!$newUser){
             //dd('error creating new user');
-            return redirect()->route('admin.users.index')->with('error','User created successfully!, Error creating firebase');
+            $this->route = route('admin.users.index')->with('error','User created successfully!, Error creating firebase');
 
         } else {
 
-            return redirect()->route('admin.users.index')->with('message','User created successfully!');
+            $this->route = route('admin.users.index')->with('message','User created successfully!');
 
         }
+    }
+
+    public function getTargetUrl($route)
+    {
+        return $this->route;
     }
 }

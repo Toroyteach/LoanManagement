@@ -85,7 +85,7 @@
                                 <i class="fa-fw fas fa-user c-sidebar-nav-icon">
 
                                 </i>
-                                {{ trans('cruds.user.title') }}
+                                Members
                             </a>
                         </li>
                     @endcan

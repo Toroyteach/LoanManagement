@@ -9,8 +9,8 @@
     <div class="card-body">
         <div class="form-group">
             <div class="container_fluid" style="width:200px;height:auto">
-                    @if($user->avatar != 'default.jpg')
-                        <img src="{{ asset( 'images/'.$user->avatar ) }}" width="40" height="40" class="rounded-circle">
+                    @if($user->avatar == 'default.jpg' or empty($user->avatar))
+                        <img src="{{ asset( 'img/uploads/profileavatar/'.$user->avatar ) }}" width="40" height="40" class="rounded-circle">
                     @else
                         <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
                     @endif            
@@ -267,7 +267,9 @@
 
                                     </tr>
                                 @empty
-                                No Current Records
+
+                                    No Current Records
+
                                 @endforelse
                             </tbody>
                         </table>

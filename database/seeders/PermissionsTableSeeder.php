@@ -162,6 +162,10 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => '38',
                 'title' => 'loan_application_repay',
             ],
+            [
+                'id'    => '39',
+                'title' => 'user_disable',
+            ],
         ];
 
         Permission::insert($permissions);

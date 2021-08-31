@@ -16,12 +16,26 @@ use App\TwoStepAuthTable;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\CreateGuarantorLoanRequest;
+use Mail;
 
 class HomeController extends Controller
 {
     public function index()
     {
         return redirect()->route('admin.loan-applications.index');
+    }
+
+    public function __construct()
+    {
+        // $data = array('name'=>"Anthony Toroitich");
+
+        // Mail::raw('Sending emails with Mailgun and Laravel is easy!', function($message){
+
+        //     $message->to('tonytoroitich@gmail.com');
+
+        // });
+
+        // dd('done');
     }
 
 
@@ -77,7 +91,7 @@ class HomeController extends Controller
 
         //dd(json_encode($members, JSON_UNESCAPED_SLASHES), $membersActiveLoans, $membersAquiredLoans);
 
-        //dd($pie, $line);
+        //dd($pie, $line, $savings);
 
         return view('admin.dashboard', compact('savings', 'user', 'loan_pending', 'amount_paid', 'line', 'pie', 'approved_loan', 'members_json', 'membersActiveLoans_json', 'membersAquiredLoans_json'));
     }

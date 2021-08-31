@@ -1,6 +1,5 @@
 <?php
 
-
 Route::get('/', 'Front\FrontendController@index');
 Route::get('/home', function () {
     if (session('status')) {
