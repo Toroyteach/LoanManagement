@@ -32,29 +32,38 @@ class CreateGuarantorRequestObserver
 
         //dd($user->user_id);
 
-        $member->notify(new LoanGuarantorsNotification($user));
+        //$member->notify(new LoanGuarantorsNotification($user));
 
-        //Http::fake();
+        Http::fake();
+
+        if($this->smsEnabled()){
         
-        $response = Http::asForm()->post($this->url, [
-            'user' => env('SMS_USERNAME', 'null'),
-            'password' => env('SMS_PASSWORD', 'null'),
-            'mobiles' => $member->number,
-            'sms' =>  'Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject',
-            'unicode' => 0,
-            'senderid' => env('SMS_SENDERID', 'null'),
-        ]);
+            $response = Http::asForm()->post($this->url, [
+                'user' => env('SMS_USERNAME', 'null'),
+                'password' => env('SMS_PASSWORD', 'null'),
+                'mobiles' => $member->number,
+                'sms' =>  'Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject',
+                'unicode' => 0,
+                'senderid' => env('SMS_SENDERID', 'null'),
+            ]);
 
-        if($response->ok()){
+            if($response->ok()){
 
-            \Log::info("SMS gurantor request sent to ".$member->name);
+                \Log::info("SMS gurantor request sent to ".$member->name);
 
-        } else {
+            } else {
 
-            \Log::info(" Failed to send sms gurantor request to ".$member->name);
-            \Log::error(now());
+                \Log::info(" Failed to send sms gurantor request to ".$member->name);
+                \Log::error(now());
+
+            }
 
         }
+    }
+
+    public function smsEnabled()
+    {
+        return env('SMS_ENABLED', 0);
     }
 
 }

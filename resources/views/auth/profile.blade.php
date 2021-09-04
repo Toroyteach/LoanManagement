@@ -3,11 +3,11 @@
 
 <div class="card">
     <div class="card-header">
-        {{ trans('global.update_profile') }}
+        Member Profile edit
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route("admin.users.update.profile", [$user->id]) }}">
+        <form method="POST" action="{{ route('admin.users.update.profile', [$user->id]) }}">
             @csrf
 
             <div class="row">
@@ -56,11 +56,15 @@
 
             </div>
 
+            @can('user_update')
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
-                    {{ trans('global.save') }}
+                    Update
                 </button>
             </div>
+            @endcan
+
+
         </form>
     </div>
 </div>

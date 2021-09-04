@@ -68,14 +68,17 @@ class StoreUserRequest extends FormRequest
                 'required',
                 'array',
             ],
-            'kinname' => [
-                'required',
+            'kin' => [
+                'required', 'array', 'min:1', 'max:10'
             ],
-            'kinphone'  => [
-                'required', 'integer',
+            'kin.*.name' => [
+                'required'
             ],
-            'kinrelationship' => [
-                'required',
+            'kin.*.number' => [
+                'required', 'integer'
+            ],
+            'kin.*.type' => [
+                'required'
             ],
         ];
     }

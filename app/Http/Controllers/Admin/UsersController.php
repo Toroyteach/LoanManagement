@@ -7,6 +7,7 @@ use App\Http\Requests\MassDestroyUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UpdateUserProfileRequest;
+use App\Http\Requests\AdminUpdateRequest;
 use App\Role;
 use App\User;
 use App\UsersAccount;
@@ -29,6 +30,7 @@ use Carbon\Carbon;
 use PDF;
 use App\Services\FirebaseService;
 use App\Action\StoreUserAction;
+use Validator;
 
 class UsersController extends Controller
 {
@@ -58,6 +60,8 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request, StoreUserAction $action, FirebaseService $service)
     {
+        //dd($request->validated());
+        
         $this->validate(request(), [
             'number' => 
                 array(
@@ -103,12 +107,18 @@ class UsersController extends Controller
             'overpayment_amount' => 0.00,
         ]);
 
-        NextKin::create([
-            'name' => $request->kinname,
-            'phone' => $request->kinphone,
-            'relationship' => $request->kinrelationship,
-            'user_id' => $user->id,
-        ]);
+
+        //dynamic adding of multiple next of kins
+        foreach($request->input('kin') as $key => $value) {
+
+            NextKin::create([
+                'name' => $value['name'],
+                'phone' => $value['number'],
+                'relationship' => $value['type'],
+                'user_id' => $user->id,
+            ]);   
+
+        }
 
         $uid = Str::random(20);
 
@@ -222,7 +232,6 @@ class UsersController extends Controller
         // $firebaseUser = $service->updateUser($request->all(), $user->firebaseid);
 
         // if($firebaseUser){
-
             $user->update($request->all());
             $user->roles()->sync($request->input('roles', []));
 
@@ -230,6 +239,59 @@ class UsersController extends Controller
         // }
 
         // return redirect()->back()->with('error','Failed to update user records');
+    }
+
+    public function updateAdminProfile(AdminUpdateRequest $request, User $user)
+    {
+        //dd($request->validated());
+        //updates admin profile
+        //dd($request->validated());
+        $user->update($request->validated());
+
+        // if ($request->has('avatar')) {
+
+        //     $this->validate($request, [
+        //         'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+        //     ]);
+
+        //     $filename = time() . '_' . $request->file('avatar')->getClientOriginalName();
+
+        //     $request->file('avatar')->storeAs('profileavatar', $filename, 'uploads');
+
+        //     $user->avatar = $filename;
+            
+    	// 	$user->save();
+        // }
+
+        return redirect()->back()->with('success','User updated successfully!');
+
+    }
+
+    public function getAdminProfile(User $user)
+    {
+
+        return view('auth.adminedit', compact('user'));
+    }
+
+    public function updateAdminProfileImage(Request $request)
+    {
+
+        //updating the profile image of the admin
+        //dd('arrived');
+
+
+        $filename = time() . '_' . $request->file('file')->getClientOriginalName();
+
+        $imageUpload = User::find(\Auth::user()->id);
+
+        $request->file('file')->storeAs('profileavatar', $filename, 'uploads');
+        
+        $imageUpload->avatar = $filename;
+
+        $imageUpload->save();
+
+        return response()->json(['success'=>$imageName]);
+
     }
 
     public function updateUserProfile(UpdateUserProfileRequest $request, User $user)
@@ -318,11 +380,11 @@ class UsersController extends Controller
         $kins = NextKin::where('user_id', $user->id)->get();
 
 
-        $files = SaccoFile::get();
+        //$files = SaccoFile::get();
 
         //dd($currentLoanAmount);
 
-        return view('admin.users.usershow', compact('user', 'files', 'currentLoanAmount', 'totalmonthlysavings', 'loanApplications', 'kins'));
+        return view('admin.users.usershow', compact('user', 'currentLoanAmount', 'totalmonthlysavings', 'loanApplications', 'kins'));
     }
 
     public function createPdf($id)

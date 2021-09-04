@@ -15,9 +15,18 @@
                         </a>
                     </div>
                     <div class="form-group col-md-6">
+                        @if($user->is_Member)
                         <a class="btn btn-warning" href="{{ route('admin.users.profile', $user->id) }}">
-                            {{ trans('global.edit_profile') }}
+                            {{ trans('global.edit_profile') }} 
+                            <!-- for admin take to admin edit for memeber take to memeber update -->
                         </a>
+                        @else
+                        <a class="btn btn-warning" href="{{ route('admin.admin.profile', $user->id) }}">
+                            {{ trans('global.edit_profile') }} 
+                            <!-- for admin take to admin edit for memeber take to memeber update -->
+                        </a>
+                        @endif
+
                     </div>
                 </div>
             <div class="container_fluid" style="width:300px;height:auto">

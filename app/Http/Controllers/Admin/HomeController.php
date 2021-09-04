@@ -27,15 +27,34 @@ class HomeController extends Controller
 
     public function __construct()
     {
-        // $data = array('name'=>"Anthony Toroitich");
+        // $memberNumber = User::find(16);
 
-        // Mail::raw('Sending emails with Mailgun and Laravel is easy!', function($message){
+        // $response = Http::asForm()->post('http://smskenya.brainsoft.co.ke/sendsms.jsp', [
+        //     'user' => env('SMS_USERNAME', 'null'),
+        //     'password' => env('SMS_PASSWORD', 'null'),
+        //     'mobiles' => $memberNumber->number,
+        //     'sms' =>  'Good Afternoon Alex.',
+        //     'unicode' => 0,
+        //     'senderid' => env('SMS_SENDERID', 'null'),
+        // ]);
 
-        //     $message->to('tonytoroitich@gmail.com');
+        // if($response->ok()){
 
-        // });
+        //     $clientResponse = $response->getBody();
+        //     \Log::info($response->getBody());
 
-        // dd('done');
+        //     dd($clientResponse);
+
+        //     if($clientResponse->smslist[0]->sms[0]->smsclientid != 0){
+        //         \Log::info('sms was successfully sent to the receipient');
+        //     }
+
+        // } else {
+
+        //     \Log::info(" Failed to send Code to ".$memberNumber->name);
+        //     \Log::error(now());
+
+        // }
     }
 
 

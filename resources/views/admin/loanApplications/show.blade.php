@@ -164,6 +164,14 @@
                             {{ \Carbon\Carbon::parse($loanApplication->created_at)->toDateString() }}
                         </td>
                     </tr>
+                    <tr>
+                        <th>
+                            Files Attached
+                        </th>
+                        <td>
+                            <a class="btn btn-md btn-primary" href="{{ route('admin.loans.pdf', $loanApplication->id ) }}">Download File</a>
+                        </td>
+                    </tr>
                     @if(!$user->is_member)
                         <tr>
                             <th>

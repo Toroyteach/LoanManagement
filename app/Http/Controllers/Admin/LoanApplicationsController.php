@@ -504,4 +504,13 @@ class LoanApplicationsController extends Controller
 
         }
     }
+
+    public function createPdf($id)
+    {      
+          $loan = LoanApplication::select(['file'])->findOrFail();
+
+          $pathToFile = storage_path('files/uploads/loanfiles/' . $book->file);
+        
+          return response()->download($pathToFile);
+    }
 }

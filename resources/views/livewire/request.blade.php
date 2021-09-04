@@ -41,33 +41,35 @@
                       </script>
                     @endif
 
-                <div class="container">
+                <div class="container" id="medianews">
                     <div class="no-gutters">
                         <div class="media media-news">
                             <div class="text-center media-body">
-                                        <span class="media-date">Eligible</span>
-                                        <p class="mt-0 sep" id="elligibleamount">ksh{{$elligibleamount}}.</p>
+                                <span class="media-date">Eligible</span>
+                                <p class="mt-0 sep" id="elligibleamount">ksh{{$elligibleamount}}.</p>
+
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Interest</span>
                                         <p class="mt-0 sep" wire:model="interest" id="interest"> {{$interest}}%.</p>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Repayment Date</span>
                                         <p class="mt-0 sep" id="repaymentdate">{{$repaymentdate}}.</p>
                                     </div>
                                 </div>
+
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Total Interest</span>
                                         <p class="mt-0 sep" id="totalplusinterest">ksh{{$interestamount}}.</p>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Total plus Interest</span>
                                         <p class="mt-0 sep" id="totalplusinterest"> ksh{{$totalplusinterest}}</p>
                                     </div>
                                 </div>
-                                <a href="" class="btn btn-transparent">Calculate</a>
+
                             </div>
                         </div>
                     </div>
@@ -76,7 +78,7 @@
     <div class="conatiner_fluid" style="padding-bottom:5em">
         <div class="row">
             
-            <div class="col-md-12 col-sm-12 col-xs-12 card-body applycard" style="position:relative; background-color: #d7ded7;">
+            <div class="col-md-12 col-sm-12 col-xs-12 card-body applycard" style="position:relative; background-color: #d7ded7; @if($currentStep == 3) height: 68em; @elseif($currentStep ==2) height: 38em !important; @endif">
                 
                     <div class="stepwizard">
                         <div class="stepwizard-row setup-panel">
@@ -103,15 +105,15 @@
                             <h3> Fill in Loan Details</h3>
 
                             <div class="row ic1">
-                                <div class=" col-md-6 input-container">
+                                <div class=" col-md-6 col-sm-6 col-xs-12 input-container" id="amount">
                                     <input type="number" wire:model="amount" name="amount" class="input" placeholder=" " id="amount" required>
                                     <div class="cut"></div>
                                     <label for="amount" class="placeholder">Amount</label>
                                     @error('amount') <span class="text-danger">{{ $message }}</span> @enderror
-                                </div>
+                                </div><br><br><br><br>
 
-                                <div class=" col-md-6 input-container">
-                                    <input type="number" wire:model="duration" name="description" class="input" id="duration" placeholder=" " disabled/>
+                                <div class=" col-md-6 col-sm-6 col-xs-12 input-container" id="duration">
+                                    <input type="number" wire:model="duration" name="duration" class="input" id="duration" placeholder=" " disabled/>
                                     @error('duration') <span class="text-danger">{{ $message }}</span> @enderror
                                     <div class="cut"></div>
                                     <label for="duration" class="placeholder">Duration</label>
@@ -119,7 +121,7 @@
                             </div>
 
                             <div class="row ic2">
-                                <div class="col-md-6">
+                                <div class="col-md-6 col-sm-6 col-xs-12" id="type">
                                     
                                     <select class="form-select" wire:model="loan_type" id='loan_type' name="loan_type" wire:change="updateDuration" aria-label="Default select example" required>
                                         <option>Choose Loan Type</option>
@@ -129,27 +131,19 @@
                                         <option value="development">Development</option>
                                     </select>
                                     @error('loan_type') <span class="text-danger">{{ $message }}</span> @enderror
-                                </div>
-                                <div class="col-md-6 input-container">
-                                    <textarea type="text" wire:model="description" class="input"
-                                    id="description" placeholder=" " required></textarea>
+                                    
+                                </div><br><br><br>
+                                <div class="col-md-6 col-sm-6 col-xs-12 input-container" id>
+                                    <textarea type="text" wire:model="description" class="input" id="description" placeholder=" " required></textarea>
                                     @error('description') <span class="text-danger">{{ $message }}</span> @enderror
                                     <div class="cut"></div>
                                         <label for="detail" class="placeholder">Loan Description</label>
                                 </div>
-                            </div>
+                            </div><br><br><br><br>
 
-                            <div class="row ic2">
-                                <div class="col-md-6">
-                                    <label for="detail">Upload request document</label>
-                                    <input type="file" wire:model="file" class="form-input" id="file" placeholder=" " /><br>
-                                    @error('file')<span class="text-danger">{{ $message }}</span> @enderror
-                                </div>
-                            </div>
-
-                            <button class="btn btn-primary nextBtn btn-lg" wire:click="firstStepSubmit" type="button" style="position:relative; top: 4rem;">Save</button>
-                            <button class="btn btn-warning nextBtn btn-lg" wire:click="deleteRequest" type="button" style="position:relative; top: 4rem;"{{ (($delReqBtn)) ? '' : 'disabled' }}>Delete Application</button>
-                            <button class="btn btn-success btn-lg pull-right" wire:click="nextRequestStep" type="button" style="position:relative; top: 4rem;" {{ (($step1)) ? '' : 'disabled' }}>Next</button>
+                            <button class="btn btn-primary nextBtn btn-md" id="nextBtn" wire:click="firstStepSubmit" type="button" style="">Save</button>
+                            <button class="btn btn-warning nextBtn btn-md"  id="nextBtn"wire:click="cofirmDeleteRequest" type="button" style=""{{ (($delReqBtn)) ? '' : 'disabled' }}>Delete Application</button>
+                            <button class="btn btn-success btn-md pull-right nextBtn" id="nextBtn" wire:click="nextRequestStep" type="button" style="" {{ (($step1)) ? '' : 'disabled' }}>Next</button>
                         </div>
                         
                     </div>
@@ -158,97 +152,102 @@
                     <div class="row setup-content {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
                         <div class="col-md-12">
                             <h3> Choose your Gurantors</h3>
-                            <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
 
-                                <div class="relative">
-                                        <input
-                                            type="text"
-                                            class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                            placeholder="Search Member..."
-                                            wire:model="query"
-                                            wire:click="reset"
-                                            wire:keydown.escape="hideDropdown"
-                                            wire:keydown.tab="hideDropdown"
-                                            wire:keydown.Arrow-Up="decrementHighlight"
-                                            wire:keydown.Arrow-Down="incrementHighlight"
-                                            wire:keydown.enter.prevent="selectAccount"
-                                            {{ (($typeAheadInput)) ? '' : 'disabled' }}
-                                        />
+                                    <div class="relative">
+                                            <input type="text"
+                                                class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                                placeholder="Search Member..." wire:model="query" wire:click="reset" wire:keydown.escape="hideDropdown" wire:keydown.tab="hideDropdown" wire:keydown.Arrow-Up="decrementHighlight" wire:keydown.Arrow-Down="incrementHighlight"
+                                                wire:keydown.enter.prevent="selectAccount"
+                                                {{ (($typeAheadInput)) ? '' : 'disabled' }}
+                                            />
 
-                                        <input type="hidden" name="account" id="account" wire:model="selectedAccount">
+                                            <input type="hidden" name="account" id="account" wire:model="selectedAccount">
 
-                                        @if ($selectedAccount)
-                                            <a class="absolute cursor-pointer top-2 right-2 text-gray-500" wire:click="reset">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </a>
+                                            @if ($selectedAccount)
+                                                <a class="absolute cursor-pointer top-2 right-2 text-gray-500" wire:click="reset">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </a>
+                                            @endif
+
+                                        @if(!empty($query) && $selectedAccount == 0 && $showDropdown)
+                                            <div class="absolute z-10 bg-white mt-1 w-full border border-gray-300 rounded-md shadow-lg">
+                                                @if (!empty($accounts))
+                                                    @foreach($accounts as $i => $account)
+                                                        <a
+                                                            wire:click="selectAccount({{ $i }})"
+                                                            class="block py-1 px-2 text-sm cursor-pointer hover:bg-blue-50 {{ $highlightIndex === $i ? 'bg-blue-50' : '' }}"
+                                                        >{{ $account['name'] }}</a>
+                                                    @endforeach
+                                                @else
+                                                    <span class="block py-1 px-2 text-sm">No results!</span>
+                                                @endif
+                                            </div>
                                         @endif
 
-                                    @if(!empty($query) && $selectedAccount == 0 && $showDropdown)
-                                        <div class="absolute z-10 bg-white mt-1 w-full border border-gray-300 rounded-md shadow-lg">
-                                            @if (!empty($accounts))
-                                                @foreach($accounts as $i => $account)
-                                                    <a
-                                                        wire:click="selectAccount({{ $i }})"
-                                                        class="block py-1 px-2 text-sm cursor-pointer hover:bg-blue-50 {{ $highlightIndex === $i ? 'bg-blue-50' : '' }}"
-                                                    >{{ $account['name'] }}</a>
-                                                @endforeach
-                                            @else
-                                                <span class="block py-1 px-2 text-sm">No results!</span>
-                                            @endif
-                                        </div>
-                                    @endif
+                                    </div>
+                                    <br><br>
 
-                                </div>
-                                <br><br>
+                                    @foreach($gurantorsChoice as $key => $value)
 
-                                @foreach($gurantorsChoice as $key => $value)
+                                    <div class="dd-input">
 
-                                <div class="dd-input">
+                                        <div class="row">
 
-                                    <div class="row">
+                                            <div class="col-md-6">
 
-                                        <div class="col-md-6">
+                                                <div class="row">
+                                                    
 
-                                            <div class="row">
-                                                 
+                                                    <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
 
-                                                <div class="col-md-4">
+                                                        <input type="text" class="form-control" placeholder="Enter Name" wire:model="gurantorsChoice.{{ $key }}.name" required>
 
-                                                    <input type="text" class="form-control" placeholder="Enter Name" wire:model="gurantorsChoice.{{ $key }}.name" required>
+                                                    </div>
+
+
+                                                    @error('gurantorChoice.'.$key) <span class="text-danger error">{{ $message }}</span>@enderror
 
                                                 </div>
 
+                                            </div>
 
-                                                @error('gurantorChoice.'.$key) <span class="text-danger error">{{ $message }}</span>@enderror
+                                            <div class="col-md-2 col-lg-2 col-sm-2 col-xs-2">
+
+                                                @if($gurantorsChoice[$key]['status'] == 'added')
+                                                    
+                                                @else
+                                                    <button class="btn btn-danger btn-sm" wire:click.prevent="removeGurantor({{ $key }})">Remove</button>
+                                                @endif
 
                                             </div>
 
                                         </div>
 
-                                        <div class="col-md-2">
+                                    </div>
 
-                                            @if($gurantorsChoice[$key]['status'] == 'added')
-                                                
-                                            @else
-                                                <button class="btn btn-danger btn-sm" wire:click.prevent="removeGurantor({{ $key }})">Remove</button>
-                                            @endif
+                                    @endforeach
 
+                                    @error('gurantorsChoice') <span class="text-danger">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-4">
+
+                                    <div class="container">
+                                        <div class="">
+                                            <label for="detail">Upload request document</label><br>
+                                            <input type="file" wire:model="fileTest" class="form-input" id="fileTest" placeholder=" " /><br>
+                                            @error('fileTest')<span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
-
                                     </div>
 
                                 </div>
-
-                                @endforeach
-
-                                @error('gurantorsChoice') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
 
                             <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" wire:click="nextRequestStep"{{ (($step2)) ? '' : 'disabled' }}>Next</button>
                             <button class="btn btn-success nextBtn btn-lg pull-right" type="button" wire:click="secondStepSave" {{ (($step2save)) ? '' : 'disabled' }}>Save</button>
-                            <button class="btn btn-success nextBtn btn-lg pull-right" type="button" wire:click="secondStepTest" >test</button>
                             <button class="btn btn-danger nextBtn btn-lg pull-left" type="button" wire:click="previousRequestStep">Back</button>
                         </div>
                     </div>
@@ -263,12 +262,18 @@
                                 <div class="col-md-4">
                                     <div class="card border-success mb-3" style="max-width: 18rem;">
                                         <div class="card-header bg-transparent border-success">Loan Details</div>
-                                        <div class="card-body text-success">
+                                        <div class="card-body">
                                             <p class="card-text">Amount : ksh{{ $amount }}</p>
                                             <p class="card-text">Duration : {{ $duration }} months</p>
                                             <p class="card-text">Loan Type : {{ $loan_type }}</p>
                                             <p class="card-text">Description : {{ $description }}</p>
-                                            <p class="card-text">File : </p>
+                                            <p class="card-text">File </p>
+                                            @if(!empty($file))
+                                            <button class="btn-sm btn-info" style="position:relative; top:-1em !important;" type="button" wire:click="downloadUploadedFile">Download file</button>
+                                            <button class="btn-sm btn-warning pull-right" style="position:relative; top:-1em !important;" type="button" wire:click="deleteUploadedFile">Delete file</button>
+                                            @else
+                                                no file uploaded
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -281,25 +286,27 @@
                                                  @forelse($finalGurantorsChoice as $key => $value)
                                                     <div class="container">
                                                         <div class="row">
-                                                            <div class="col-md-2">
-                                                                <li class="list-group-item">{{ $key+1 }}</li>
+
+                                                            <div class="col-md-2 col-sm-2 col-xs-2">
+                                                                <p>{{ $key+1 }}</p>
                                                             </div>
-                                                            <div class="col-md-8">
-                                                                <li class="list-group-item">{{ $value->user->name }}</li>
+
+                                                            <div class="col-md-8 col-sm-7 col-xs-7">
+                                                                <p>{{ $value->user->name }}</p>
                                                             </div>
 
                                                             @if($value->request_status == 'Accepted')
 
-                                                                <div class="col-md-2" style="position:relative; top: 10px;">
-                                                                        <i class="fas fa-check"></i>
-                                                                    </div>
+                                                            <div class="col-md-2 col-sm-3 col-xs-3" style="position:relative; top: 8px;">
+                                                                    <i class="fas fa-check"></i>
+                                                            </div>
                                                             @else
 
-                                                                <div class="col-md-2" style="position:relative; top: 10px;">
-                                                                    <div class="spinner-border pull-right" role="status">
-                                                                        <span class="sr-only">Loading...</span>
-                                                                    </div>
+                                                            <div class="col-md-2 col-sm-3 col-xs-3" style="position:relative; top: 8px;">
+                                                                <div class="spinner-border pull-right" role="status">
+                                                                    <span class="sr-only">Loading...</span>
                                                                 </div>
+                                                            </div>
                                                             
                                                             @endif
                                                         </div>
@@ -379,6 +386,47 @@ window.addEventListener('swal:confirmStep2', event => {
              // calling destroy method to delete
                     @this.call('secondStepConfirmSave')
              // success response
+
+                } else {
+
+
+                }
+            });
+
+    });
+
+    //event to ask user for confirmation before deleting application
+
+    window.addEventListener('swal:confirmDelete', event => { 
+
+    swal.fire({
+
+        title: event.detail.title,
+
+        text: event.detail.message,
+
+        icon: event.detail.type,
+
+        buttons: true,
+
+        dangerMode: true,
+
+        showCancelButton: true,
+
+        confirmButtonColor: '#3085d6',
+
+        cancelButtonColor: '#aaa',
+
+        confirmButtonText: 'Confirm!'
+
+        })
+
+        .then((result) => {
+        //if user clicks on delete
+                if (result.value) {
+            // calling destroy method to delete
+                    @this.call('deleteRequest')
+            // success response
 
                 } else {
 

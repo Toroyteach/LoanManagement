@@ -13,6 +13,8 @@ use Livewire\WithFileUploads;
 use Carbon\Carbon;
 use App\MonthlySavings;
 use App\User;
+use Illuminate\Support\Facades\Storage;
+
 
 class Request extends Component
 {
@@ -20,7 +22,7 @@ class Request extends Component
 
 
     public $currentStep = 1;
-    public $amount, $description, $loan_type, $file, $duration = '';
+    public $amount, $description, $loan_type, $file, $fileTest, $duration = '';
     public $successMsg = '';
     public $gurantorInputs = [];
     public $i = 0;
@@ -115,7 +117,7 @@ class Request extends Component
 
     public function updatedQuery()
     {
-        $this->accounts = User::where('name', 'like', '%' . $this->query. '%')
+        $this->accounts = User::select(['name', 'id'])->where('name', 'like', '%' . $this->query. '%')
             ->where('id', '!=', auth()->user()->id)
             ->take(5)
             ->get()
@@ -133,8 +135,8 @@ class Request extends Component
 
     public function mount()
     {
-        $this->elligibleamount =  20000;//$this->getUserElligibleAmount();
-        $this->checkRequesStatus();
+        $this->elligibleamount =  $this->getUserElligibleAmount();
+        $this->checkRequestStatus();
         $this->getGurantors();
         $this->reset();
 
@@ -172,11 +174,16 @@ class Request extends Component
 
         $this->duration = '';
 
-        if($this->gurantorsChoice){
+        
+        if(count($this->gurantorsChoice) > 0){
 
-            unset($this->gurantorsChoice);
+            $this->gurantorsChoice = [];
 
         }
+
+        $this->step1 = false;
+
+        $this->delReqBtn = false;
     }
 
     
@@ -205,13 +212,11 @@ class Request extends Component
             'amount' => 'required|numeric|min:1000|max:'.$this->elligibleamount,
             'description' => 'required',
             'loan_type' => 'required',
-            'duration' => 'required|numeric'
+            'duration' => 'required|numeric',
         ]);
 
-        //dd($validatedData);
-
             //check if user had already created an application
-        if($this->checkRequesStatus()){
+        if($this->checkRequestStatus()){
 
     
             $user = CreateLoanRequest::create([
@@ -221,20 +226,6 @@ class Request extends Component
                 'duration' => $this->duration,
                 'user_id' => auth()->user()->id
             ]);
-    
-            if (!empty($this->file)) {
-
-                $this->validate([
-                    'file' => 'required|mimes:png,jpg,jpeg,csv,txt,xlx,xls,pdf|max:2048'
-                ]);
-    
-                $filename = md5($this->file . microtime()).'.'.$this->file->extension();
-    
-                $this->file->storeAs('loanfiles', $filename, 'files');
-                $user->file = $filename;
-                $user->save();
-    
-            }
 
             //activate buttons and fill in form with new details
 
@@ -252,28 +243,23 @@ class Request extends Component
 
             //update possible new values
             if ($this->loan_request_id) {
+
                 $request = CreateLoanRequest::find($this->loan_request_id);
 
-                //dd($this->description,);
-
-                $request->description = $validatedData['description'];
-                $request->loan_type = $validatedData['loan_type'];
-                $request->duration = $validatedData['duration'];
-                $request->loan_amount = $validatedData['amount'];
-
                 
-                // $request->update([
-                //     'loan_amount' => $validatedData['amount'],
-                //     'description' => $validatedData['description'],
-                //     'loan_type' => $validatedData['loan_type'],
-                //     'duration' => $validatedData['duration'],
-                // ]);
+                $request->update([
+                    'loan_amount' => $validatedData['amount'],
+                    'description' => $validatedData['description'],
+                    'loan_type' => $validatedData['loan_type'],
+                    'duration' => $validatedData['duration'],
+                ]);
 
-                if($request->isDirty('description') or $request->isDirty('loan_type') or $request->isDirty('amount')){
+
+                if($request->isDirty('description') or $request->isDirty('loan_type') or $request->isDirty('loan_amount')){
 
                     $request->save();
 
-                    $this->checkRequesStatus();
+                    $this->checkRequestStatus();
 
                     session()->flash('success','Loan Application Request was updated successfully!');
 
@@ -287,7 +273,7 @@ class Request extends Component
         //show sweet alert flash success
     }
 
-    public function checkRequesStatus()
+    public function checkRequestStatus()
     {
             $request = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
 
@@ -299,6 +285,9 @@ class Request extends Component
                     $this->duration = $request->duration;
                     $this->loan_request_id = $request->id;
                     $this->step1 = true;
+                    $this->file = $request->file;
+
+                    //dd($request->file);
 
                     // $this->getGurantors();
                     $this->delReqBtn = true;
@@ -307,41 +296,10 @@ class Request extends Component
 
                     return false;
 
-                    //disable file upload ****************
-
             } 
 
             return true;
             
-    }
-
-    public function secondStepTest()
-    {
-
-        //$count = sizeof($this->gurantorsChoice);
-        //return redirect(request()->header('Referer'));
-        //dd($this->finalGurantorsChoice);
-
-        $this->dispatchBrowserEvent('swal:confirm', [
-
-            'type' => 'warning',  
-
-            'message' => 'User Created Successfully!', 
-
-            'text' => 'It will list on users table soon. just hang in a minute',
-
-            'title' => 'heading in a minute'
-
-        ]);
-
-        //session()->flash('success','Loan Application Request was created successfully!');
-        //dd('flash');
-
-        //$this->dispatchBrowserEvent('swal', ['title' => 'hello from Livewire']);
-
-        //dd($count, $this->gurantorsChoice);
-
-        //array_push($this->gurantorsChoice, ["id" => '' ,"name" => '', , 'status' => '']);
     }
 
     public function getGurantors()
@@ -349,6 +307,8 @@ class Request extends Component
         //fill from datbase of the  previous gurantors
 
         $gurantorsList = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->whereIn('request_status', (['Pending','Accepted']))->with('user')->get();
+
+        $this->gurantorsChoice = [];
     
 
         foreach($gurantorsList as $key => $user){
@@ -445,19 +405,21 @@ class Request extends Component
      */
     public function secondStepSave()
     {
+        //check if request is for file or gurantors and also check if furantors was added initially
+        
         $validatedData = $this->validate([
             'gurantorsChoice' => 'required|array|min:3|max:5',
         ]);
 
-        $this->dispatchBrowserEvent('swal:confirmStep2', [
+            $this->dispatchBrowserEvent('swal:confirmStep2', [
 
-            'type' => 'warning',  
+                'type' => 'warning',  
 
-            'message' => 'Are you sure about your selection. This action is irreversible', 
+                'message' => 'Are you sure about your selection. This action is irreversible', 
 
-            'title' => 'Gurantors Selection'
+                'title' => 'Gurantors Selection'
 
-        ]);
+            ]);
 
 
     }
@@ -472,6 +434,10 @@ class Request extends Component
             $savedGurantors = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->get()->pluck('user_id');
 
             //dd($savedGurantors->toArray());
+            $fileUploaded = false;
+            $gurantorAdded = false;
+
+            //upload file as well
 
 
             if($gurantorsList->count() > 5 ){
@@ -505,24 +471,87 @@ class Request extends Component
                             'user_id' => $user['id'],
                         ]);
 
+                        $gurantorAdded = true;
+
                         session()->flash('success','Loan Application Gurantors Added Successfully!');
 
                     }
 
-
                 }
 
+                $this->getGurantors();
+
+                //session()->flash('success','Loan Application Gurantors Added Successfully!');
 
             }
 
             //check if memeber has 3 or more gurantors then enable step 3
+            if (!empty($this->fileTest)) {
+
+                //dd($this->fileTest);
+                //check if file is empty if not warn user can not upload twice
+
+                $this->validate([
+                    'fileTest' => 'required|mimes:png,jpg,jpeg,csv,txt,xlx,xls,pdf|max:2048'
+                ]);
+    
+                $filename = md5($this->fileTest . microtime()).'.'.$this->fileTest->extension();
+    
+                $this->fileTest->storeAs('loanfiles', $filename, 'files');
+
+                $requestId->update([
+                    'file' => $filename
+                ]);
+                
+                $fileUploaded = true;
+
+                $this->fileTest = null;
+
+                session()->flash('success','Loan Application File Added Successfully!');
+
+    
+            }
             
-            if($gurantorsList->count() >= 3){
+            if(CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->count() >= 3){
 
                 $this->step2 = true;
 
             }
+
+            if($fileUploaded && $gurantorAdded){
+
+                session()->flash('success','Loan Application File and Gurantor Added Successfully!');
+
+            }
+
+            //return redirect(request()->header('Referer'));
             
+
+    }
+
+    public function downloadUploadedFile()
+    {
+
+        return response()->download(storage_path('files/uploads/loanfiles/'.$this->file));
+
+    }
+
+    public function deleteUploadedFile()
+    {
+
+        
+        $requestId = CreateLoanRequest::find($this->loan_request_id);
+
+        $requestId->file = null;
+
+        $requestId->save();
+
+        Storage::delete(storage_path('files/uploads/loanfiles/'.$this->file));
+
+        $this->file = null;
+
+        session()->flash('success','Loan Application File Deleted Successfully');
+
 
     }
 
@@ -558,16 +587,19 @@ class Request extends Component
     {
             // dd('ready to submit form');
             $this->step3 = false;
-            //dd('wait to submit');
+            //dd($this->file);
+
+            $loanDetails = CreateLoanRequest::select(['loan_amount', 'description', 'loan_type', 'duration', 'file'])->findOrFail($this->loan_request_id);
 
             $entryNumber = mt_rand(100000, 1000000);
             //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration);
             $loanApplication = LoanApplication::create([
                 'loan_entry_number' => $entryNumber,
-                'loan_amount' => $this->amount,
-                'description' => $this->description,
-                'loan_type' => $this->loan_type,
-                'duration' => $this->duration,
+                'loan_amount' => $loanDetails->loan_amount,
+                'description' => $loanDetails->description,
+                'loan_type' => $loanDetails->loan_type,
+                'duration' => $loanDetails->duration,
+                'file' => $loanDetails->file
             ]);
 
             $gurantors = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->where('request_status', 'Accepted')->get();
@@ -704,7 +736,7 @@ class Request extends Component
 
      public function getUserElligibleAmount()
      {
-         $monthlyContribution = MonthlySavings::where('user_id', auth()->user()->id)->first();
+         $monthlyContribution = MonthlySavings::select(['total_contributed'])->where('user_id', auth()->user()->id)->first();
          //dd($monthlyContribution->total_contributed);
          $totalMonthlyContribution = ($monthlyContribution->overpayment_amount + $monthlyContribution->total_contributed) * 3;
          $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('loan_amount');
@@ -729,7 +761,7 @@ class Request extends Component
 
         } else {
 
-            $totalAdded = $amounyRequest * 0.1 * $loan_types_config['max_duration'];
+            $totalAdded = $amountRequest * 0.1 * $loan_types_config['max_duration'];
             $this->interestamount = $totalAdded;
             $total = $totalAdded + $amountRequest;
 
@@ -831,6 +863,21 @@ class Request extends Component
             'message' => $text
 
         ]);
+     }
+
+     public function cofirmDeleteRequest()
+     {
+
+        $this->dispatchBrowserEvent('swal:confirmDelete', [
+
+            'type' => 'warning',  
+
+            'message' => 'Are you sure you want to delete your application request. You will loose your accepted gurantors', 
+
+            'title' => 'Delete Loan Application'
+
+        ]);
+
      }
 
      public function deleteRequest()

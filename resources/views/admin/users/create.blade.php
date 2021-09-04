@@ -7,7 +7,7 @@
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route("admin.users.store") }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data">
             @csrf
             <div class="row">
                 <div class="form-group col-md-6">
@@ -191,36 +191,22 @@
                 Next Of Kin Registration
             </div><br><br>
 
-            <div class="row nextKinInput" id="nextKinInput">
-                <div class="form-group col-md-4">
-                    <label class="required" for="kinname">Next of Kin Name</label>
-                    <input class="form-control {{ $errors->has('kinname') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinname', '') }}" placeholder="Enter Name" name="kinname" id="kinname" required>
-                    @if($errors->has('kinname'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('kinname') }}
-                        </div>
-                    @endif
-                </div>
+            <div class="table-responsive">  
 
-                <div class="form-group col-md-4">
-                    <label class="required" for="kinphone">Next of Kin Number</label>
-                    <input class="form-control {{ $errors->has('kinphone') ? 'is-invalid' : '' }}" type="number" value="{{ old('kinphone', '') }}"  placeholder="254*********" name="kinphone" id="kinphone" required>
-                    @if($errors->has('kinphone'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('kinphone') }}
-                        </div>
-                    @endif
-                </div>
+                <table class="table table-bordered" id="dynamic_field">  
 
-                <div class="form-group col-md-4">
-                    <label class="required" for="kinrelationship">Next of Kin Relationship</label>
-                    <input class="form-control {{ $errors->has('kinrelationship') ? 'is-invalid' : '' }}" type="text" value="{{ old('kinrelationship', '') }}" name="kinrelationship" id="kinrelationship" required>
-                    @if($errors->has('kinrelationship'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('kinrelationship') }}
-                        </div>
-                    @endif
-                </div>
+                    <tr id="">  
+
+                        <td><input type="text" name="kin[0][name]" placeholder="Enter There Name" class="{{ $errors->has('kinname') ? 'is-invalid' : '' }} form-control name_list" /></td>  
+                        <td><input type="number" name="kin[0][number]" placeholder="Enter Number" class="{{ $errors->has('kinphone') ? 'is-invalid' : '' }} form-control name_list" /></td>  
+                        <td><input type="text" name="kin[0][type]" placeholder="Enter Type" class="{{ $errors->has('kinrelationship') ? 'is-invalid' : '' }} form-control name_list" /></td>  
+
+                        <td><button type="button" name="add" id="add" class="btn btn-info">Add Another Row</button></td>  
+
+                    </tr>  
+
+                </table>
+
             </div>
 
             <div class="form-group">
@@ -232,22 +218,33 @@
     </div>
 </div>
 
+<br><br><br>
 
 
-@endsection
-
-@push('scripts')
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
-    function add_row()
-    {
-        $rowno = $("#nextKinInput input").length;
-        $rowno = $rowno+1;
-        $("#nextKinInput input:last").after("<tr id='row"+$rowno+"'><td><input type='text' name='name[]' placeholder='Enter Name'></td><td><input type='text' name='age[]' placeholder='Enter Age'></td><td><input type='text' name='job[]' placeholder='Enter Job'></td><td><input type='button' value='DELETE' onclick=delete_row('row"+$rowno+"')></td></tr>");
-    }
+    $(document).ready(function(){     
 
-    function delete_row(rowno)
-    {
-        $('#'+rowno).remove();
-    }
+    var i = 1;  
+
+
+    $('#add').click(function(){  
+
+        i++;  
+
+        $('#dynamic_field').append('<tr id="row'+i+'" class="dynamic-added"><td><input type="text" name="kin['+i+'][name]" placeholder="Enter your Name" class="form-control name_list" /></td><td><input type="number" name="kin['+i+'][number]" placeholder="Enter your Number" class="form-control name_list" /></td><td><input type="text" name="kin['+i+'][type]" placeholder="Enter your Type" class="form-control name_list" /></td><td><button type="button" name="remove" id="'+i+'" class="btn btn-danger btn_remove">X</button></td></tr>');  
+
+    });  
+
+
+    $(document).on('click', '.btn_remove', function(){  
+
+        var button_id = $(this).attr("id");   
+
+        $('#row'+button_id+'').remove();  
+
+    });  
+
+});  
 </script>
-@endpush
+@endsection

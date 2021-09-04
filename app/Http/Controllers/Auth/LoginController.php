@@ -69,7 +69,7 @@ class LoginController extends Controller
             //CHECK STATUS OF USER (HERE, 1 = ACTIVE & 0 = INACTIVE)
             if ($user->status === 0) {
                 //THROW ERROR WITH CUSTOM MESSAGE
-                throw ValidationException::withMessages([$this->username() => __('User account has been deactivated. Please Contact Administrator.')]);
+                throw ValidationException::withMessages([$this->username() => __('User account has been deactivated. Please Contact the Administrator.')]);
             }
         }
 

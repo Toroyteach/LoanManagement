@@ -7,7 +7,7 @@
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route("profile.password.update") }}">
+        <form method="POST" action="{{ route('profile.password.update') }}">
             @csrf
             <div class="form-group">
                 <label class="required" for="title">{{ trans('cruds.user.fields.email') }}</label>
