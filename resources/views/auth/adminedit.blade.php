@@ -131,40 +131,7 @@
             </div>
         </form>
 
-        <label class="required" for="password">Drop profile image here to upload</label>
-        <form method="post" action="{{ route('admin.image.update')}}" enctype="multipart/form-data" class="dropzone" id="dropzone">
-            @csrf
-        </form> 
-
     </div>
 </div>
 
 @endsection
-@push('script')
-<script type="text/javascript">
-    Dropzone.options.dropzone =
-    {
-            maxFilesize: 2,
-
-            renameFile: function(file) {
-                var dt = new Date();
-                var time = dt.getTime();
-               return time+file.name;
-            },
-
-            acceptedFiles: ".jpeg,.jpg,.png,.gif",
-            addRemoveLinks: true,
-            timeout: 5000,
-
-            success: function(file, response) 
-            {
-                console.log(response);
-            },
-            
-            error: function(file, response)
-            {
-               return false;
-            }
-    };
-</script>
-@endpush

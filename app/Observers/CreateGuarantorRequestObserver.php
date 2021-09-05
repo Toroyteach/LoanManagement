@@ -34,29 +34,14 @@ class CreateGuarantorRequestObserver
 
         //$member->notify(new LoanGuarantorsNotification($user));
 
-        Http::fake();
+        //Http::fake();
 
         if($this->smsEnabled()){
         
-            $response = Http::asForm()->post($this->url, [
-                'user' => env('SMS_USERNAME', 'null'),
-                'password' => env('SMS_PASSWORD', 'null'),
-                'mobiles' => $member->number,
-                'sms' =>  'Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject',
-                'unicode' => 0,
-                'senderid' => env('SMS_SENDERID', 'null'),
-            ]);
+            $message = "Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject";
+            //'sms' =>  'Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject',
 
-            if($response->ok()){
-
-                \Log::info("SMS gurantor request sent to ".$member->name);
-
-            } else {
-
-                \Log::info(" Failed to send sms gurantor request to ".$member->name);
-                \Log::error(now());
-
-            }
+            $this->sendSms($member->id, $message);
 
         }
     }
@@ -64,6 +49,58 @@ class CreateGuarantorRequestObserver
     public function smsEnabled()
     {
         return env('SMS_ENABLED', 0);
+    }
+
+    public function sendSms($id, $message)
+    {
+
+        $usernameSMS = env('SMS_USERNAME', 'null');
+        $passwordSMS = env('SMS_PASSWORD', 'null');
+        $senderIdSMS = env('SMS_SENDERID', 'null');
+
+        $memberNumber = User::select(['number', 'id', 'name'])->findOrFail($id);
+
+        $response = Http::asForm()->post('http://smskenya.brainsoft.co.ke/sendsms.jsp', [
+            'user' => $usernameSMS,
+            'password' => $passwordSMS,
+            'mobiles' => $memberNumber->number,
+            'sms' =>  $message,
+            'unicode' => 0,
+            'senderid' => $senderIdSMS,
+        ]);
+
+        if($response->ok()){
+
+            $xml = simplexml_load_string($response->getBody(),'SimpleXMLElement',LIBXML_NOCDATA);
+
+            // json
+            $json = json_encode($xml);
+
+            $array = json_decode($json, true);
+
+            $collection = collect($array);
+
+            if($collection['sms']['mobile-no'] == $memberNumber->number){
+
+                SmsTextsSent::create([
+                    'smsclientid' => $collection['sms']['smsclientid'],
+                    'description' => $memberNumber->name.' requested to be gurantor',
+                    'user_id' => $memberNumber->id,
+                    'messageid' => $collection['sms']['messageid'],
+                    'type' => " Gurantor Request"
+                ]);
+
+                \Log::info("SMS (".$message.") code sent to ".$memberNumber->name);
+
+            }
+
+        } else {
+
+            \Log::info(" Failed to send guaranto request to ".$memberNumber->name);
+            \Log::error(now());
+
+        }
+
     }
 
 }

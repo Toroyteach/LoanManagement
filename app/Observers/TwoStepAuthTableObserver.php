@@ -6,6 +6,7 @@ use App\TwoStepAuthTable;
 use jeremykenedy\laravel2step\App\Models\TwoStepAuth;
 use App\User;
 use Illuminate\Support\Facades\Http;
+use App\SmsTextsSent;
 
 class TwoStepAuthTableObserver
 {
@@ -24,38 +25,9 @@ class TwoStepAuthTableObserver
 
         if($this->smsEnabled()){
         //
-            //send token to members phonenumber
-            //using the sms service
-            //
-            \Log::info(" Auth Code Created");
+            $message = "Please use the following code to authenticate your account ".$twoStepAuthTable->authCode;
 
-            $memberNumber = User::find($twoStepAuthTable->userId);
-
-            $name = $memberNumber->name;
-            $number = $memberNumber->number;
-            $code = $twoStepAuthTable->authCode;
-            $smsUsername = env('SMS_USERNAME', 'null');
-            $smsPassword = env('SMS_PASSWORD', 'null');
-            $smsSenderId = env('SMS_SENDERID', 'null');
-
-            
-            //dd($number, $name, $code, $smsPassword, $smsSenderId, $smsUsername);
-            //Http::fake();
-            
-            $response = $this->sendSms($number, $name, $code, $smsPassword, $smsSenderId, $smsUsername);
-
-            //Http::fake();
-
-            if($response->ok()){
-
-                \Log::info("SMS code sent to ".$memberNumber->name);
-
-            } else {
-
-                \Log::info(" Failed to send Code to ".$memberNumber->name);
-                \Log::error(now());
-
-            }
+            $this->sendSms($twoStepAuthTable->userId, $message);
         }
     }
 
@@ -79,39 +51,11 @@ class TwoStepAuthTableObserver
 
             //dd($changes);
 
-            if(array_key_exists('authCode', $changes) || array_key_exists('requestDate', $changes)){
+            if(array_key_exists('authCode', $changes)){
 
+                $message = "Please use the following code to authenticate your account ".$twoStepAuthTable->authCode;
 
-                \Log::info(" Auth Code updated");
-
-                $memberNumber = User::select(['number', 'name'])->findOrFail($twoStepAuthTable->userId);
-
-                $name = $memberNumber->name;
-                $number = $memberNumber->number;
-                $code = $twoStepAuthTable->authCode;
-                $smsUsername = env('SMS_USERNAME', 'null');
-                $smsPassword = env('SMS_PASSWORD', 'null');
-                $smsSenderId = env('SMS_SENDERID', 'null');
-
-                
-                //dd($number, $name, $code, $smsPassword, $smsSenderId, $smsUsername);
-                //Http::fake();
-                
-                $response = $this->sendSms($number, $name, $code, $smsPassword, $smsSenderId, $smsUsername);
-                
-                if($response->ok()){
-                    
-                    \Log::info("Response logged ".$response->getBody());
-                    \Log::info("updated SMS code sent to ".$name);
-        
-                } else {
-        
-                    \Log::info(" Failed to send updated Code to ".$name);
-                    \Log::error(now());
-        
-                }
-
-                //dd($changes);
+                $this->sendSms($twoStepAuthTable->userId, $message);
 
             }
 
@@ -126,19 +70,55 @@ class TwoStepAuthTableObserver
         return env('SMS_ENABLED', 0);
     }
 
-    public function sendSms($number, $name, $code, $smsPassword, $smsSenderId, $smsUsername)
+    public function sendSms($id, $message)
     {
 
-        $response = Http::post($this->url, [
-            'user' => $smsUsername,
-            'password' => $smsPassword,
-            'mobiles' => $number,
-            'sms' =>  'Please use this code to authenticate your account '.$code,
+        $usernameSMS = env('SMS_USERNAME', 'null');
+        $passwordSMS = env('SMS_PASSWORD', 'null');
+        $senderIdSMS = env('SMS_SENDERID', 'null');
+
+        $memberNumber = User::select(['number', 'id', 'name'])->findOrFail($id);
+
+        $response = Http::asForm()->post('http://smskenya.brainsoft.co.ke/sendsms.jsp', [
+            'user' => $usernameSMS,
+            'password' => $passwordSMS,
+            'mobiles' => $memberNumber->number,
+            'sms' =>  $message,
             'unicode' => 0,
-            'senderid' => $smsSenderId,
+            'senderid' => $senderIdSMS,
         ]);
 
-        return $response;
+        if($response->ok()){
+
+            $xml = simplexml_load_string($response->getBody(),'SimpleXMLElement',LIBXML_NOCDATA);
+
+            // json
+            $json = json_encode($xml);
+
+            $array = json_decode($json, true);
+
+            $collection = collect($array);
+
+            if($collection['sms']['mobile-no'] == $memberNumber->number){
+
+                SmsTextsSent::create([
+                    'smsclientid' => $collection['sms']['smsclientid'],
+                    'description' => " Auth code sent to ".$memberNumber->name,
+                    'user_id' => $memberNumber->id,
+                    'messageid' => $collection['sms']['messageid'],
+                    'type' => " Auth code"
+                ]);
+
+                \Log::info("SMS (".$message.") code sent to ".$memberNumber->name);
+
+            }
+
+        } else {
+
+            \Log::info(" Failed to send Code to ".$memberNumber->name);
+            \Log::error(now());
+
+        }
 
     }
 }

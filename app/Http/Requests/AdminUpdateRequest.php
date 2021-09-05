@@ -29,6 +29,13 @@ class AdminUpdateRequest extends FormRequest
      */
     public function rules()
     {
+
+        if(request()->routeIs('admin.admin.update.profile')){
+
+            $avatarRule = 'sometimes';
+
+        }
+
         return [
             'firstname'     => [
                 'required',
@@ -58,9 +65,20 @@ class AdminUpdateRequest extends FormRequest
                 'required',
                 'unique:users,idno,' . request()->route('user')->id, 'digits:6',
             ],
-            // 'avatar'  => [
-            //     'image:jpeg,png,jpg,gif,svg|max:2048',
-            // ],
+            'avatar'  => [
+                $avatarRule, 'image:jpeg,png,jpg,gif,svg|max:2048'
+            ],
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+
+        if($this->avatar == null){
+
+            $this->request->remove('avatar');
+            
+        }
+
     }
 }

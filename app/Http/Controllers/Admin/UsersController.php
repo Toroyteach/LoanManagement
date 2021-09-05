@@ -75,11 +75,11 @@ class UsersController extends Controller
         //$action->execute($request, $service);
 
 
-        if($service->getUser($request->number)){
+        // if($service->getUser($request->number)){
 
-            return redirect()->back()->with('error','Failed to create user Firebase details conflict');
+        //     return redirect()->back()->with('error','Failed to create user Firebase details conflict');
 
-        }
+        // }
 
         //get next of kin information
 
@@ -124,7 +124,7 @@ class UsersController extends Controller
 
         $user->name = $request->firstname.' '.$request->lastname;
         $user->middlename = $request->middlename;
-        $user->firebaseid = $uid;
+        //$user->firebaseid = $uid;
         $user->save();
         $user->roles()->sync($request->input('roles', []));
 
@@ -178,31 +178,31 @@ class UsersController extends Controller
         //create base64 username/email and password 
 
         //create fiorebase calls to insert to firebase
-        $userProperties = [
-            'email' => $user->email,
-            'emailVerified' => false,
-            'phoneNumber' => '+'.$request->number,
-            'password' => $request->password,
-            'displayName' => $user->firstname.' '.$user->lastname,
-            'photoUrl' => '',
-            'disabled' => false,
-            'uid' => $uid,
-        ];
+        // $userProperties = [
+        //     'email' => $user->email,
+        //     'emailVerified' => false,
+        //     'phoneNumber' => '+'.$request->number,
+        //     'password' => $request->password,
+        //     'displayName' => $user->firstname.' '.$user->lastname,
+        //     'photoUrl' => '',
+        //     'disabled' => false,
+        //     'uid' => $uid,
+        // ];
         //check if you can add extra field idno. you cant
 
         //dd($userProperties);
 
-        $newUser = $service->createUser($userProperties);
+        //$newUser = $service->createUser($userProperties);
 
-        if(!$newUser){
+        //if(!$newUser){
             //dd('error creating new user');
-            return redirect()->route('admin.users.index')->with('error','User created successfully!, Error creating firebase');
+            //return redirect()->route('admin.users.index')->with('error','User created successfully!, Error creating firebase');
 
-        } else {
+        //} else {
 
             return redirect()->route('admin.users.index')->with('success','User created successfully!');
 
-        }
+        //}
 
         //return redirect()->route('admin.users.index');
 
@@ -332,39 +332,39 @@ class UsersController extends Controller
         $user = User::find($id);
         $status = $user->status;
 
-        if(!empty($user->firebaseid)){
+        //if(!empty($user->firebaseid)){
 
             if($status == 1){
 
-                $firebaseDisable = $service->disableUser($user->firebaseid);
+                //$firebaseDisable = $service->disableUser($user->firebaseid);
 
-                if( $firebaseDisable){
+                //if( $firebaseDisable){
 
                     $user->update(['status' => 0]);
                 
                     return back()->with('success', 'User has been disabled');   
-                }
+                //}
 
-                return back()->with('error', 'Sorry could not Disable this user');   
+                //return back()->with('error', 'Sorry could not Disable this user');   
 
             } else {
 
-                $firebaseEnable = $service->enableUser($user->firebaseid);
+                //$firebaseEnable = $service->enableUser($user->firebaseid);
 
-                if( $firebaseEnable){
+                //if( $firebaseEnable){
                     
                     $user->update(['status' => 1]);
 
                     return back()->with('success', 'User has been Re-enable');
-                }
+                //}
 
-                return back()->with('error', 'Sorry could not Re-enable user');
+                //return back()->with('error', 'Sorry could not Re-enable user');
                 
             }
 
-        }
+        //}
 
-        return back()->with('error', 'Sorry Can not Disable this user');
+        //return back()->with('error', 'Sorry Can not Disable this user');
 
     }
 
@@ -451,21 +451,21 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        if(!$user->firebaseid){
-            return redirect()->back()->with('error','Failed to Delete user Firebase details missing');
-        }
+        // if(!$user->firebaseid){
+        //     return redirect()->back()->with('error','Failed to Delete user Firebase details missing');
+        // }
 
-        $updatedUser = $service->deleteUser($user->firebaseid);
+        //$updatedUser = $service->deleteUser($user->firebaseid);
 
-        if($updatedUser){
+        //if($updatedUser){
 
             $user->delete();
             return back()->with('success', 'User was deleted successfully');;
 
-        }
+        //}
 
 
-        return back()->with('error', 'sorry could not delete this user');
+        //return back()->with('error', 'sorry could not delete this user');
     }
 
     public function massDestroy(MassDestroyUserRequest $request)

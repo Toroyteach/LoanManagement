@@ -65,15 +65,15 @@ class LoanApplicationsController extends Controller
         $random = Str::random(20);
         //dd($random);
 
-        $loanDetails = [
-            'loanentrynumber' => $entryNumber,
-            'loandescription' => $loanApplication->description,
-            'amount' => $loanApplication->loan_amount,
-            'created_at' => $loanApplication->created_at,
-            'id' => $loanApplication->created_by->firebaseid,
-            'status' => $loanApplication->status_id,
-            'docID' => $random,
-        ];
+        // $loanDetails = [
+        //     'loanentrynumber' => $entryNumber,
+        //     'loandescription' => $loanApplication->description,
+        //     'amount' => $loanApplication->loan_amount,
+        //     'created_at' => $loanApplication->created_at,
+        //     'id' => $loanApplication->created_by->firebaseid,
+        //     'status' => $loanApplication->status_id,
+        //     'docID' => $random,
+        // ];
         
         $repaymentDate = date('Y-m-d', strtotime($request->duration.' months'));
 
@@ -82,22 +82,22 @@ class LoanApplicationsController extends Controller
         $loanApplication->defaulted_date = Carbon::parse($repaymentDate)->addMonths(3);
         $loanApplication->save();
         
-        $newLoan = $service->createLoan($loanDetails);
+        //$newLoan = $service->createLoan($loanDetails);
 
         //dd($newLoan);
 
 
-        if(!$newLoan){
+       // if(!$newLoan){
 
-            \Log::info("Loan application was not creatd to firebase id => ".$loanApplication->firebaseid.' loan id '.$loanApplication->id);
+            //\Log::info("Loan application was not creatd to firebase id => ".$loanApplication->firebaseid.' loan id '.$loanApplication->id);
 
-            return redirect()->route('admin.loan-applications.index')->with('message','Loan Application Request was created successfully!');
+            //return redirect()->route('admin.loan-applications.index')->with('message','Loan Application Request was created successfully!');
 
-        } else {
+        //} else {
 
             return redirect()->route('admin.loan-applications.index')->with('success','Loan Application Request was created successfully!');
 
-        }
+        //}
     }
 
     public function edit(LoanApplication $loanApplication)
@@ -137,13 +137,13 @@ class LoanApplicationsController extends Controller
                 'approved' => true,
             ];
 
-            $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+            //$updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
 
-            if(!$updateFirebaseLoan){
+            //if(!$updateFirebaseLoan){
 
-                return redirect()->back()->with('error','Loan Application was not updated successfully!');
+                //return redirect()->back()->with('error','Loan Application was not updated successfully!');
 
-            }
+            //}
 
             $loanApplication->update($request->only('status_id'));
             
@@ -154,18 +154,18 @@ class LoanApplicationsController extends Controller
         } else if($request->status_id == 9){
 
             //rejected by accountant
-            $data = [
-                'status' => $request->status_id,
-                'approved' => true,
-            ];
+            //$data = [
+                //'status' => $request->status_id,
+                //'approved' => true,
+            //];
 
-            $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+            //$updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
 
-            if(!$updateFirebaseLoan){
+            //if(!$updateFirebaseLoan){
 
-                return redirect()->back()->with('error','Loan Application was not updated successfully!');
+                //return redirect()->back()->with('error','Loan Application was not updated successfully!');
 
-            }
+            //}
 
             $loanApplication->update($request->only('status_id'));
             
@@ -281,9 +281,9 @@ class LoanApplicationsController extends Controller
 
         //dd($loanApplication);
 
-        $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+       // $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
 
-        if($updateFirebaseLoan){
+        //if($updateFirebaseLoan){
 
             $loanApplication->update([
                 $column => $request->user_id,
@@ -292,9 +292,9 @@ class LoanApplicationsController extends Controller
     
             return redirect()->route('admin.loan-applications.index')->with('success', 'Loan Application forwaded for analysis');
 
-        }
+        //}
 
-        return redirect()->back()->with('error', 'Loan Application was not processed successfuly');
+        //return redirect()->back()->with('error', 'Loan Application was not processed successfuly');
 
     }
 
@@ -351,10 +351,10 @@ class LoanApplicationsController extends Controller
         //dd($data, $loanApplication->firebaseid);
 
 
-        $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
+       // $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
 
 
-        if($updateFirebaseLoan){
+        //if($updateFirebaseLoan){
 
             $loanApplication->comments()->create([
                 'comment_text' => $request->comment_text,
@@ -367,9 +367,9 @@ class LoanApplicationsController extends Controller
     
             return redirect()->route('admin.loan-applications.index')->with('message', 'Loan Application forwaded for analysis');
 
-        }
+        //}
 
-        return redirect()->back()->with('error', 'Analysis was not submitted successfully');
+        //return redirect()->back()->with('error', 'Analysis was not submitted successfully');
     }
 
     public function createLoan($params)

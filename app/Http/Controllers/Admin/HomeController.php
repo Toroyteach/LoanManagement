@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\CreateGuarantorLoanRequest;
 use Mail;
+use App\SmsTextsSent;
 
 class HomeController extends Controller
 {
@@ -27,26 +28,40 @@ class HomeController extends Controller
 
     public function __construct()
     {
-        // $memberNumber = User::find(16);
+        // $memberNumber = User::find(1);
 
         // $response = Http::asForm()->post('http://smskenya.brainsoft.co.ke/sendsms.jsp', [
         //     'user' => env('SMS_USERNAME', 'null'),
         //     'password' => env('SMS_PASSWORD', 'null'),
         //     'mobiles' => $memberNumber->number,
-        //     'sms' =>  'Good Afternoon Alex.',
+        //     'sms' =>  'Good Afternoon Tony.',
         //     'unicode' => 0,
         //     'senderid' => env('SMS_SENDERID', 'null'),
         // ]);
 
         // if($response->ok()){
 
-        //     $clientResponse = $response->getBody();
-        //     \Log::info($response->getBody());
+        //     $xml = simplexml_load_string($response->getBody(),'SimpleXMLElement',LIBXML_NOCDATA);
 
-        //     dd($clientResponse);
+        //     // json
+        //     $json = json_encode($xml);
 
-        //     if($clientResponse->smslist[0]->sms[0]->smsclientid != 0){
-        //         \Log::info('sms was successfully sent to the receipient');
+        //     $array = json_decode($json, true);
+
+        //     $collection = collect($array);
+
+        //     if($collection['sms']['mobile-no'] == $memberNumber->number){
+
+        //         SmsTextsSent::create([
+        //             'smsclientid' => $collection['sms']['smsclientid'],
+        //             'description' => " Auth code sent to ".$memberNumber->name,
+        //             'user_id' => $memberNumber->id,
+        //             'messageid' => $collection['sms']['messageid'],
+        //             'type' => " Auth code"
+        //         ]);
+
+        //         \Log::info("SMS code sent to ".$memberNumber->name);
+
         //     }
 
         // } else {
