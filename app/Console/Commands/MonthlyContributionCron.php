@@ -134,11 +134,11 @@ class MonthlyContributionCron extends Command
     public function calculateLoanInterest()
     {
         
-        $loanApplications = LoanApplication::select(['created_at', 'date_last_amount_paid', 'created_by', 'duration_count', 'duration'])->where('repaid_status', '!=', 1)->where('status_id', '=', 8)->with('created_by')->get();
+        $loanApplications = LoanApplication::select(['loan_amount', 'loan_type', 'accumulated_amount', 'created_at', 'date_last_amount_paid', 'last_month_amount_paid', 'created_by', 'duration_count', 'duration'])->where('repaid_status', '!=', 1)->where('status_id', '=', 8)->with('created_by')->get();
 
         foreach($loanApplications as $key => $loanItem){
 
-            $dateCreated = Carbon::parse($loanItem->created_at)->addMonths($loanItem->remaining_duration);
+            $dateCreated = Carbon::parse($loanItem->created_at)->addMonths($loanItem->duration_count);
 
             //dd($dateCreated);
             
@@ -146,32 +146,55 @@ class MonthlyContributionCron extends Command
 
                 if($loanItem->duration_count <= $loanItem->duration){
 
-                    $startDate = Carbon::createFromFormat('Y-m-d', '2021-07-20'); //first day of last month when interest was calculated last
-                    $endDate = Carbon::createFromFormat('Y-m-d', '2021-08-20'); //today
-            
-                    $check = Carbon::parse($loanItem->date_last_amount_paid)->between($startDate, $endDate);
+                    //check which type of loan it was to get if on reducing or normal
+                    if($loanItem->loan_type == 'instantloan'){ //the rest is on reducing
 
-                    if($check){
-                    
-                        //made a paymanet to help reduce loan amount
-                        $accumulatedAmount = $this->getOnReducingBalance($loanItem->accumulated_amount, $loanItem->last_month_amount_paid);
-
-                        $loanItem->accumulated_amount = $accumulatedAmount;
+                        $accumulatedAmount = $this->getOnReducingBalance($loanItem->loan_amount);
+                        $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
+                        $loanItem->increment('accumulated_amount', $accumulatedAmount);
                         $loanItem->increment('duration_count', 1);
                         $loanItem->save();
 
+                    } else {
+
+                        $startDate = Carbon::createFromFormat('Y-m-d', $dateCreated); //first day of last month when interest was calculated last
+                        $endDate = Carbon::now(); //today
+                
+                        $check = Carbon::parse($loanItem->date_last_amount_paid)->between($startDate, $endDate);
+    
+                        if($check){
+                        
+                            //made a paymanet to help reduce loan amount
+                            $accumulatedAmount = $this->getOnReducingBalance($loanItem->accumulated_amount, $loanItem->last_month_amount_paid);
+    
+                            $loanItem->accumulated_amount = $accumulatedAmount;
+                            $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
+                            $loanItem->increment('duration_count', 1);
+                            $loanItem->save();
+    
+                        } else {
+    
+                            //nothing paid back in last month
+                            $accumulatedAmount = $this->getOnReducingBalance($loanItem->accumulated_amount);
+                            $loanItem->accumulated_amount = $accumulatedAmount;
+                            $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
+                            $loanItem->increment('duration_count', 1);
+                            $loanItem->save();
+    
+                        }
+    
+                        \Log::info("member loan interest was calculated for the member ".$loanItem->created_by->name);
+    
+                        if($loanItem->duration_count == $loanItem->duration){
+    
+                            \Log::info("This member is on his last month of loan pay ".$loanItem->created_by->name);
+    
+                        }
                     }
 
-                    //nothing paid back in last month
-                    $accumulatedAmount = $this->getOnReducingBalance($loanItem->accumulated_amount);
+                } else {
 
-                    \Log::info("member loan interest was calculated for the member ".$loanItem->created_by->name);
-
-                    if($loanItem->duration_count == $loanItem->duration){
-
-                        \Log::info("This member is on his last month of loan pay ".$loanItem->created_by->name);
-
-                    }
+                    //member defaulted the loan
 
                 }
             }
