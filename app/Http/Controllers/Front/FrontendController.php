@@ -12,8 +12,8 @@ class FrontendController extends Controller
 
     public function index()
     {
-        // $file = SaccoFile::get();
-        // return view('onepage.index', compact('file'));
+         //$file = SaccoFile::get();
+         //return view('onepage.index', compact('file'));
         return view('frontend.pages.home');
     }
 

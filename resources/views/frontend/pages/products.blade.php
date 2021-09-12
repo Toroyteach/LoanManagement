@@ -16,110 +16,49 @@
   </div>
 </section><!-- End Breadcrumbs -->
 
-<!-- ======= Services Section ======= -->
-<section id="services" class="services">
-  <div class="container">
-
-    <div class="row">
-      <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
-        <div class="icon-box">
-          <div class="icon"><i class="bx bxl-dribbble"></i></div>
-          <h4><a href="">Lorem Ipsum</a></h4>
-          <p>Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi</p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0">
-        <div class="icon-box">
-          <div class="icon"><i class="bx bx-file"></i></div>
-          <h4><a href="">Sed ut perspiciatis</a></h4>
-          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore</p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
-        <div class="icon-box">
-          <div class="icon"><i class="bx bx-tachometer"></i></div>
-          <h4><a href="">Magni Dolores</a></h4>
-          <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia</p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
-        <div class="icon-box">
-          <div class="icon"><i class="bx bx-world"></i></div>
-          <h4><a href="">Nemo Enim</a></h4>
-          <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis</p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
-        <div class="icon-box">
-          <div class="icon"><i class="bx bx-slideshow"></i></div>
-          <h4><a href="">Dele cardo</a></h4>
-          <p>Quis consequatur saepe eligendi voluptatem consequatur dolor consequuntur</p>
-        </div>
-      </div>
-
-      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
-        <div class="icon-box">
-          <div class="icon"><i class="bx bx-arch"></i></div>
-          <h4><a href="">Divera don</a></h4>
-          <p>Modi nostrum vel laborum. Porro fugit error sit minus sapiente sit aspernatur</p>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</section><!-- End Services Section -->
-
 <!-- ======= Our Skills Section ======= -->
 <section id="skills" class="skills">
   <div class="container">
 
     <div class="section-title">
-      <h2>Our Skills</h2>
-      <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
+      <h2>Our Service Requirements</h2>
+      <p>Every applicant for membership shall complete an application for membership form. This form shall be drawn to show all the information required for the purpose of registration of members.
+      An applicant shall be admitted to membership on application upon payment of an entrance fee of kshs, 1000 and a minimum share deposit of kshs 2000. The following are qualifications for membership.</p>
     </div>
 
     <div class="row">
       <div class="col-lg-6">
         <img src="{{ asset ( 'fronttheme/assets/img/skills-img.jpg')}}" class="img-fluid" alt="">
       </div>
-      <div class="col-lg-6 pt-4 pt-lg-0 content">
-        <h3>Voluptatem dignissimos provident quasi corporis voluptates</h3>
-        <p class="font-italic">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt direna past reda
-        </p>
+      <div class="col-lg-6 pt-1 content">
 
         <div class="skills-content">
 
-          <div class="progress">
-            <span class="skill">HTML <i class="val">100%</i></span>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="">
+            <h4 class="">Elligibility </h4>
+            <div class="">
+              <p class="text"> Is within the field of membership consisting of the following common bond; employees of Kenya broadcasting corporation (KBC).</p>
             </div>
           </div>
 
-          <div class="progress">
-            <span class="skill">CSS <i class="val">90%</i></span>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="">
+            <h4 class="">Age </h4>
+            <div class="">
+              <p class="text"> Has attained the age of 18 years.</p>
             </div>
           </div>
 
-          <div class="progress">
-            <span class="skill">JavaScript <i class="val">75%</i></span>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="">
+            <h4 class="">character </h4>
+            <div class="">
+              <p class="text"> Is of good character and sound mind.</p>
             </div>
           </div>
 
-          <div class="progress">
-            <span class="skill">Photoshop <i class="val">55%</i></span>
-            <div class="progress-bar-wrap">
-              <div class="progress-bar" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100"></div>
+          <div class="">
+            <h4 class="">Registration </h4>
+            <div class="">
+              <p class="text"> Pays the entrance fee and share capital as prescribed in the by-laws provided that no member shall belong to more than one Sacco society having similar objects.</p>
             </div>
           </div>
 
@@ -130,6 +69,121 @@
 
   </div>
 </section><!-- End Our Skills Section -->
+
+    <!-- ======= Frequently Asked Questions Section ======= -->
+    <section id="faq" class="faq section-bg">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>Lending Requirements</h2>
+        </div>
+
+        <div class="row  d-flex align-items-stretch">
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up">
+            <h1><i class="icofont-checked"></i></h1>
+            <p>
+            Be an active member of the Sacco with regular deposit contribution.
+            </p>
+          </div>
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up" data-aos-delay="100">
+          <h1><i class="icofont-checked"></i></h1>
+            <p>
+            Must have paid (or is paying) the minimum share capital requirements by the Sacco.
+            </p>
+          </div>
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up" data-aos-delay="200">
+          <h1><i class="icofont-checked"></i></h1>
+            <p>
+            Must be a member of the Sacco for at least 6 months.
+            </p>
+          </div>
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up" data-aos-delay="300">
+          <h1><i class="icofont-checked"></i></h1>
+            <p>
+            Must have a regular source of income to support loan repayment (salary, business etc).
+            </p>
+          </div>
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up" data-aos-delay="400">
+          <h1><i class="icofont-checked"></i></h1>
+            <p>
+            Must provide security for the loan applied for such as guarantors etc.
+            </p>
+          </div>
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up" data-aos-delay="500">
+          <h1><i class="icofont-checked"></i></h1>
+            <p>
+            All deductions should not exceed1/3 of gross salary.
+            </p>
+          </div>
+
+          <div class="col-lg-6 faq-item" data-aos="fade-up" data-aos-delay="500">
+          <h1><i class="icofont-checked"></i></h1>
+            <p>
+            Most current pay slip certified by the employer.
+            </p>
+          </div>
+
+        </div>
+
+        <div class="section-title">
+              <h2>Interest</h2>
+              <p>The interest rate applicable for loan is 1% on reducing balance.</p>
+            </div>
+
+      </div>
+    </section><!-- End Frequently Asked Questions Section -->
+
+    <!-- ======= Services Section ======= -->
+<section id="services" class="services">
+  <div class="container">
+    <div class="section-title">
+          <h2>Our Products</h2>
+        </div>
+
+    <div class="row">
+      
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch">
+        <div class="icon-box">
+          <div class="icon"><i class="bx bx-building"></i></div>
+          <h4><a href="">Development Loan</a></h4>
+          <p>Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi</p>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch mt-4 mt-md-0">
+        <div class="icon-box">
+          <div class="icon"><i class="bx bx-file"></i></div>
+          <h4><a href="">Education Loans</a></h4>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore</p>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch mt-4">
+        <div class="icon-box">
+        <div class="icon"><i class="bx bx-save"></i></div>
+          <h4><a href="">Retirement Savings</a></h4>
+          <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia</p>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch mt-4">
+        <div class="icon-box">
+          <div class="icon"><i class="bx bx-world"></i></div>
+          <h4><a href="">Holiday Savings</a></h4>
+          <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section><!-- End Services Section -->
 
 </main><!-- End #main -->
 

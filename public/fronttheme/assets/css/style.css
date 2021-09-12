@@ -416,6 +416,7 @@ h1, h2, h3, h4, h5, h6 {
 
 #hero p {
   width: 80%;
+  font-size: 20px;
   -webkit-animation-delay: 0.4s;
   animation-delay: 0.4s;
   margin: 0 auto 30px auto;
@@ -659,6 +660,9 @@ section {
 /*--------------------------------------------------------------
 # About
 --------------------------------------------------------------*/
+.about {
+  padding-top: 10em;
+}
 .about .content h3 {
   font-weight: 600;
   font-size: 26px;
@@ -916,56 +920,17 @@ section {
   margin-bottom: 20px;
 }
 
-.skills .content ul {
-  list-style: none;
-  padding: 0;
-}
-
-.skills .content ul li {
-  padding-bottom: 10px;
-}
-
-.skills .content ul i {
-  font-size: 20px;
-  padding-right: 4px;
-  color: #0d5c13;
-}
-
-.skills .content p:last-child {
-  margin-bottom: 0;
+.skills .text{
+  font-size: 16px;
 }
 
 .skills .progress {
-  height: 62px;
+  height: 82px;
   display: block;
   background: none;
 }
 
-.skills .progress .skill {
-  padding: 0;
-  margin: 0 0 6px 0;
-  text-transform: uppercase;
-  display: block;
-  font-weight: 600;
-  font-family: "Poppins", sans-serif;
-  color: #545454;
-}
 
-.skills .progress .skill .val {
-  float: right;
-  font-style: normal;
-}
-
-.skills .progress-bar-wrap {
-  background: #e0e0e0;
-}
-
-.skills .progress-bar {
-  width: 1px;
-  height: 10px;
-  transition: .9s;
-  background-color: #0d5c13;
-}
 
 /*--------------------------------------------------------------
 # Portfolio
