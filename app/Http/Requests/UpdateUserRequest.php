@@ -35,4 +35,12 @@ class UpdateUserRequest extends FormRequest
             ],
         ];
     }
+
+    public function messages()
+    {
+        return[
+            'name' => 'Name is required',
+            'email' =>  'Email is Required'
+        ];
+    }
 }

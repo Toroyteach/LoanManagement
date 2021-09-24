@@ -58,7 +58,7 @@ class UsersController extends Controller
         return view('admin.users.create', compact('roles'));
     }
 
-    public function store(StoreUserRequest $request, StoreUserAction $action, FirebaseService $service)
+    public function store(StoreUserRequest $request, StoreUserAction $action)
     {
         //dd($request->validated());
         
@@ -225,7 +225,7 @@ class UsersController extends Controller
         return view('admin.users.edit', compact('roles', 'user'));
     }
 
-    public function update(UpdateUserRequest $request, User $user, FirebaseService $service)
+    public function update(UpdateUserRequest $request, User $user)
     {
         //update firebase data
         //updates from admins control
@@ -325,7 +325,7 @@ class UsersController extends Controller
         return view('admin.users.show', compact('user', 'currentLoanAmount', 'loanApplications', 'kins'));
     }
 
-    public function disableUser($id, FirebaseService $service)
+    public function disableUser($id)
     {
         abort_if(Gate::denies('user_disable'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -447,7 +447,7 @@ class UsersController extends Controller
         return response()->download($pathToFile);
     }
 
-    public function destroy(User $user, FirebaseService $service)
+    public function destroy(User $user)
     {
         abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 

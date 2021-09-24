@@ -155,7 +155,7 @@
                             <div class="row">
                                 <div class="col-md-6 form-group">
 
-                                    <div class="relative">
+                                    <div class="">
                                             <input type="text"
                                                 class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 placeholder="Search Member..." wire:model="query" wire:click="reset" wire:keydown.escape="hideDropdown" wire:keydown.tab="hideDropdown" wire:keydown.Arrow-Up="decrementHighlight" wire:keydown.Arrow-Down="incrementHighlight"
@@ -174,19 +174,17 @@
                                             @endif
 
                                         @if(!empty($query) && $selectedAccount == 0 && $showDropdown)
-                                            <div class="absolute z-10 bg-white mt-1 w-full border border-gray-300 rounded-md shadow-lg">
+                                            <div class="absolute bg-white border border-gray-300 rounded-md shadow-lg">
                                                 @if (!empty($accounts))
                                                     @foreach($accounts as $i => $account)
-                                                        <a
-                                                            wire:click="selectAccount({{ $i }})"
-                                                            class="block py-1 px-2 text-sm cursor-pointer hover:bg-blue-50 {{ $highlightIndex === $i ? 'bg-blue-50' : '' }}"
-                                                        >{{ $account['name'] }}</a>
+                                                        <a wire:click="selectAccount({{ $i }})" class=" py-2 px-1 text-sm cursor-pointer hover:bg-blue-50 {{ $highlightIndex === $i ? 'bg-blue-50' : '' }}">{{ $account['name'] }}</a><br>
                                                     @endforeach
                                                 @else
-                                                    <span class="block py-1 px-2 text-sm">No results!</span>
+                                                    <span class=" py-1 text-sm">No results!</span>
                                                 @endif
                                             </div>
                                         @endif
+
 
                                     </div>
                                     <br><br>

@@ -33,4 +33,12 @@ class UpdatePasswordRequest extends FormRequest
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
+
+    public function messages()
+    {
+        return[
+            'email.required' => 'Email is required',
+            'password.required' => 'Password is required and mandatory',
+        ];
+    }
 }

@@ -81,4 +81,19 @@ class AdminUpdateRequest extends FormRequest
         }
 
     }
+
+    public function messages()
+    {
+        return[
+            'firstname.required' => "First name is required",
+            'lastname.required' => 'Lastname is required',
+            'dateofbirth.required' => 'Please enter correct Date format',
+            'address.required' => 'Address is required',
+            'joinedsacco.required' => "Please enter correct date format for when joined sacco",
+            'nationalid.required' => 'National id is required',
+            'number.required.integer.digits:12' => 'A valid Number is required',
+            'idno.required' => 'Member number is required',
+            'idno.unique:users,idno' => 'Member number is already taken'
+        ];
+    }
 }

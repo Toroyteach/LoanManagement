@@ -98,7 +98,7 @@
                             {{ trans('cruds.user.fields.accountbal') }}
                         </th>
                         <td>
-                            ksh {{ $user->userAccount['total_amount'] }}
+                            ksh {{ $user->userAccount['total_amount'] ?? '' }}
                         </td>
                     </tr>
                     <tr>
@@ -114,7 +114,7 @@
                             {{ trans('cruds.user.fields.monthlyamount') }}
                         </th>
                         <td>
-                            ksh {{ $user->monthlySavings['monthly_amount'] }}   
+                            ksh {{ $user->monthlySavings['monthly_amount']  ?? '' }}   
                         </td>
                     </tr>
                     <tr>

@@ -3,7 +3,7 @@
 @can('loan_application_create')
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
-            <a class="btn btn-success" href="{{ route('admin.loan-applications.create') }}">
+            <a class="btn btn-success" href="{{ route('admin.staff.loanapplications') }}">
                 {{ trans('global.add') }} {{ trans('cruds.loanApplication.title_singular') }}
             </a>
         </div>

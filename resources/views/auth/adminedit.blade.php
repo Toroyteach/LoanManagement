@@ -104,7 +104,7 @@
             <div class="row">
                 <div class="form-group col-md-6">
                     <label class="required" for="password">Account No</label>
-                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', $user->idno) }}" placeholder="Enter 6 digits" name="idno" id="idno" required>
+                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', $user->idno) }}" placeholder="Enter 6 digits" name="idno" id="idno">
                     @if($errors->has('idno'))
                         <div class="invalid-feedback">
                             {{ $errors->first('idno') }}

@@ -43,4 +43,14 @@ class UpdateUserProfileRequest extends FormRequest
             ],
         ];
     }
+
+    public function messages()
+    {
+        return[
+            'firstname.required' => "First name is required",
+            'lastname.required' => 'Lastname is required',
+            'dateofbirth.required' => 'Please enter correct Date format',
+            'address.required' => 'Address is required',
+        ];
+    }
 }

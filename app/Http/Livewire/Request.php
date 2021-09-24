@@ -129,7 +129,6 @@ class Request extends Component
      */
     public function render()
     {
-
         return view('livewire.request');
     }
 
@@ -583,7 +582,7 @@ class Request extends Component
 
     }
 
-    public function submitFinalForm(FirebaseService $service)
+    public function submitFinalForm()
     {
             // dd('ready to submit form');
             $this->step3 = false;
@@ -599,6 +598,7 @@ class Request extends Component
                 'description' => $loanDetails->description,
                 'loan_type' => $loanDetails->loan_type,
                 'duration' => $loanDetails->duration,
+                'defaulted_date' => Carbon::parse($loanDetails->duration)->addMonths(3),
                 'file' => $loanDetails->file
             ]);
 
@@ -736,8 +736,8 @@ class Request extends Component
 
      public function getUserElligibleAmount()
      {
-         $monthlyContribution = MonthlySavings::select(['total_contributed'])->where('user_id', auth()->user()->id)->first();
-         //dd($monthlyContribution->total_contributed);
+         $monthlyContribution = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->where('user_id', auth()->user()->id)->first();
+         //dd($monthlyContribution->overpayment_amount);
          $totalMonthlyContribution = ($monthlyContribution->overpayment_amount + $monthlyContribution->total_contributed) * 3;
          $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('loan_amount');
          $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;

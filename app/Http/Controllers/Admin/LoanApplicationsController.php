@@ -49,7 +49,14 @@ class LoanApplicationsController extends Controller
         return view('admin.loanApplications.create');
     }
 
-    public function store(StoreLoanApplicationRequest $request, FirebaseService $service)
+    public function staffCreate()
+    {
+        abort_if(Gate::denies('loan_application_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        return view('admin.loanApplications.userapplyloan');
+    }
+
+    public function store(StoreLoanApplicationRequest $request)
     {
         //dd($request->all());
         $entryNumber = mt_rand(100000, 1000000);
@@ -61,7 +68,7 @@ class LoanApplicationsController extends Controller
             'duration' => $request->duration,
         ]);
 
-        //create fiorebase calls to insert to firebase
+        //create firebase calls to insert to firebase
         $random = Str::random(20);
         //dd($random);
 
@@ -120,7 +127,7 @@ class LoanApplicationsController extends Controller
         return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'));
     }
 
-    public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication, FirebaseService $service)
+    public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
     {
         //dd('give out the money');
         //makes the status change to approved or rejected to give out also update firebase
@@ -234,7 +241,7 @@ class LoanApplicationsController extends Controller
         return view('admin.loanApplications.send', compact('loanApplication', 'role', 'users'));
     }
 
-    public function send(Request $request, LoanApplication $loanApplication, FirebaseService $service)
+    public function send(Request $request, LoanApplication $loanApplication)
     {
         // once a loan is created this is first instance of sending to next processing which is from accountant to 
         // (accountant(proccesing,approved, rejected))
@@ -316,7 +323,7 @@ class LoanApplicationsController extends Controller
         return view('admin.loanApplications.analyze', compact('loanApplication'));
     }
 
-    public function analyze(Request $request, LoanApplication $loanApplication, FirebaseService $service)
+    public function analyze(Request $request, LoanApplication $loanApplication)
     {
 
         // once analyst approves or rejects a loan this is where it comes back to for further udpating
