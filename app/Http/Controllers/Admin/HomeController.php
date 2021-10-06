@@ -78,21 +78,21 @@ class HomeController extends Controller
         //get and send loan details
         if(\Auth::user()->getIsMemberAttribute()){
 
-            $approved_loan = LoanApplication::where('created_by_id', \Auth::user()->id)->where('status_id', '=' , 8)->sum('loan_amount');// approved loan
+            $approved_loan = LoanApplication::select(['loan_amount'])->where('created_by_id', \Auth::user()->id)->where('status_id', '=' , 8)->sum('loan_amount');// approved loan
             //dd($approved_loan);
-            $loan_pending = LoanApplication::where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('loan_amount');// 
-            $amount_paid = LoanApplication::where('created_by_id', \Auth::user()->id)->sum('repaid_amount');
+            $loan_pending = LoanApplication::select(['loan_amount'])->where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('loan_amount');// 
+            $amount_paid = LoanApplication::select(['repaid_amount'])->where('created_by_id', \Auth::user()->id)->sum('repaid_amount');
             $user = 'user';
                     //logic to return data for the chart js of loan and loan types for user
             $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $savings = MonthlySavings::where('user_id', \Auth::user()->id)->first('total_contributed'); //monthly savings
-            //dd($line);
+            $savings = MonthlySavings::select(['total_contributed'])->where('user_id', \Auth::user()->id)->first(); //monthly savings
+            //dd($savings);
 
         } else {
 
-            $approved_loan = LoanApplication::where('status_id', '=' , 8)->sum('loan_amount');
-            $loan_pending = LoanApplication::where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('loan_amount');//loan which havent been paid back
+            $approved_loan = LoanApplication::select(['loan_amount'])->where('status_id', '=' , 8)->sum('loan_amount');
+            $loan_pending = LoanApplication::select(['loan_amount'])->where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('loan_amount');//loan which havent been paid back
             $amount_paid = LoanApplication::sum('repaid_amount');// amount paied back
             $user = 'admin';
                     //logic to return data for the chart js of loan and loan types for admin
@@ -154,11 +154,11 @@ class HomeController extends Controller
 
         if($userType == 'Admin'){
             for ($x = 0; $x <= 3; $x++) {
-                $loanTypeValues[$x] = LoanApplication::where('loan_type', $loanTypeKey[$x])->where('status_id', '=' , 8)->sum('loan_amount');
+                $loanTypeValues[$x] = LoanApplication::select(['loan_amount'])->where('loan_type', $loanTypeKey[$x])->where('status_id', '=' , 8)->sum('loan_amount');
             }
         } else {
             for ($x = 0; $x <= 3; $x++) {
-                $loanTypeValues[$x] = LoanApplication::where('loan_type', $loanTypeKey[$x])->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
+                $loanTypeValues[$x] = LoanApplication::select(['loan_amount'])->where('loan_type', $loanTypeKey[$x])->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
 
@@ -171,11 +171,11 @@ class HomeController extends Controller
 
         if($userType == 'Admin'){
             for ($x = 0; $x < 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('status_id', '=' , 8)->sum('loan_amount');
+                $monthlyValues[$x] = LoanApplication::select(['loan_amount'])->whereMonth('created_at', $x+1)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         } else {
             for ($x = 0; $x < 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::whereMonth('created_at', $x+1)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
+                $monthlyValues[$x] = LoanApplication::select(['loan_amount'])->whereMonth('created_at', $x+1)->where('created_by_id', $id)->where('status_id', '=' , 8)->sum('loan_amount');
             }
         }
 

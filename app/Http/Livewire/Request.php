@@ -633,16 +633,16 @@ class Request extends Component
             $loanApplication->repayment_date = date('Y-m-d', strtotime($this->duration.' months'));
             $loanApplication->save();
             
-            $newLoan = $service->createLoan($loanDetails);
+            //$newLoan = $service->createLoan($loanDetails);
     
             //dd($newLoan);
     
     
-            if(!$newLoan){
+            //if(!$newLoan){
     
-                return false;
+                //return false;
     
-            } else {
+            //} else {
 
                 //deleted record from loan request
                 $requestDetails = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
@@ -654,7 +654,7 @@ class Request extends Component
           
                 $this->currentStep = 1;
     
-            }
+            //}
     }
   
     /**
@@ -725,7 +725,7 @@ class Request extends Component
      public function calculateInterest($type)
      {
 
-        $this->elligibleamount = 100000;
+        $this->elligibleamount = $this->getUserElligibleAmount();
         $this->interest = config('loantypes.'.$type.'.interest');
         $this->duration = config('loantypes.'.$type.'.max_duration');
         $this->totalplusinterest = $this->totalWithInterest($type);
@@ -737,8 +737,11 @@ class Request extends Component
      public function getUserElligibleAmount()
      {
          $monthlyContribution = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->where('user_id', auth()->user()->id)->first();
-         //dd($monthlyContribution->overpayment_amount);
-         $totalMonthlyContribution = ($monthlyContribution->overpayment_amount + $monthlyContribution->total_contributed) * 3;
+         //dd($monthlyContribution->total_contributed);
+         $a = $monthlyContribution->overpayment_amount;
+         $b = $monthlyContribution->total_contributed;
+         $totalMonthlyContribution = ($a + $b) * 3;
+         //dd($totalMonthlyContribution);
          $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('loan_amount');
          $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;
          

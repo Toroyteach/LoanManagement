@@ -427,7 +427,7 @@ class UsersController extends Controller
 
     public function memberLoans()
     {
-        $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommitee')->where('created_by_id', \Auth::user()->id)->get();
+        $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('created_by_id', \Auth::user()->id)->get();
 
         return view('admin.users.userloans', compact('loanApplications'));
     }

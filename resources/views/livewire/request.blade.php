@@ -41,6 +41,7 @@
                       </script>
                     @endif
 
+
                 <div class="container" id="medianews">
                     <div class="no-gutters">
                         <div class="media media-news">
@@ -104,6 +105,14 @@
                         <div class="col-md-12">
                             <h3> Fill in Loan Details</h3>
 
+                            <div wire:loading wire:target="firstStepSubmit">>
+
+                                <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+
+                            </div>
+
                             <div class="row ic1">
                                 <div class=" col-md-6 col-sm-6 col-xs-12 input-container" id="amount">
                                     <input type="number" wire:model="amount" name="amount" class="input" placeholder=" " id="amount" required>
@@ -152,6 +161,7 @@
                     <div class="row setup-content {{ $currentStep != 2 ? 'display-none' : '' }}" id="step-2">
                         <div class="col-md-12">
                             <h3> Choose your Gurantors</h3>
+
                             <div class="row">
                                 <div class="col-md-6 form-group">
 

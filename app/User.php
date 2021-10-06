@@ -129,7 +129,7 @@ class User extends Authenticatable
 
     public function userAccount()
     {
-        return $this->hasOne(UsersAccount::class);
+        return $this->hasOne(UsersAccount::class, 'user_id');
 
     }
 

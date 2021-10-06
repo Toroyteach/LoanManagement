@@ -7,6 +7,7 @@ use App\Notifications\LoanGuarantorsNotification;
 use Illuminate\Support\Facades\Notification;
 use App\User;
 use Illuminate\Support\Facades\Http;
+use App\SmsTextsSent;
 
 class CreateGuarantorRequestObserver
 {

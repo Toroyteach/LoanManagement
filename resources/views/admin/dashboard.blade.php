@@ -21,9 +21,9 @@
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
                                 @if( $user == 'admin' )
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings }}</h2>
+                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings ?? '0.00' }}</h2>
                                 @else
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings['total_contributed'] }}</h2>
+                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings['total_contributed'] ?? '0.00' }}</h2>
                                 @endif
                             </h2>
                         </div>
@@ -47,7 +47,7 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0" id="amount">
-                                ksh{{ $loan_pending }}
+                                ksh{{ $loan_pending ?? '0.00' }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">
@@ -70,7 +70,7 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0" id="amount">
-                                ksh{{ $amount_paid }}
+                                ksh{{ $amount_paid ?? '0.00' }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">
@@ -97,7 +97,7 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0" id="amount">
-                                ksh{{ $approved_loan }}
+                                ksh{{ $approved_loan ?? '0.00' }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">
