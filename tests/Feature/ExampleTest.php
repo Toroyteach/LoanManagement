@@ -7,6 +7,7 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * A basic test example.
      *
@@ -14,7 +15,13 @@ class ExampleTest extends TestCase
      */
     public function testBasicTest()
     {
-        $response = $this->get('/register')->assertStatus(404);
+        //$response = $this->get('/register')->assertStatus(404);
+
+        //$this->assertDatabaseCount('users', 0);
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'sally@example.com',
+        ]);
 
     }
 }

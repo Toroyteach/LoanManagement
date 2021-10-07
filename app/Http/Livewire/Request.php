@@ -117,11 +117,15 @@ class Request extends Component
 
     public function updatedQuery()
     {
-        $this->accounts = User::select(['name', 'id'])->where('name', 'like', '%' . $this->query. '%')
-            ->where('id', '!=', auth()->user()->id)
-            ->take(5)
-            ->get()
-            ->toArray();
+
+        if(strlen($this->query) >= 3){
+            $this->accounts = User::select(['name', 'id'])->where('name', 'like', '%' . $this->query. '%')
+                ->where('id', '!=', auth()->user()->id)
+                ->take(5)
+                ->get()
+                ->toArray();
+        }
+        
     }
   
     /**
@@ -136,6 +140,11 @@ class Request extends Component
     {
         $this->elligibleamount =  $this->getUserElligibleAmount();
         $this->checkRequestStatus();
+
+        if(!$this->checkRequestStatus()){
+            session()->flash('message','You have Pending loan Application Request');
+        }
+
         $this->getGurantors();
         $this->reset();
 
@@ -146,7 +155,7 @@ class Request extends Component
 
         $i = $i + 1;
         $this->i = $i;
-        array_push($this->gurantorInputs ,$i);
+        array_push($this->gurantorInputs , $i);
 
     }
 
@@ -245,16 +254,13 @@ class Request extends Component
 
                 $request = CreateLoanRequest::find($this->loan_request_id);
 
-                
-                $request->update([
-                    'loan_amount' => $validatedData['amount'],
-                    'description' => $validatedData['description'],
-                    'loan_type' => $validatedData['loan_type'],
-                    'duration' => $validatedData['duration'],
-                ]);
+                $request->loan_amount = $validatedData['amount'];
+                $request->description = $validatedData['description'];
+                $request->duration    = $validatedData['duration'];
+                $request->loan_type   = $validatedData['loan_type'];
 
 
-                if($request->isDirty('description') or $request->isDirty('loan_type') or $request->isDirty('loan_amount')){
+                if($request->isDirty('description') || $request->isDirty('loan_type') || $request->isDirty('loan_amount')){
 
                     $request->save();
 
@@ -262,18 +268,21 @@ class Request extends Component
 
                     session()->flash('success','Loan Application Request was updated successfully!');
 
+                    
                 }
-
+                
 
             }
 
         }
  
-        //show sweet alert flash success
     }
 
     public function checkRequestStatus()
     {
+            
+            unset($request);
+
             $request = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
 
             if($request){
@@ -286,12 +295,12 @@ class Request extends Component
                     $this->step1 = true;
                     $this->file = $request->file;
 
-                    //dd($request->file);
+                    //dd($this->loan_type);
 
                     // $this->getGurantors();
                     $this->delReqBtn = true;
 
-                    session()->flash('message','You have Pending loan Application Request');
+                    //session()->flash('message','You have Pending loan Application Request');
 
                     return false;
 
@@ -695,30 +704,32 @@ class Request extends Component
                 $this->duration = " ";
           }
 
-    }
-
-    public function loadApplicationDetails()
-    {
-        //get users loan request
-        $previousRequest = CreateLoanRequest::where('user_id', auth()->user()->id)->get();
-
-        if($previousRequest){
-            // fill form
-
-            $this->amount = $previousRequest->loan_amount;
-
-            $this->description = $previousRequest->description;
-    
-            $this->loan_type = $previousRequest->loan_type;
-    
-            $this->file = $previousRequest->file;
-    
-
-        } else {
-            //empty form fields
-        }
+          //dd($this->loan_type);
 
     }
+
+    // public function loadApplicationDetails()
+    // {
+    //     //get users loan request
+    //     $previousRequest = CreateLoanRequest::where('user_id', auth()->user()->id)->get();
+
+    //     if($previousRequest){
+    //         // fill form
+
+    //         $this->amount = $previousRequest->loan_amount;
+
+    //         $this->description = $previousRequest->description;
+    
+    //         $this->loan_type = $previousRequest->loan_type;
+    
+    //         $this->file = $previousRequest->file;
+    
+
+    //     } else {
+    //         //empty form fields
+    //     }
+
+    // }
 
          //interest calculator
      //$elligibleamount, $interest, $totalplusinterest, $repaymentdate;
@@ -737,7 +748,7 @@ class Request extends Component
      public function getUserElligibleAmount()
      {
          $monthlyContribution = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->where('user_id', auth()->user()->id)->first();
-         //dd($monthlyContribution->total_contributed);
+         //dd($monthlyContribution);
          $a = $monthlyContribution->overpayment_amount;
          $b = $monthlyContribution->total_contributed;
          $totalMonthlyContribution = ($a + $b) * 3;

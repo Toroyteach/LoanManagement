@@ -1,5 +1,38 @@
 <?php
 
+// use App\User;
+// use App\UsersAccount;
+// use App\SaccoAccount;
+// use App\MonthlySavings;
+// use Carbon\Carbon;
+
+// for($i = 1; $i < 5; $i++){
+//     $user = User::findOrFail($i);
+//     UsersAccount::create([
+//         'total_amount' => 0.00,
+//         'user_id' => $user->id,
+//     ]);
+
+//     //add/deposit on the sacco account
+//     SaccoAccount::create([
+//         'opening_bal' =>  0.00,
+//         'deposit_bal' =>  5000.00,
+//         'created_by' =>   1,
+//         'user_id' =>  $user->id,
+//     ]);
+
+//     MonthlySavings::create([
+//         'total_contributed' =>  0.00,
+//         'monthly_amount' =>  15000.00,
+//         'created_by' =>   1,
+//         'user_id' =>  $user->id,
+//         'next_payment_date' => Carbon::createFromFormat('Y-m-d H:i:s', $user->created_at)->firstOfMonth()->addDays(4)->addMonths(1)->format('Y-m-d'),
+//         'overpayment_amount' => 0.00,
+//     ]);
+// }
+
+// dd('done');
+
 Route::view('/', 'frontend.pages.home');
 
 Route::get('/home', function () {
@@ -25,7 +58,7 @@ Route::get('/team', 'Front\FrontendController@team')->name('team');
 //file download
 Route::get('files/{uuid}/download', 'Front\FrontendController@download')->name('files.download');
 
-Auth::routes();
+Auth::routes(['register' => false]);
 // Admin
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth' ,'twostep']], function () {
@@ -114,6 +147,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('autocomplete', 'CreateLoanRequestController@autocomplete')->name('autocomplete');
 
 });
+
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', 'twostep']], function () {
 // Change password
     if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php'))) {

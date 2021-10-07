@@ -133,7 +133,7 @@
                                 <div class="col-md-6 col-sm-6 col-xs-12" id="type">
                                     
                                     <select class="form-select" wire:model="loan_type" id='loan_type' name="loan_type" wire:change="updateDuration" aria-label="Default select example" required>
-                                        <option>Choose Loan Type</option>
+                                        @if($loan_type)<option value="{{ $loan_type }}" selected>{{ $loan_type }}</option>@else<option>Choose Loan Type</option>@endif
                                         <option value="emergency">Emergency</option>
                                         <option value="instantloan">Instant Loan</option>
                                         <option value="schoolfees">School Fees</option>
@@ -170,8 +170,7 @@
                                                 class="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                                 placeholder="Search Member..." wire:model="query" wire:click="reset" wire:keydown.escape="hideDropdown" wire:keydown.tab="hideDropdown" wire:keydown.Arrow-Up="decrementHighlight" wire:keydown.Arrow-Down="incrementHighlight"
                                                 wire:keydown.enter.prevent="selectAccount"
-                                                {{ (($typeAheadInput)) ? '' : 'disabled' }}
-                                            />
+                                                {{ (($typeAheadInput)) ? '' : 'disabled' }}/>
 
                                             <input type="hidden" name="account" id="account" wire:model="selectedAccount">
 
@@ -201,41 +200,41 @@
 
                                     @foreach($gurantorsChoice as $key => $value)
 
-                                    <div class="dd-input">
+                                        <div class="dd-input">
 
-                                        <div class="row">
+                                            <div class="row">
 
-                                            <div class="col-md-6">
+                                                <div class="col-md-6">
 
-                                                <div class="row">
-                                                    
+                                                    <div class="row">
+                                                        
 
-                                                    <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
+                                                        <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
 
-                                                        <input type="text" class="form-control" placeholder="Enter Name" wire:model="gurantorsChoice.{{ $key }}.name" required>
+                                                            <input type="text" class="form-control" placeholder="Enter Name" wire:model="gurantorsChoice.{{ $key }}.name" required>
+
+                                                        </div>
+
+
+                                                        @error('gurantorChoice.'.$key) <span class="text-danger error">{{ $message }}</span>@enderror
 
                                                     </div>
 
+                                                </div>
 
-                                                    @error('gurantorChoice.'.$key) <span class="text-danger error">{{ $message }}</span>@enderror
+                                                <div class="col-md-2 col-lg-2 col-sm-2 col-xs-2">
+
+                                                    @if($gurantorsChoice[$key]['status'] == 'added')
+                                                        
+                                                    @else
+                                                        <button class="btn btn-danger btn-sm" wire:click.prevent="removeGurantor({{ $key }})">Remove</button>
+                                                    @endif
 
                                                 </div>
 
                                             </div>
 
-                                            <div class="col-md-2 col-lg-2 col-sm-2 col-xs-2">
-
-                                                @if($gurantorsChoice[$key]['status'] == 'added')
-                                                    
-                                                @else
-                                                    <button class="btn btn-danger btn-sm" wire:click.prevent="removeGurantor({{ $key }})">Remove</button>
-                                                @endif
-
-                                            </div>
-
                                         </div>
-
-                                    </div>
 
                                     @endforeach
 
@@ -364,42 +363,42 @@ window.addEventListener('swal:modal', event => {
 
 //event to ask user for confirmation
 
-window.addEventListener('swal:confirmStep2', event => { 
+    window.addEventListener('swal:confirmStep2', event => { 
 
-    swal.fire({
+        swal.fire({
 
-        title: event.detail.title,
+            title: event.detail.title,
 
-        text: event.detail.message,
+            text: event.detail.message,
 
-        icon: event.detail.type,
+            icon: event.detail.type,
 
-        buttons: true,
+            buttons: true,
 
-        dangerMode: true,
+            dangerMode: true,
 
-        showCancelButton: true,
+            showCancelButton: true,
 
-        confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#3085d6',
 
-        cancelButtonColor: '#aaa',
+            cancelButtonColor: '#aaa',
 
-        confirmButtonText: 'Confirm!'
+            confirmButtonText: 'Confirm!'
 
-        })
+            })
 
-        .then((result) => {
-         //if user clicks on delete
-                if (result.value) {
-             // calling destroy method to delete
-                    @this.call('secondStepConfirmSave')
-             // success response
+            .then((result) => {
+            //if user clicks on delete
+                    if (result.value) {
+                // calling destroy method to delete
+                        @this.call('secondStepConfirmSave')
+                // success response
 
-                } else {
+                    } else {
 
 
-                }
-            });
+                    }
+                });
 
     });
 
@@ -407,79 +406,79 @@ window.addEventListener('swal:confirmStep2', event => {
 
     window.addEventListener('swal:confirmDelete', event => { 
 
-    swal.fire({
+        swal.fire({
 
-        title: event.detail.title,
+            title: event.detail.title,
 
-        text: event.detail.message,
+            text: event.detail.message,
 
-        icon: event.detail.type,
+            icon: event.detail.type,
 
-        buttons: true,
+            buttons: true,
 
-        dangerMode: true,
+            dangerMode: true,
 
-        showCancelButton: true,
+            showCancelButton: true,
 
-        confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#3085d6',
 
-        cancelButtonColor: '#aaa',
+            cancelButtonColor: '#aaa',
 
-        confirmButtonText: 'Confirm!'
+            confirmButtonText: 'Confirm!'
 
-        })
+            })
 
-        .then((result) => {
-        //if user clicks on delete
-                if (result.value) {
-            // calling destroy method to delete
-                    @this.call('deleteRequest')
-            // success response
+            .then((result) => {
+            //if user clicks on delete
+                    if (result.value) {
+                // calling destroy method to delete
+                        @this.call('deleteRequest')
+                // success response
 
-                } else {
+                    } else {
 
 
-                }
-            });
+                    }
+                });
 
-    });
+        });
 
     window.addEventListener('swal:confirmStepFinal', event => { 
 
-    swal.fire({
+        swal.fire({
 
-        title: event.detail.title,
+            title: event.detail.title,
 
-        text: event.detail.message,
+            text: event.detail.message,
 
-        icon: event.detail.type,
+            icon: event.detail.type,
 
-        buttons: true,
+            buttons: true,
 
-        dangerMode: true,
+            dangerMode: true,
 
-        showCancelButton: true,
+            showCancelButton: true,
 
-        confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#3085d6',
 
-        cancelButtonColor: '#aaa',
+            cancelButtonColor: '#aaa',
 
-        confirmButtonText: 'Confirm!'
+            confirmButtonText: 'Confirm!'
 
-        })
+            })
 
-        .then((result) => {
-        //if user clicks on delete
-                if (result.value) {
-            // calling destroy method to delete
-                    @this.call('submitFinalForm')
-            // success response
+            .then((result) => {
+            //if user clicks on delete
+                    if (result.value) {
+                // calling destroy method to delete
+                        @this.call('submitFinalForm')
+                // success response
 
-                } else {
+                    } else {
 
 
-                }
-            });
+                    }
+                });
 
     });
 
