@@ -170,6 +170,14 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => '40',
                 'title' => 'admin_edit',
             ],
+            [
+                'id'    => '41',
+                'title' => 'update_monthly_contribution',
+            ],
+            [
+                'id'    => '42',
+                'title' => 'update_monthly_contribution_amount',
+            ],
         ];
 
         Permission::insert($permissions);

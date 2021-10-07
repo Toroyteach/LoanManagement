@@ -202,7 +202,7 @@
 
                     <li class="nav-item dropdown nav-user"> 
                         <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          @if(!empty(Auth::user()->avatar))
+                          @if(!empty(Auth::user()->avatar) && Auth::user()->avatar != 'default.jpg')
                               <img src="{{ asset( 'img/uploads/profileavatar/'.Auth::user()->avatar ) }}" alt="" class="user-avatar-md rounded-circle">
                           @else
                               <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">

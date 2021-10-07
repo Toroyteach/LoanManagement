@@ -139,6 +139,7 @@ class Request extends Component
     public function mount()
     {
         $this->elligibleamount =  $this->getUserElligibleAmount();
+        //dd($this->elligibleamount);
         $this->checkRequestStatus();
 
         if(!$this->checkRequestStatus()){

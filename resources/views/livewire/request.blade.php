@@ -131,9 +131,12 @@
 
                             <div class="row ic2">
                                 <div class="col-md-6 col-sm-6 col-xs-12" id="type">
+
+                                <h4>Loan Type</h4>
+                                @if($loan_type)<p class="text-info">{{ $loan_type }}</p>@else<p>None Selected</p>@endif
                                     
                                     <select class="form-select" wire:model="loan_type" id='loan_type' name="loan_type" wire:change="updateDuration" aria-label="Default select example" required>
-                                        @if($loan_type)<option value="{{ $loan_type }}" selected>{{ $loan_type }}</option>@else<option>Choose Loan Type</option>@endif
+                                        <option>Choose Loan Type</option>
                                         <option value="emergency">Emergency</option>
                                         <option value="instantloan">Instant Loan</option>
                                         <option value="schoolfees">School Fees</option>

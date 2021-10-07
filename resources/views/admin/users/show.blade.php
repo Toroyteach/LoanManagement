@@ -9,11 +9,39 @@
     <div class="card-body">
         <div class="form-group">
             <div class="container_fluid" style="width:200px;height:auto">
-                    @if($user->avatar == 'default.jpg' or empty($user->avatar))
+                    @if(!empty(Auth::user()->avatar) && Auth::user()->avatar != 'default.jpg')
                         <img src="{{ asset( 'img/uploads/profileavatar/'.$user->avatar ) }}" width="40" height="40" class="rounded-circle">
                     @else
-                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
+                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="60" height="auto" class="user-avatar-md rounded-circle">
                     @endif            
+            </div><br>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <a class="btn btn-primary" href="{{ route('admin.users.index') }}">
+                        {{ trans('global.back_to_list') }}
+                    </a>
+                </div>
+                    @can('update_monthly_contribution')
+                        @if(empty($user->monthlySavings->modified_at))
+                        <div class="form-group col-md-6">
+                                    <a class="btn btn-success" onclick="submitMonthly()">
+                                        {{ trans('global.monthlyupdate') }}
+                                    </a>
+                                </div>
+                        @elseif(\Carbon\Carbon::parse($user->monthlySavings->modified_at)->format('F Y') === \Carbon\Carbon::now()->format('F Y'))
+                        <div class="form-group col-md-6">
+                                <a class="btn btn-warning" disabled>
+                                    {{ trans('global.monthlyupdatedisable') }}
+                                </a>
+                            </div>
+                        @else
+                        <div class="form-group col-md-6">
+                                    <a class="btn btn-success" onclick="submitMonthly()">
+                                        {{ trans('global.monthlyupdate') }}
+                                    </a>
+                                </div>
+                        @endif
+                    @endcan
             </div><br>
             <table class="table table-bordered table-striped">
                 <tbody>
@@ -170,34 +198,6 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <a class="btn btn-primary" href="{{ route('admin.users.index') }}">
-                        {{ trans('global.back_to_list') }}
-                    </a>
-                </div>
-                    @can('update_monthly_contribution')
-                        @if(empty($user->monthlySavings->modified_at))
-                        <div class="form-group col-md-6">
-                                    <a class="btn btn-success" onclick="submitMonthly()">
-                                        {{ trans('global.monthlyupdate') }}
-                                    </a>
-                                </div>
-                        @elseif(\Carbon\Carbon::parse($user->monthlySavings->modified_at)->format('F Y') === \Carbon\Carbon::now()->format('F Y'))
-                        <div class="form-group col-md-6">
-                                <a class="btn btn-warning" disabled>
-                                    {{ trans('global.monthlyupdatedisable') }}
-                                </a>
-                            </div>
-                        @else
-                        <div class="form-group col-md-6">
-                                    <a class="btn btn-success" onclick="submitMonthly()">
-                                        {{ trans('global.monthlyupdate') }}
-                                    </a>
-                                </div>
-                        @endif
-                    @endcan
-            </div>
 
             <div class="container-fluid">
                 <h2 class="section-title"> Current Loans</h2>
@@ -338,7 +338,7 @@
         </div>
     </div>
 </div>
-@endsection
+
 <script type="text/javascript">
 
 
@@ -393,3 +393,4 @@
     }
 
 </script>
+@endsection

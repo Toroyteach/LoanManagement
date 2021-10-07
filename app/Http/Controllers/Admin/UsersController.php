@@ -93,8 +93,8 @@ class UsersController extends Controller
         //add/deposit on the sacco account
         SaccoAccount::create([
             'opening_bal' =>  0.00,
-            'deposit_bal' =>  $request->amount,
-            'created_by' =>   \Auth::user()->id,
+            'deposit_bal' =>  $request->amount, //registration amount
+            'created_by' =>   \Auth::user()->id, //staff who created the account
             'user_id' =>  $user->id,
         ]);
 
