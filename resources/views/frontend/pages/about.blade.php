@@ -22,7 +22,7 @@
 
     <div class="row">
       <div class="col-lg-6">
-        <img src="{{ asset ( 'fronttheme/assets/img/about.jpg')}}" class="img-fluid" alt="">
+        <img src="{{ asset ( 'frontend/assets/img/slide/mtangaza2.jpg')}}" class="img-fluid" alt="">
       </div>
       <div class="col-lg-6 pt-4 pt-lg-0 content">
         <h3>About Mtangazaji Sacco.</h3>
@@ -30,11 +30,6 @@
         Mtangazaji Sacco was established 22 years ago on the 22nd April 1999 in accordance with the co-operative societies 
           Act Cap 490 laws of Kenya by staff at the Kenya Broadcasting Corporation (KBC).
         </p>
-        <ul>
-          <li><i class="icofont-check-circled"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-          <li><i class="icofont-check-circled"></i> Duis aute irure dolor in reprehenderit in voluptate velit.</li>
-          <li><i class="icofont-check-circled"></i> Ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
-        </ul>
         <p>
           It has since expanded its horizons to accommodate members from different sectors of the economy with a common interest of cooperation in financial matters.
         </p>

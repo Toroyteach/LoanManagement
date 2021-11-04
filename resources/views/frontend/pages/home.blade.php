@@ -123,7 +123,7 @@
 
           </div>
           <div class="col-lg-6">
-            <img src="{{ asset ( 'fronttheme/assets/img/about.jpg')}} " class="img-fluid" alt="">
+            <img src="{{ asset ( 'frontend/assets/img/slide/mtangaza2.jpg')}} " class="img-fluid" alt="">
           </div>
         </div>
 

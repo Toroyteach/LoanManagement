@@ -1,52 +1,5 @@
 <?php
 
-use App\User;
-use App\UsersAccount;
-use App\SaccoAccount;
-use App\MonthlySavings;
-use App\NextKin;
-use Carbon\Carbon;
-use App\Permission;
-use App\Role;
-use App\Status;
-
-// $user = User::findOrFail(15);
-
-// if($user){
-
-//     UsersAccount::create([
-//         'total_amount' => 0.00,
-//         'user_id' => $user->id,
-//     ]);
-
-//     SaccoAccount::create([
-//         'opening_bal' =>  0.00,
-//         'deposit_bal' =>  1000.00,
-//         'created_by' =>   2,
-//         'user_id' =>  $user->id,
-//     ]);
-
-//     MonthlySavings::create([
-//         'total_contributed' =>  0.00,
-//         'monthly_amount' =>  2000.00,
-//         'created_by' =>   2,
-//         'user_id' =>  $user->id,
-//         'next_payment_date' => Carbon::createFromFormat('Y-m-d H:i:s', $user->created_at)->firstOfMonth()->addDays(4)->addMonths(1)->format('Y-m-d'),
-//         'overpayment_amount' => 0.00,
-//     ]);
-
-//     NextKin::create([
-//         'name' => 'Ezbon Kigondu',
-//         'phone' => '0722425095',
-//         'relationship' => 'Dad',
-//         'user_id' => $user->id,
-//     ]);   
-
-// }
-
-// dd('done');
-
-//dd(User::with('monthlySavings')->with('userAccount')->get());
 
 Route::view('/', 'frontend.pages.home');
 

@@ -67,9 +67,21 @@ class TwoStepAuthTableObserver
 
     public function smsEnabled()
     {
-        return env('SMS_ENABLED', 0);
+        $sms = env("SMS_ENABLED"); 
+        
+        //dd($sms);
+        
+        if($sms == 1){
+            
+            return true;
+            
+        } else {
+            
+            return false;
+        }
+        
+        
     }
-
     public function sendSms($id, $message)
     {
 

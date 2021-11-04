@@ -483,9 +483,10 @@ class LoanApplicationsController extends Controller
             $loanItem->date_last_amount_paid = now();
             $loanItem->status_id = 10;
 
-            $loanItem->save();
-
+            
             if($loanItem->isDirty() && $memberAccount->isDirty()){
+                
+                $loanItem->save();
 
                 return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated Succesfully. Memeber has fully settled Loan and Overpayment added to Member account'), 200);
 
@@ -499,10 +500,11 @@ class LoanApplicationsController extends Controller
             $loanItem->last_month_amount_paid = $request->amount;
             $loanItem->date_last_amount_paid = now();
     
-            $loanItem->save();
-    
+            
             if($loanItem->isDirty() && $memberAccount->isDirty()){
-    
+                
+                $loanItem->save();
+                
                 return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated'), 200);
     
             }

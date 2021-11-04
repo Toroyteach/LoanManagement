@@ -31,62 +31,60 @@
 
 <body>
 
-  <!-- ======= Top Bar ======= -->
-  <section id="topbar" class="d-none d-lg-block">
-    <div class="container d-flex">
-      <div class="contact-info mr-auto">
-        <i class="icofont-envelope"></i><a href="mailto:mtangazajisacco@gmail.com">mtangazajisacco@gmail.com</a>
-        <i class="icofont-phone"></i> +254 726616120
-      </div>
-      <div class="social-links">
-        <a href="#" class="twitter"><i class="icofont-twitter"></i></a>
-        <a href="#" class="facebook"><i class="icofont-facebook"></i></a>
-        <a href="#" class="instagram"><i class="icofont-instagram"></i></a>
-        <a href="#" class="skype"><i class="icofont-skype"></i></a>
-        <a href="#" class="linkedin"><i class="icofont-linkedin"></i></i></a>
-      </div>
-    </div>
-  </section>
-
   <!-- ======= Header ======= -->
-  <header id="header">
-    <div class="container d-flex">
+  <header id="h">
+    <div class="container-fluid d-flex justify-content-center">
 
-      <div class="logo mr-auto">
-        <!-- <h1 class="text-light"><a href="index.html"><span>Eterna</span></a></h1> -->
-        <!-- Uncomment below if you prefer to use an image logo -->
-        <a href="{{ route('index')}}"><img src="{{ asset ( 'onepage/logo.jpeg')}}" width="100" height="200" alt="" class="img-responsive"></a>
-      </div>
 
-      <nav class="nav-menu d-none d-lg-block">
-        <ul>
-          <li class="active"><a href="{{ route('index')}}">Home</a></li>
+    <!-- <li class="active"><a href="{{ route('index')}}">Home</a></li>
+    <li class="drop-down"><a href="javascript:void(0)">About</a>
+      <ul>
+        <li><a href="{{ route('about')}}">About Us</a></li>
+        <li><a href="{{ route('team')}}">Team</a></li>
+      </ul>
+    </li>
 
-          <li class="drop-down"><a href="javascript:void(0)">About</a>
-            <ul>
-              <li><a href="{{ route('about')}}">About Us</a></li>
-              <li><a href="{{ route('team')}}">Team</a></li>
+    <li><a href="{{ route('products')}}">Products</a></li>
+    <li><a href="{{ route('resources')}}">Resources</a></li>
+    <li><a href="{{ route('contact')}}">Contact Us</a></li>
+    <li><a href="{{ route('login')}}">Member Login</a></li> -->
 
-              <!-- <li class="drop-down"><a href="#">Drop Down 2</a>
-                <ul>
-                  <li><a href="#">Deep Drop Down 1</a></li>
-                  <li><a href="#">Deep Drop Down 2</a></li>
-                  <li><a href="#">Deep Drop Down 3</a></li>
-                  <li><a href="#">Deep Drop Down 4</a></li>
-                  <li><a href="#">Deep Drop Down 5</a></li>
-                </ul>
-              </li> -->
+      <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #FFFFFF;">
+        <a class="navbar-brand d-lg-none" href="#"><img src="{{ asset ( 'onepage/mtangazaji.png')}}" width="100%" height="50" alt="" class="img-responsive"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavbarToggler7"
+            aria-controls="myNavbarToggler7" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="myNavbarToggler7">
+            <ul class="navbar-nav" style="margin-left:20px;">
+                <li class="nav-item ml-3 mr-3">
+                    <a class="nav-link" href="{{ route('index')}}"id="navBarAdjust">Home</a>
+                </li>
+                <li class="nav-item ml-3 mr-3 drop-down">
+                    <a class="nav-link" href="{{ route('about')}}"id="navBarAdjust">About</a>
+                      <!-- <ul>
+                        <li><a href="{{ route('about')}}">About Us</a></li>
+                        <li><a href="{{ route('team')}}">Team</a></li>
+                      </ul> -->
+                </li>
+                <li class="nav-item ml-3 mr-3">
+                    <a class="nav-link" href="{{ route('products')}}"id="navBarAdjust">Products</a>
+                </li>
 
+                <a class="d-none d-lg-block" href="#"><img src="{{ asset ( 'onepage/mtangazaji.png')}}" width="100%" height="100" alt="" class="img-responsive"></a>
+
+                <li class="nav-item ml-3 mr-3">
+                    <a class="nav-link" href="{{ route('resources')}}"id="navBarAdjust">Resources</a>
+                </li>
+                <li class="nav-item ml-3 mr-3">
+                    <a class="nav-link" href="{{ route('contact')}}"id="navBarAdjust">Contact us</a>
+                </li>
+                <li class="nav-item ml-3 mr-3">
+                    <a class="nav-link" href="{{ route('login')}}"id="navBarAdjust">Member Login</a>
+                </li>
             </ul>
-          </li>
-
-          <li><a href="{{ route('products')}}">Products</a></li>
-          <li><a href="{{ route('resources')}}">Resources</a></li>
-          <li><a href="{{ route('contact')}}">Contact Us</a></li>
-          <li><a href="{{ route('login')}}">Member Login</a></li>
-
-        </ul>
-      </nav><!-- .nav-menu -->
+        </div>
+    </nav>
 
     </div>
   </header><!-- End Header -->

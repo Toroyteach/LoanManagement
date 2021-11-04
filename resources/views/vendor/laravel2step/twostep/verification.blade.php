@@ -155,7 +155,7 @@ switch ($remainingAttempts) {
             $('.code-inputs').delay(200).removeClass('invalid-shake');
         });
 
-        var countDownTimer = "{{ env('LARAVEL_2STEP_RESET_BUFFER_IN_SECONDS', 60) }}";
+        var countDownTimer = "{{ env('LARAVEL_2STEP_RESET_BUFFER_IN_SECONDS', 180) }}";
         var dateRequestCreated = "{{  $user->twoStep->requestDate }}";
         var timeObj = new Date(dateRequestCreated);
         var expiredTime = new Date( Date.parse(timeObj) + countDownTimer*1000 );

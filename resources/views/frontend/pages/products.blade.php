@@ -28,7 +28,7 @@
 
     <div class="row">
       <div class="col-lg-6">
-        <img src="{{ asset ( 'fronttheme/assets/img/skills-img.jpg')}}" class="img-fluid" alt="">
+        <img src="{{ asset ( 'frontend/assets/img/slide/mtangaza3.jpg')}}" class="img-fluid" alt="">
       </div>
       <div class="col-lg-6 pt-1 content">
 
