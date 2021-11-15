@@ -103,7 +103,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('/user/forms', 'UsersController@memberForms')->name('user.forms');
     Route::get('/user/loans', 'UsersController@memberLoans')->name('user.loans');
 
-    //notification routes
+    //notification routes and gurantor request reject or approve using ajax
     Route::post('/mark-as-read', 'HomeController@markNotification')->name('markNotification');
     Route::post('/mark-gurantor-request', 'HomeController@requestGurantor')->name('requestGurantor');
     Route::get('/view/notifications', 'HomeController@notifications')->name('viewnotification');

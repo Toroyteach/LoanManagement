@@ -93,7 +93,8 @@ class AdminUpdateRequest extends FormRequest
             'nationalid.required' => 'National id is required',
             'number.required.integer.digits:12' => 'A valid Number is required',
             'idno.required' => 'Member number is required',
-            'idno.unique:users,idno' => 'Member number is already taken'
+            'idno.unique:users,idno' => 'Member number is already taken',
+            'avatar' => 'Please upload a valid Image',
         ];
     }
 }

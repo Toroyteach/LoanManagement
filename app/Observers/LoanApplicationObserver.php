@@ -84,11 +84,18 @@ class LoanApplicationObserver
 
                 if(in_array($loanApplication->status_id, [3, 4])){
 
-                    $emails = collect($users)->merge(Role::find(3)->users);
+                    if($loanApplication->status_id == 3){
+
+                        $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
+                        
+                    } else {
+
+                        $emails = collect($users)->merge(Role::find(3)->users);
+                    }
 
                 } else if(in_array($loanApplication->status_id, [6, 7])){
 
-                    $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
+                   $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
                     //only accountant and admin should be notified that the credoit committee rejected the
 
                 }

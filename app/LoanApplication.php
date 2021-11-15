@@ -43,6 +43,7 @@ class LoanApplication extends Model
         'deleted_at',
         'created_by_id',
         'status_id',
+        'file',
     ];
 
     protected static function booted()

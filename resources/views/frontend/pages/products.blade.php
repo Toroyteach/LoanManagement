@@ -151,32 +151,32 @@
       <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch">
         <div class="icon-box">
           <div class="icon"><i class="bx bx-building"></i></div>
-          <h4><a href="">Development Loan</a></h4>
-          <p>Voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi</p>
+          <h4><a href="">Normal Loan</a></h4>
+          <p>Payable Within a period of 36 months with an interest of 1% on reducing balance</p>
         </div>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch mt-4 mt-md-0">
         <div class="icon-box">
           <div class="icon"><i class="bx bx-file"></i></div>
-          <h4><a href="">Education Loans</a></h4>
-          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore</p>
+          <h4><a href="">School fee Loans</a></h4>
+          <p>Payable Within a period of 12 months with an interest of 1% on reducing balance</p>
         </div>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch mt-4">
         <div class="icon-box">
         <div class="icon"><i class="bx bx-save"></i></div>
-          <h4><a href="">Retirement Savings</a></h4>
-          <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia</p>
+          <h4><a href="">Emergency Loans</a></h4>
+          <p>Payable Within a period of 12 months with an interest of 1% on reducing balance</p>
         </div>
       </div>
 
       <div class="col-lg-6 col-md-6 col-sm-12 d-flex align-items-stretch mt-4">
         <div class="icon-box">
           <div class="icon"><i class="bx bx-world"></i></div>
-          <h4><a href="">Holiday Savings</a></h4>
-          <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis</p>
+          <h4><a href="">Instant Loan</a></h4>
+          <p>Payable Within a period of 6 months with an interest of 10% once</p>
         </div>
       </div>
 

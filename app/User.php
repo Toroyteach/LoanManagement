@@ -148,4 +148,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(TwoStepAuthTable::class, 'userId');
     }
+
+    public function nextKin()
+    {
+        return $this->hasMany(NextKin::class, 'user_id');
+    }
 }

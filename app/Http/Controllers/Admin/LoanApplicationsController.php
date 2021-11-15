@@ -89,22 +89,8 @@ class LoanApplicationsController extends Controller
         $loanApplication->defaulted_date = Carbon::parse($repaymentDate)->addMonths(3);
         $loanApplication->save();
         
-        //$newLoan = $service->createLoan($loanDetails);
-
-        //dd($newLoan);
-
-
-       // if(!$newLoan){
-
-            //\Log::info("Loan application was not creatd to firebase id => ".$loanApplication->firebaseid.' loan id '.$loanApplication->id);
-
-            //return redirect()->route('admin.loan-applications.index')->with('message','Loan Application Request was created successfully!');
-
-        //} else {
 
             return redirect()->route('admin.loan-applications.index')->with('success','Loan Application Request was created successfully!');
-
-        //}
     }
 
     public function edit(LoanApplication $loanApplication)
@@ -144,13 +130,6 @@ class LoanApplicationsController extends Controller
                 'approved' => true,
             ];
 
-            //$updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
-
-            //if(!$updateFirebaseLoan){
-
-                //return redirect()->back()->with('error','Loan Application was not updated successfully!');
-
-            //}
 
             $loanApplication->update($request->only('status_id'));
             
@@ -161,18 +140,6 @@ class LoanApplicationsController extends Controller
         } else if($request->status_id == 9){
 
             //rejected by accountant
-            //$data = [
-                //'status' => $request->status_id,
-                //'approved' => true,
-            //];
-
-            //$updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
-
-            //if(!$updateFirebaseLoan){
-
-                //return redirect()->back()->with('error','Loan Application was not updated successfully!');
-
-            //}
 
             $loanApplication->update($request->only('status_id'));
             
@@ -189,6 +156,7 @@ class LoanApplicationsController extends Controller
         $loanApplication->load('status', 'accountant', 'creditCommittee', 'created_by', 'logs.user', 'comments');
         $defaultStatus = Status::find(1);
         $user          = auth()->user();
+        //dd($loanApplication->logs);
         $logs          = AuditLogService::generateLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
         //dd($remaining);
@@ -516,9 +484,9 @@ class LoanApplicationsController extends Controller
 
     public function createPdf($id)
     {      
-          $loan = LoanApplication::select(['file'])->findOrFail();
+          $loan = LoanApplication::select(['file'])->findOrFail($id);
 
-          $pathToFile = storage_path('files/uploads/loanfiles/' . $book->file);
+          $pathToFile = storage_path('files/uploads/loanfiles/' . $loan->file);
         
           return response()->download($pathToFile);
     }

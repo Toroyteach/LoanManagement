@@ -42,6 +42,7 @@ class AuditLogService
                         $key           = Str::replaceFirst('_id', '', $key);
                         if (in_array($difference, [3, 4, 6, 7])) {
                             $column = in_array($difference, [3, 4]) ? 'analyst_id' : 'cfo_id';
+                            //dd($current);
                             $value['comment'] = $loanApplication->comments->where('user_id', $current[$column])->first()->comment_text;
                         }
                     } elseif (in_array($key, ['analyst_id', 'cfo_id'])) {
@@ -51,6 +52,7 @@ class AuditLogService
                     }
 
                     $changesString = '<b>' . Str::of($key)->replace('_', ' ')->title() . '</b>: ';
+                    //var_dump('<br>'.$changesString);
                     $changesString .= $previousValue ? 'from ' . $previousValue . ' to ' . $currentValue : 'set to ' . $currentValue;
                     $value['changes'][] = $changesString;
                 }

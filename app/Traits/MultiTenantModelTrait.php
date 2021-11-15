@@ -28,11 +28,11 @@ trait MultiTenantModelTrait
 
                     if ($user->is_accountant) {
 
-                        // $column = 'analyst_id';
+                        $column = 'analyst_id';
 
-                        // $field = sprintf('%s.%s', $builder->getQuery()->from, $column);
+                        $field = sprintf('%s.%s', $builder->getQuery()->from, $column);
 
-                        // $builder->where($field, auth()->id());
+                        $builder->where($field, auth()->id());
 
                     } else if ($user->is_creditCommittee) {
 

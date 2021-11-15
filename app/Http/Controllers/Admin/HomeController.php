@@ -194,6 +194,7 @@ class HomeController extends Controller
 
     public function markNotification(Request $request)
     {
+        
         auth()->user()
             ->unreadNotifications
             ->when($request->input('id'), function ($query) use ($request) {
@@ -207,11 +208,13 @@ class HomeController extends Controller
     public function requestGurantor(Request $request)
     {
 
-        $gurantorRequest = CreateGuarantorLoanRequest::where('user_id', auth()->user()->id)->where('request_id', 20)->firstOrFail();
+        //dd($request->all());
+        
+        $gurantorRequest = CreateGuarantorLoanRequest::where('user_id', auth()->user()->id)->where('id', $request->loan_id)->firstOrFail();
 
         $gurantorRequest->request_status = $request->choice;
 
-        //dd($gurantorRequest->request_status);
+        //dd($gurantorRequest);
 
         if($gurantorRequest->isDirty('request_status')){
 

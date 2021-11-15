@@ -51,7 +51,7 @@ class StatusChangeNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'loan_id' => $this->loanApplication->loan_entry_number,
+            'loan_id' => $this->loanApplication->id,
             'message_desc' => 'Loan Application status is '.$this->loanApplication->status->name,
             'loan_status' => $this->loanApplication->status->name,
             'notification_type' => 'CompleteLoanApplication',

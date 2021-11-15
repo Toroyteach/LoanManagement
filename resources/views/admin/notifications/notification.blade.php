@@ -144,7 +144,7 @@
 
                                   <!-- Monthly payment Analysis -->
 
-                                  <div class="container_fluid bg-secondary gurantor" style="padding:1em;">
+                                  <div class="container-fluid bg-secondary gurantor" style="padding:1em;">
                                         <div class="alert alert-success" role="alert">
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
@@ -162,10 +162,10 @@
                                                     </div>
                                                     <div class="col-md-5">
                                                         <div>
-                                                            <button class="btn btn-sm btn-secondary reject-gurantor" data-loan="{{ $notice->id }}" data-id="{{ $notice->data['member_id'] }}" >Reject</button>
+                                                            <button class="btn btn-sm btn-warning " onclick="submitResponse('Rejected')">Reject</button>
                                                         </div>
                                                         <div>
-                                                            <button class="btn btn-sm btn-success accept-gurantor" data-loan="{{ $notice->id }}" data-id="{{ $notice->data['member_id'] }}" >Accept</button>
+                                                            <button class="btn btn-sm btn-success " onclick="submitResponse('Accepted')">Accept</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -197,7 +197,115 @@
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
+    $(function() {
+        $('.mark-as-read').click(function() {
+            let request = sendMarkRequest($(this).data('id'));
+            request.done(() => {
+                $(this).parents('div.alert').remove();
+                            Swal.fire({
+                                  position: 'top-end',
+                                  icon: 'success',
+                                  title: "Request submitted successfully",
+                                  showConfirmButton: false,
+                                  timer: 2000
+                              });
+
+                              setTimeout(function(){
+                                    //location.reload();
+                            }, 2000);
+            });
+        });
+        $('#mark-all').click(function() {
+            let request = sendMarkRequest();
+            request.done(() => {
+                $('div.alert').remove();
+
+                            Swal.fire({
+                                  position: 'top-end',
+                                  icon: 'success',
+                                  title: "Request submitted successfully",
+                                  showConfirmButton: false,
+                                  timer: 2000
+                              });
+
+                              setTimeout(function(){
+                                    location.reload();
+                            }, 2000);
+            })
+        });
+        $('.accept-gurantor').click(function() {
+            let request = sendGurantorRequest('Accepted', $(this).data('id'), $(this).data('loan'));
+            request.done(() => {
+                $('.gurantor').remove();
+            })
+        });
+        $('.reject-gurantor').click(function() {
+            // console.log("this line")
+            let request = sendGurantorRequest('Rejected', $(this).data('id'), $(this).data('loan'));
+            request.done(() => {
+                $('.gurantor').remove();
+            })
+        });
+    });
+
+    function submitResponse(choice = null) {
+
+        let choiceMade = choice;
+        let loanid = "{{ $notice->data['member_id'] ?? '' }}";
+        let noticeid = "{{ $notice->id ?? '' }}";
+        let _token = $('meta[name="csrf-token"]').attr('content');
+
+        swal.fire({
+            title: "Gurantor Request",
+            icon: 'question',
+            text: "Are you sure you want to take this action. The request will be "+choiceMade+". This action is irreversible",
+            showCancelButton: !0,
+            confirmButtonText: "Yes, Submit",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: !0
+        }).then(function (e) {
+
+            if (e.value === true) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('admin.requestGurantor') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        loan_id: loanid,
+                        choice: choiceMade,
+                        requestid: noticeid
+                        },
+                    dataType: 'JSON',
+                    success: function (results) {
+                        if (results.status === true) {
+
+                            swal.fire("Done!", results.message, "success");
+                            // refresh page after 2 seconds
+                            setTimeout(function(){
+                                location.reload();
+                            },3000);
+
+                        } else if(results.status === false) {
+
+                            swal.fire("Error!", results.failure, "error");
+
+                        }
+                    }
+                });
+
+            } else {
+                e.dismiss;
+            }
+
+        }, function (dismiss) {
+            return false;
+        })
+
+    }
+
     function sendMarkRequest(id = null) {
+        console.log("this")
         return $.ajax("{{ route('admin.markNotification') }}", {
             method: 'POST',
             data: {
@@ -209,6 +317,7 @@
     }
 
     function sendGurantorRequest(choice = null, loanid, id) {
+        console.log(choice+" "+loanid+" "+id)
         return $.ajax("{{ route('admin.requestGurantor') }}", {
             method: 'POST',
             data: {
@@ -250,55 +359,5 @@
 
         });
     }
-
-    $(function() {
-        $('.mark-as-read').click(function() {
-            let request = sendMarkRequest($(this).data('id'));
-            request.done(() => {
-                $(this).parents('div.alert').remove();
-                            Swal.fire({
-                                  position: 'top-end',
-                                  icon: 'success',
-                                  title: "Request submitted successfully",
-                                  showConfirmButton: false,
-                                  timer: 2000
-                              });
-
-                              setTimeout(function(){
-                                    location.reload();
-                            }, 2000);
-            });
-        });
-        $('#mark-all').click(function() {
-            let request = sendMarkRequest();
-            request.done(() => {
-                $('div.alert').remove();
-
-                            Swal.fire({
-                                  position: 'top-end',
-                                  icon: 'success',
-                                  title: "Request submitted successfully",
-                                  showConfirmButton: false,
-                                  timer: 2000
-                              });
-
-                              setTimeout(function(){
-                                    location.reload();
-                            }, 2000);
-            })
-        });
-        $('.accept-gurantor').click(function() {
-            let request = sendGurantorRequest('Accepted', $(this).data('id'), $(this).data('loan'));
-            request.done(() => {
-                $('.gurantor').remove();
-            })
-        });
-        $('.reject-gurantor').click(function() {
-            let request = sendGurantorRequest('Rejected', $(this).data('id'), $(this).data('loan'));
-            request.done(() => {
-                $('.gurantor').remove();
-            })
-        });
-    });
 
     </script>

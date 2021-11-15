@@ -69,19 +69,6 @@ class UsersController extends Controller
                     'regex:/(254)[0-9]{9}/'
                 )
         ]);
-        //dd($request->all());
-        //created users account table as well
-
-        //$action->execute($request, $service);
-
-
-        // if($service->getUser($request->number)){
-
-        //     return redirect()->back()->with('error','Failed to create user Firebase details conflict');
-
-        // }
-
-        //get next of kin information
 
 
         $user = User::create($request->validated());
@@ -128,42 +115,6 @@ class UsersController extends Controller
         $user->save();
         $user->roles()->sync($request->input('roles', []));
 
-            	// Handle the user upload of avatar
-    	//if($request->hasFile('avatar')){
-            
-    		// $avatar = $request->file('avatar');
-    		// $filename = time() . '.' . $avatar->getClientOriginalExtension();
-    		// //Image::make($avatar)->resize(300, 300)->save('./uploads/avatars/' . $filename);
-        
-            // $avatar->move(public_path('/uploads/avatars/'), $filename);
-            // //Storage::disk('public')->put($filename, $avatar);
-
-    		// $user->avatar = $filename;
-    		// $user->save();
-
-            // $this->validate($request, [
-            //     'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-            // ]);
-            // // Get image file
-            // $image = $request->file('avatar');
-            // // Make a image name based on user name and current timestamp
-            // $name = Str::slug($request->input('lastname')).'_'.time();
-            // // Define folder path
-            // $folder = '/uploads/users/images/';
-            // // Make a file path where image will be stored [ folder path + file name + file extension]
-            // $filePath = $folder . $name. '.' . $image->getClientOriginalExtension();
-            // // Upload image
-            // //$this->uploadOne($image, $folder, 'public', $name);
-            // $request->avatar->storeAs($filePath, $name . "." . $image->getClientOriginalExtension(), 'public');
-            // // Set user profile image path in database to filePath
-            // $user->avatar = $filePath;
-            // $user->save();
-            // //$request->avatar = $filePath;
-            // //dd($filePath);
-            // //$input['profile_image'] = $filePath;
-            // //dd($input);
-
-    	//}
 
         if ($request->has('avatar')) {
             $filename = time() . '_' . $request->file('avatar')->getClientOriginalName();
@@ -172,45 +123,7 @@ class UsersController extends Controller
     		$user->save();
         }
 
-        //dd('saved');
-        
-        //dd('user created');
-        //create base64 username/email and password 
-
-        //create fiorebase calls to insert to firebase
-        // $userProperties = [
-        //     'email' => $user->email,
-        //     'emailVerified' => false,
-        //     'phoneNumber' => '+'.$request->number,
-        //     'password' => $request->password,
-        //     'displayName' => $user->firstname.' '.$user->lastname,
-        //     'photoUrl' => '',
-        //     'disabled' => false,
-        //     'uid' => $uid,
-        // ];
-        //check if you can add extra field idno. you cant
-
-        //dd($userProperties);
-
-        //$newUser = $service->createUser($userProperties);
-
-        //if(!$newUser){
-            //dd('error creating new user');
-            //return redirect()->route('admin.users.index')->with('error','User created successfully!, Error creating firebase');
-
-        //} else {
-
             return redirect()->route('admin.users.index')->with('success','User created successfully!');
-
-        //}
-
-        //return redirect()->route('admin.users.index');
-
-        //$action->getTargetUrl();
-    }
-
-    public function createUserAccounts($params)
-    {
 
     }
 
@@ -227,25 +140,24 @@ class UsersController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        //update firebase data
-        //updates from admins control
-        // $firebaseUser = $service->updateUser($request->all(), $user->firebaseid);
 
-        // if($firebaseUser){
             $user->update($request->all());
             $user->roles()->sync($request->input('roles', []));
 
-            return redirect()->route('admin.users.index')->with('success','User updated successfully!');
-        // }
+            if ($request->has('avatar')) {
+                $filename = time() . '_' . $request->file('avatar')->getClientOriginalName();
+                $request->file('avatar')->storeAs('profileavatar', $filename, 'uploads');
+                $user->avatar = $filename;
+                $user->save();
+            }
 
-        // return redirect()->back()->with('error','Failed to update user records');
+            return redirect()->route('admin.users.index')->with('success','User updated successfully!');
+
     }
 
     public function updateAdminProfile(AdminUpdateRequest $request, User $user)
     {
-        //dd($request->validated());
-        //updates admin profile
-        //dd($request->validated());
+
         $user->update($request->validated());
 
         // if ($request->has('avatar')) {
@@ -505,7 +417,6 @@ class UsersController extends Controller
     protected function updateMonthlyContribution(Request $request)
     {
         //ajax request to update database on users monthly contribution
-
         abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //handle logic to update monthly amount

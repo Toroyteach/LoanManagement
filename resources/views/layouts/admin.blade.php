@@ -62,15 +62,11 @@
 
             <nav class="navbar navbar-dark bg-dark navbar-expand-sm">
 
-            <div class="collapse navbar-collapse " id="navbarSupportedContent">
-                <ul class="navbar-nav ml-auto navbar-right-top">
-                    <li class="nav-item">
-                        <div id="custom-search" class="top-search-bar"> 
-                          <input class="form-control" type="text" placeholder="Search.."> 
-                        </div>
-                    </li>
+            <div class=" navbar-collapse" id="navbarSupportedContent" id="menunav">
+            
+                <ul class="ml-auto navbar-right-top list-inline">
 
-                    <li class="nav-item dropdown notification"> 
+                    <li class="nav-item dropdown notification list-inline-item"> 
 
                       @if($notifications < 1)
                       
@@ -109,7 +105,7 @@
 
                                               @if($notice->data['notification_type'] == 'NewLoanApplication')
                                               <!-- new loan application notification -->
-                                                <a href="#" class="list-group-item list-group-item-action active">
+                                                <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}" class="list-group-item list-group-item-action active">
                                                       <div class="notification-info">
                                                         <div class="notification-list-user-img"><i class="fa fa-envelope fa-3x" aria-hidden="true"></i></div>
                                                         <div class="notification-list-user-block">
@@ -121,7 +117,7 @@
                                                 </a> 
                                               @elseif($notice->data['notification_type'] == 'StatusAnalysis')
                                               <!-- loan status analysis notification -->
-                                              <a href="#" class="list-group-item list-group-item-action active">
+                                              <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}" class="list-group-item list-group-item-action active">
                                                       <div class="notification-info">
                                                         <div class="notification-list-user-img"><i class="fa fa-flag fa-3x" aria-hidden="true"></i></div>
                                                         <div class="notification-list-user-block">
@@ -133,7 +129,7 @@
                                                 </a> 
                                               @elseif($notice->data['notification_type'] == 'LoanAnalysis')
                                               <!-- loan analysis notification -->
-                                              <a href="#" class="list-group-item list-group-item-action active">
+                                              <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}" class="list-group-item list-group-item-action active">
                                                       <div class="notification-info">
                                                         <div class="notification-list-user-img"><i class="fa fa-line-chart fa-3x" aria-hidden="true"></i></div>
                                                         <div class="notification-list-user-block">
@@ -145,7 +141,7 @@
                                                 </a> 
                                               @elseif($notice->data['notification_type'] == 'CompleteLoanApplication')
                                               <!-- completed loan notification -->
-                                              <a href="#" class="list-group-item list-group-item-action active">
+                                              <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}" class="list-group-item list-group-item-action active">
                                                       <div class="notification-info">
                                                         <div class="notification-list-user-img"><i class="fa fa-hourglass-end fa-3x" aria-hidden="true"></i></div>
                                                         <div class="notification-list-user-block">
@@ -157,7 +153,7 @@
                                                 </a> 
                                               @elseif($notice->data['notification_type'] == 'MonthlyContribution')
                                               <!-- monthly contribution -->
-                                              <a href="#" class="list-group-item list-group-item-action active">
+                                              <a href="{{ route('admin.viewnotification') }}" class="list-group-item list-group-item-action active">
                                                       <div class="notification-info">
                                                         <div class="notification-list-user-img"><i class="fa fa-calendar fa-3x" aria-hidden="true"></i></div>
                                                         <div class="notification-list-user-block">
@@ -169,7 +165,7 @@
                                                 </a> 
                                               @elseif($notice->data['notification_type'] == 'GuarantorRequest')
                                               <!-- gurantor request notification -->
-                                              <a href="#" class="list-group-item list-group-item-action active">
+                                              <a href="{{ route('admin.viewnotification') }}" class="list-group-item list-group-item-action active">
                                                       <div class="notification-info">
                                                         <div class="notification-list-user-img"><i class="fa fa-user-plus fa-3x" aria-hidden="true"></i></div>
                                                         <div class="notification-list-user-block">
@@ -200,7 +196,7 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item dropdown nav-user"> 
+                    <li class="nav-item dropdown nav-user list-inline-item"> 
                         <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           @if(!empty(Auth::user()->avatar) && Auth::user()->avatar != 'default.jpg')
                               <img src="{{ asset( 'img/uploads/profileavatar/'.Auth::user()->avatar ) }}" alt="" class="user-avatar-md rounded-circle">

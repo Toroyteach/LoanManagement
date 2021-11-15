@@ -52,7 +52,7 @@ class SubmittedAnalysisNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'loan_id' => $this->loanApplication->loan_entry_number,
+            'loan_id' => $this->loanApplication->id,
             'message_desc' => 'Please review the folowing status change',
             'message_desc_1' => $this->loanApplication->status->name,
             'message_comment' => $this->loanApplication->comments()->latest()->first()->comment_text,

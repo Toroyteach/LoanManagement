@@ -138,7 +138,7 @@ class Request extends Component
 
     public function mount()
     {
-        $this->elligibleamount =  $this->getUserElligibleAmount();
+        $this->elligibleamount = $this->getUserElligibleAmount();
         //dd($this->elligibleamount);
         $this->checkRequestStatus();
 
@@ -296,10 +296,11 @@ class Request extends Component
                     $this->step1 = true;
                     $this->file = $request->file;
 
-                    //dd($this->loan_type);
-
                     // $this->getGurantors();
                     $this->delReqBtn = true;
+
+                    //show lona details
+                    $this->showLoanDetails($request->loan_type);
 
                     //session()->flash('message','You have Pending loan Application Request');
 
@@ -601,6 +602,7 @@ class Request extends Component
             $loanDetails = CreateLoanRequest::select(['loan_amount', 'description', 'loan_type', 'duration', 'file'])->findOrFail($this->loan_request_id);
 
             $entryNumber = mt_rand(100000, 1000000);
+            //$defaluted = Carbon::
             //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration);
             $loanApplication = LoanApplication::create([
                 'loan_entry_number' => $entryNumber,
@@ -608,8 +610,10 @@ class Request extends Component
                 'description' => $loanDetails->description,
                 'loan_type' => $loanDetails->loan_type,
                 'duration' => $loanDetails->duration,
-                'defaulted_date' => Carbon::parse($loanDetails->duration)->addMonths(3),
-                'file' => $loanDetails->file
+                'defaulted_date' => Carbon::now()->addMonths($loanDetails->duration + 3),
+                'analyst_id' => 3,
+                'file' => $loanDetails->file,
+                'repayment_date' => date('Y-m-d', strtotime($this->duration.' months'))
             ]);
 
             $gurantors = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->where('request_status', 'Accepted')->get();
@@ -619,40 +623,12 @@ class Request extends Component
 
             foreach($gurantors as $key => $guarantor){
                 LoanGuarantor::create([
-                    'user_id' => $guarantor->id,
+                    'user_id' => $guarantor->user_id,
                     'loan_application_id' => $loanApplication->id,
                 ]);
             }
 
     
-            //create fiorebase calls to insert to firebase
-            $random = Str::random(20);
-            //dd($random);
-    
-            $loanDetails = [
-                'loanentrynumber' => $entryNumber,
-                'loandescription' => $loanApplication->description,
-                'amount' => $loanApplication->loan_amount,
-                'created_at' => $loanApplication->created_at,
-                'id' => $loanApplication->created_by->firebaseid,
-                'status' => $loanApplication->status_id,
-                'docID' => $random,
-            ];
-    
-            $loanApplication->firebaseid = $random;
-            $loanApplication->repayment_date = date('Y-m-d', strtotime($this->duration.' months'));
-            $loanApplication->save();
-            
-            //$newLoan = $service->createLoan($loanDetails);
-    
-            //dd($newLoan);
-    
-    
-            //if(!$newLoan){
-    
-                //return false;
-    
-            //} else {
 
                 //deleted record from loan request
                 $requestDetails = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
@@ -664,7 +640,6 @@ class Request extends Component
           
                 $this->currentStep = 1;
     
-            //}
     }
   
     /**
@@ -689,17 +664,17 @@ class Request extends Component
         //get the changed loan type and calculate interest etc and update duration
 
         switch ($this->loan_type) {
-            case "emergency":
-                $this->calculateInterest("emergency"); // twelf months duration
+            case "Emergency":
+                $this->calculateInterest("Emergency"); // twelf months duration
               break;
-            case "instantloan":
-                $this->calculateInterest("instantloan"); // twelf months duration;
+            case "InstantLoan":
+                $this->calculateInterest("InstantLoan"); // twelf months duration;
               break;
-            case "schoolfees":
-                $this->calculateInterest("schoolfees"); // twelf months duration
+            case "SchoolFees":
+                $this->calculateInterest("SchoolFees"); // twelf months duration
               break;
-            case "development":
-                $this->calculateInterest("development"); // twelf months duration
+            case "Development":
+                $this->calculateInterest("Development"); // twelf months duration
               break;
             default:
                 $this->duration = " ";
@@ -708,29 +683,6 @@ class Request extends Component
           //dd($this->loan_type);
 
     }
-
-    // public function loadApplicationDetails()
-    // {
-    //     //get users loan request
-    //     $previousRequest = CreateLoanRequest::where('user_id', auth()->user()->id)->get();
-
-    //     if($previousRequest){
-    //         // fill form
-
-    //         $this->amount = $previousRequest->loan_amount;
-
-    //         $this->description = $previousRequest->description;
-    
-    //         $this->loan_type = $previousRequest->loan_type;
-    
-    //         $this->file = $previousRequest->file;
-    
-
-    //     } else {
-    //         //empty form fields
-    //     }
-
-    // }
 
          //interest calculator
      //$elligibleamount, $interest, $totalplusinterest, $repaymentdate;
@@ -744,6 +696,12 @@ class Request extends Component
         $this->repaymentdate = Carbon::now()->addMonths(config('loantypes'.$type.'max_duration'));//today plus config months
 
         //dd($this->elligibleamount, $this->interest, $this->totalplusinterest,  $this->repaymentdate);
+     }
+
+     public function showLoanDetails($type)
+     {
+        $this->totalplusinterest = $this->totalWithInterest($type);
+        $this->repaymentdate = Carbon::now()->addMonths(config('loantypes'.$type.'max_duration'));
      }
 
      public function getUserElligibleAmount()
@@ -765,14 +723,16 @@ class Request extends Component
      {
 
         $loan_types_config = config('loantypes.'.$type);
+        //dd(config('loantypes.'.$type));
         $amountRequest = $this->amount;
 
-        if($type == 'emergency' || $type == 'schoolfees' || $type == 'development'){
 
-            //$interestAccumulated = $this->onReducingLoanBalance($loan_types_config['max_duration']);
+        if($type == 'Emergency' || $type == 'SchoolFees' || $type == 'Development'){
             
-            $total = $this->onReducingLoanBalance($loan_types_config['max_duration']);
-            //$this->interestamount = $total - $amountRequest;
+            $total = $this->onReducingLoanBalance($loan_types_config['max_duration'], $loan_types_config['interest']);
+            $this->interestamount = $total - $amountRequest;
+            //add the new interest amount in the the display amount
+            //dd($total);
 
         } else {
 
@@ -786,15 +746,14 @@ class Request extends Component
 
      }
 
-     public function onReducingLoanBalance($time)
+     public function onReducingLoanBalance($time, $rate)
      {
         
         
         $principal = $this->amount;
-        $rate = 0.01;
         $accumulatedAmount = 0;
 
-        $amounpaid = 800;//from db check the amount paid in last month
+        $amounpaid = 0;//from db check the amount paid in last month
 
         for($x = 0; $x < $time; $x++){
 
@@ -802,27 +761,26 @@ class Request extends Component
 
                 $startingAmount = $principal;
 
-                $accumulatedAmount =  ($startingAmount * $rate) + $principal;
+                $accumulatedAmount =  ($startingAmount * ($rate / 100)) + $principal;
 
-                 //dd($accumulatedAmount);
 
             } else {
 
                 $startingAmount = $accumulatedAmount;
 
-                $secondAmount = (($startingAmount * $rate) + $startingAmount) - $amounpaid;
+                $secondAmount = (($startingAmount * ($rate / 100)) + $startingAmount) - $amounpaid;
 
                 unset($accumulatedAmount);
 
                 $accumulatedAmount = $secondAmount;
 
-                //dd($accumulatedAmount);
             }
 
 
         }
 
-        return $accumulatedAmount;
+        $rounded = number_format((float)$accumulatedAmount, 2, '.', '');
+        return $rounded;
      }
 
      public function alertSuccess()

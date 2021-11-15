@@ -27,19 +27,19 @@ class CreateGuarantorRequestObserver
 
         $user = [
             'id' => $createGuarantorLoanRequest->id,
-            'description' => 'A member '.$requestorName.' has requested you to become there guarantor.',
+            'description' => $requestorName.' has requested you to become there guarantor. Click here to take action',
             'name' => $member->name
         ];
 
         //dd($user->user_id);
 
-        //$member->notify(new LoanGuarantorsNotification($user));
+        $member->notify(new LoanGuarantorsNotification($user));
 
         //Http::fake();
 
         if($this->smsEnabled()){
         
-            $message = "Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject";
+            $message = "Dear $member->firstname. $requestorName has listed you as a guarantor to a loan with Mtangazaji Sacco. If you wish to decline contact 0726616120  or log on to the website www.mtangazajisacco.co.ke within 48hours to decline.";
             //'sms' =>  'Dear Member. '.$requestorName.' a member has requested you to be there gurantor. Please note if you do not act in 24hrs it will be assumed you accepted. Contact your administrator or log in to the website to reject',
 
             $this->sendSms($member->id, $message);

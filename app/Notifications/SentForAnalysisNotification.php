@@ -50,7 +50,7 @@ class SentForAnalysisNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            'loan_id' => $this->loanApplication->loan_entry_number,
+            'loan_id' => $this->loanApplication->id,
             'message_desc' => 'You have a loan application request to analyse',
             'notification_type' => 'LoanAnalysis',
         ];

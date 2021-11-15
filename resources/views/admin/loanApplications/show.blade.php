@@ -169,7 +169,7 @@
                             Files Attached
                         </th>
                         <td>
-                            <a class="btn btn-md btn-primary" href="{{ route('admin.loans.pdf', $loanApplication->id ) }}">Download File</a>
+                            @if(!empty($loanApplication->file))<a class="btn btn-md btn-primary" href="{{ route('admin.loans.pdf', $loanApplication->id ) }}">Download Attached File</a>@endif
                         </td>
                     </tr>
                     @if(!$user->is_member)
@@ -274,18 +274,18 @@
                     <form action="{{ route('admin.loan-applications.destroy', $loanApplication->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="submit" class="btn btn-lg btn-danger" value="{{ trans('global.delete') }}">
+                        <input type="submit" class="btn btn-md btn-danger" value="{{ trans('global.delete') }}">
                     </form>
                 @endcan
             </div>
             <div class="form-group">
-                <a class="btn btn-lg btn-info" href="{{ route('admin.loan-applications.index') }}">
+                <a class="btn btn-md btn-info" href="{{ route('admin.loan-applications.index') }}">
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>
             @can('loan_application_repay')
             <div class="form-group">
-                <a class="btn btn-lg btn-danger text-white" onclick="makeLoanRepaymenRequest()">
+                <a class="btn btn-md  btn-warning text-white" onclick="makeLoanRepaymenRequest()">
                     Make Payment Request
                 </a>
             </div>

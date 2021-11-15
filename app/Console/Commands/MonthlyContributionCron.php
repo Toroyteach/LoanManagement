@@ -90,7 +90,7 @@ class MonthlyContributionCron extends Command
                             'user' => env('SMS_USERNAME', 'null'),
                             'password' => env('SMS_PASSWORD', 'null'),
                             'mobiles' => $memberNumber->number,
-                            'sms' =>  'Dear Member you are reminder to make your monthly contribution before on coming deadline',
+                            'sms' =>  'Dear '.$memberNumber->name.' you are reminded to make your monthly contribution before on coming deadline',
                             'unicode' => 0,
                             'senderid' => env('SMS_SENDERID', 'null'),
                         ]);

@@ -263,7 +263,7 @@
         e.preventDefault(e);
 
     swal.fire({
-            title: "Create Mmeber",
+            title: "Create Member",
             icon: 'question',
             text: "Your are about to create a member. Please check details, then confirm!",
             showCancelButton: !0,

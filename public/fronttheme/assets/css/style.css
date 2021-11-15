@@ -2161,10 +2161,16 @@ section {
     color: #808080;
 }
 .navbar-logo-centered .navbar-nav .nav-link{
-    padding: .5em 1em;
+    padding: .1em 1em;
 }
 
 #navBarAdjust{
   position: relative;
   padding-top: 30px;
+}
+
+/* backend navigation css */
+
+#menunav ul > li {
+  display:inline;
 }

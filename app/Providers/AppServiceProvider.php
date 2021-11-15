@@ -29,15 +29,12 @@ class AppServiceProvider extends ServiceProvider
     {
         //
 
-        //TwoStepAuthTable::observe(TwoStepAuthTableObserver::class);
-
         view()->composer('layouts.admin', function ($view) {
             $view->with('notifications', auth()->user()->unreadNotifications()->groupBy('notifiable_type')->count());
-            $view->with('notificationDescription', auth()->user()->unreadNotifications);
+            $view->with('notificationDescription', auth()->user()->unreadNotifications()->take(7)->get());
         });
 
-        //dd(User::find(6)->unreadNotifications);
-        //observe the model class and send text notifications
+        //observers to send OTP code to the client
         TwoStepAuth::observe(TwoStepAuthTableObserver::class);
     }
 }

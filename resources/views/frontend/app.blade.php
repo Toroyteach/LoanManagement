@@ -73,9 +73,9 @@
 
                 <a class="d-none d-lg-block" href="#"><img src="{{ asset ( 'onepage/mtangazaji.png')}}" width="100%" height="100" alt="" class="img-responsive"></a>
 
-                <li class="nav-item ml-3 mr-3">
+                <!-- <li class="nav-item ml-3 mr-3">
                     <a class="nav-link" href="{{ route('resources')}}"id="navBarAdjust">Resources</a>
-                </li>
+                </li> -->
                 <li class="nav-item ml-3 mr-3">
                     <a class="nav-link" href="{{ route('contact')}}"id="navBarAdjust">Contact us</a>
                 </li>

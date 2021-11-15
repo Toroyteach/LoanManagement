@@ -52,22 +52,22 @@
                                 <div class="row">
                                     <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Interest</span>
-                                        <p class="mt-0 sep" wire:model="interest" id="interest"> {{$interest}}%.</p>
+                                        <p class="mt-0 sep" wire:model="interest" id="interest"> {{$interest ?? '0'}}%.</p>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Repayment Date</span>
-                                        <p class="mt-0 sep" id="repaymentdate">{{$repaymentdate}}.</p>
+                                        <p class="mt-0 sep" id="repaymentdate">{{$repaymentdate ?? '-'}}.</p>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Total Interest</span>
-                                        <p class="mt-0 sep" id="totalplusinterest">ksh{{$interestamount}}.</p>
+                                        <p class="mt-0 sep" id="totalplusinterest">ksh{{$interestamount ?? '0'}}.</p>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-sm-12">
                                         <span class="media-date">Total plus Interest</span>
-                                        <p class="mt-0 sep" id="totalplusinterest"> ksh{{$totalplusinterest}}</p>
+                                        <p class="mt-0 sep" id="totalplusinterest"> ksh{{$totalplusinterest ?? '0'}}</p>
                                     </div>
                                 </div>
 
@@ -78,6 +78,22 @@
 
     <div class="conatiner_fluid" style="padding-bottom:5em">
         <div class="row">
+
+        <div wire:loading wire:target="secondStepConfirmSave">
+
+            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+
+        </div>
+
+        <div wire:loading wire:target="submitFinalForm">
+
+            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+
+        </div>
             
             <div class="col-md-12 col-sm-12 col-xs-12 card-body applycard" style="position:relative; background-color: #d7ded7; @if($currentStep == 3) height: 68em; @elseif($currentStep ==2) height: 38em !important; @endif">
                 
@@ -113,6 +129,14 @@
 
                             </div>
 
+                            <div wire:loading wire:target="submitForm">>
+
+                                <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+
+                            </div>
+
                             <div class="row ic1">
                                 <div class=" col-md-6 col-sm-6 col-xs-12 input-container" id="amount">
                                     <input type="number" wire:model="amount" name="amount" class="input" placeholder=" " id="amount" required>
@@ -137,10 +161,10 @@
                                     
                                     <select class="form-select" wire:model="loan_type" id='loan_type' name="loan_type" wire:change="updateDuration" aria-label="Default select example" required>
                                         <option>Choose Loan Type</option>
-                                        <option value="emergency">Emergency</option>
-                                        <option value="instantloan">Instant Loan</option>
-                                        <option value="schoolfees">School Fees</option>
-                                        <option value="development">Development</option>
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="InstantLoan">Instant Loan</option>
+                                        <option value="SchoolFees">School Fees</option>
+                                        <option value="Development">Development</option>
                                     </select>
                                     @error('loan_type') <span class="text-danger">{{ $message }}</span> @enderror
                                     
