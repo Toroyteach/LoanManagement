@@ -150,7 +150,7 @@ class HomeController extends Controller
     public function getPieChartData($userType, $id)
     {
         $loanTypeValues = array();
-        $loanTypeKey = array('Emergency', 'SchoolFees', 'Development', 'TopUp');
+        $loanTypeKey = array('emergency', 'education', 'development', 'instantloan');
 
         if($userType == 'Admin'){
             for ($x = 0; $x <= 3; $x++) {
@@ -187,7 +187,7 @@ class HomeController extends Controller
 
     public function notifications()
     {
-        $notifications = auth()->user()->unreadNotifications;
+        $notifications = auth()->user()->notifications;
 
         return view('admin.notifications.notification', compact('notifications'));
     }

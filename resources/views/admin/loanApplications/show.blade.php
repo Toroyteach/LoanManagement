@@ -265,9 +265,14 @@
                             @endif  
 
                 @if((Gate::allows('loan_application_edit') and ($user->is_admin or $user->accountant)) && $loanApplication->status_id == 6)
-                    <a class="btn btn-lg btn-success" href="{{ route('admin.loan-applications.edit', $loanApplication->id) }}">
-                        Finalize Application
-                    </a>
+                    <form method="POST" action="{{ route('admin.loan-applications.update', [$loanApplication->id]) }}">
+                        @method('PUT')
+                        @csrf
+                            <input type="hidden" name="loan_amount" id="loan_amount" value="{{ $loanApplication->loan_amount }}" required>
+                            <input type="hidden" name="status_id" id="status_id" value="8" required>
+
+                            <button class="btn btn-lg btn-success" type="submit"> Finalize Application</button>
+                    </form>
                 @endif
 
                 @can('loan_application_delete')
@@ -283,13 +288,15 @@
                     {{ trans('global.back_to_list') }}
                 </a>
             </div>
-            @can('loan_application_repay')
-            <div class="form-group">
-                <a class="btn btn-md  btn-warning text-white" onclick="makeLoanRepaymenRequest()">
-                    Make Payment Request
-                </a>
-            </div>
-            @endcan
+            @if($loanApplication->status_id == 8)
+                @can('loan_application_repay')
+                <div class="form-group">
+                    <a class="btn btn-md  btn-warning text-white" onclick="makeLoanRepaymenRequest()">
+                        Make Payment Request
+                    </a>
+                </div>
+                @endcan
+            @endif
         </div>
     </div>
 </div>

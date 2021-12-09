@@ -115,9 +115,8 @@
                                     @if(($user->is_accountant or $user->is_admin) && in_array($loanApplication->status_id, [1, 2, 3]))
                                         
                                                 @if($loanApplication->status_id == 1)
-                                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
-                                                    Submit Analysis
-                                                    <!-- here the accountant sets the loan to status 3(approved) or 4(rejected) then its moved to next stage 5(creditcommittee processing) -->
+                                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showSend', $loanApplication->id) }}">
+                                                    Submit to Accountant
                                                 </a>
                                                 @elseif($loanApplication->status_id == 2)
                                                 <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
@@ -147,12 +146,6 @@
                                         {{ trans('global.view') }}
                                     </a>
                                 @endcan
-
-                                @if((Gate::allows('loan_application_edit') && ($user->is_admin or $user->is_accountant)) && $loanApplication->status_id == 6)<br>
-                                    <a class="btn btn-xs btn-warning" href="{{ route('admin.loan-applications.edit', $loanApplication->id) }}">
-                                        Finalize
-                                    </a>
-                                @endif
 
                                 @can('loan_application_delete')<br>
                                     <form action="{{ route('admin.loan-applications.destroy', $loanApplication->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">

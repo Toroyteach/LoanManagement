@@ -6,12 +6,13 @@
                                   <!-- new loan application notification -->
 
                                     <div class="container_fluid bg-secondary" style="padding:1em;">
-                                        <div class="alert alert-success" role="alert">
+                                    @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
                                                     Mark as read
                                                 </a>
                                             </div>
+                                            @endif
 
                                             <div class="container">
                                                 @if(Auth::user()->is_user)
@@ -37,11 +38,13 @@
 
                                     <div class="container_fluid bg-secondary" style="padding:1em;">
                                         <div class="alert alert-success" role="alert">
+                                        @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
                                                     Mark as read
                                                 </a>
                                             </div>
+                                            @endif
 
                                             <div class="container">
                                                 <strong class="">New Loan Application Status</strong>
@@ -63,11 +66,13 @@
 
                                     <div class="container_fluid bg-secondary" style="padding:1em;">
                                         <div class="alert alert-success" role="alert">
+                                        @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
                                                     Mark as read
                                                 </a>
                                             </div>
+                                            @endif
 
                                             <div class="container">
                                                 <strong class="">New Loan Analysis Report</strong>
@@ -91,11 +96,13 @@
 
                                     <div class="container_fluid bg-secondary" style="padding:1em;">
                                         <div class="alert alert-success" role="alert">
+                                        @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
                                                     Mark as read
                                                 </a>
                                             </div>
+                                            @endif
 
                                             <div class="container">
                                                 <strong class="">Loan Application Status </strong>
@@ -119,11 +126,13 @@
 
                                     <div class="container_fluid bg-secondary" style="padding:1em;">
                                         <div class="alert alert-success" role="alert">
+                                        @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
                                                     Mark as read
                                                 </a>
                                             </div>
+                                            @endif
 
                                             <div class="container">
                                                 <strong class="">Monthly Contribution</strong>
@@ -145,12 +154,14 @@
                                   <!-- Monthly payment Analysis -->
 
                                   <div class="container-fluid bg-secondary gurantor" style="padding:1em;">
-                                        <div class="alert alert-success" role="alert">
-                                            <div class="conatiner">
+                                        <div class="alert alert-success">
+                                            @if(empty($notice->read_at))
+                                            <div class="conatiner" role="alert">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
                                                     Mark as read
                                                 </a>
                                             </div>
+                                            @endif
 
                                             <div class="container">
                                                 <div class="row">
@@ -160,7 +171,9 @@
                                                             <p class="">{{ $notice->data['message_desc'] }}</p>
                                                         </div>
                                                     </div>
+                                                @if(empty($notice->read_at))
                                                     <div class="col-md-5">
+                                                    <input type="hidden" value="{{ $notice->data['member_id'] ?? '' }}" id="loanrequestid">
                                                         <div>
                                                             <button class="btn btn-sm btn-warning " onclick="submitResponse('Rejected')">Reject</button>
                                                         </div>
@@ -168,6 +181,8 @@
                                                             <button class="btn btn-sm btn-success " onclick="submitResponse('Accepted')">Accept</button>
                                                         </div>
                                                     </div>
+                                                @endif
+                                                
                                                 </div>
                                             </div>
 
@@ -211,14 +226,14 @@
                               });
 
                               setTimeout(function(){
-                                    //location.reload();
-                            }, 2000);
+                                    location.reload();
+                            }, 1000);
             });
         });
         $('#mark-all').click(function() {
             let request = sendMarkRequest();
             request.done(() => {
-                $('div.alert').remove();
+                 $('div.alert').remove();
 
                             Swal.fire({
                                   position: 'top-end',
@@ -230,7 +245,7 @@
 
                               setTimeout(function(){
                                     location.reload();
-                            }, 2000);
+                            }, 1000);
             })
         });
         $('.accept-gurantor').click(function() {
@@ -251,7 +266,7 @@
     function submitResponse(choice = null) {
 
         let choiceMade = choice;
-        let loanid = "{{ $notice->data['member_id'] ?? '' }}";
+        let loanid = document.getElementById('loanrequestid').value
         let noticeid = "{{ $notice->id ?? '' }}";
         let _token = $('meta[name="csrf-token"]').attr('content');
 

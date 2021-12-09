@@ -611,12 +611,12 @@ class Request extends Component
                 'loan_type' => $loanDetails->loan_type,
                 'duration' => $loanDetails->duration,
                 'defaulted_date' => Carbon::now()->addMonths($loanDetails->duration + 3),
-                'analyst_id' => 3,
+                // 'analyst_id' => 3,
                 'file' => $loanDetails->file,
                 'repayment_date' => date('Y-m-d', strtotime($this->duration.' months'))
             ]);
 
-            $gurantors = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->where('request_status', 'Accepted')->get();
+            $gurantors = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->get();
 
             //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration, $this->loan_request_id, $gurantors);
 

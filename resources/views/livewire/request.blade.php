@@ -121,7 +121,7 @@
                         <div class="col-md-12">
                             <h3> Fill in Loan Details</h3>
 
-                            <div wire:loading wire:target="firstStepSubmit">>
+                            <div wire:loading wire:target="firstStepSubmit">
 
                                 <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
                                     <span class="sr-only">Loading...</span>
@@ -169,7 +169,8 @@
                                     @error('loan_type') <span class="text-danger">{{ $message }}</span> @enderror
                                     
                                 </div><br><br><br>
-                                <div class="col-md-6 col-sm-6 col-xs-12 input-container" id>
+
+                                <div class="col-md-6 col-sm-6 col-xs-12 input-container" id="loanDesc">
                                     <textarea type="text" wire:model="description" class="input" id="description" placeholder=" " required></textarea>
                                     @error('description') <span class="text-danger">{{ $message }}</span> @enderror
                                     <div class="cut"></div>
@@ -177,9 +178,11 @@
                                 </div>
                             </div><br><br><br><br>
 
-                            <button class="btn btn-primary nextBtn btn-md" id="nextBtn" wire:click="firstStepSubmit" type="button" style="">Save</button>
-                            <button class="btn btn-warning nextBtn btn-md"  id="nextBtn"wire:click="cofirmDeleteRequest" type="button" style=""{{ (($delReqBtn)) ? '' : 'disabled' }}>Delete Application</button>
-                            <button class="btn btn-success btn-md pull-right nextBtn" id="nextBtn" wire:click="nextRequestStep" type="button" style="" {{ (($step1)) ? '' : 'disabled' }}>Next</button>
+                            <div class="container_fluid">
+                                <button class="btn btn-primary nextBtn btn-md" id="nextBtn" wire:click="firstStepSubmit" type="button" style="">Save</button>
+                                <button class="btn btn-warning nextBtn btn-md"  id="nextBtn"wire:click="cofirmDeleteRequest" type="button" style=""{{ (($delReqBtn)) ? '' : 'disabled' }}>Delete Application</button>
+                                <button class="btn btn-success btn-md pull-right nextBtn" id="nextBtn" wire:click="nextRequestStep" type="button" style="" {{ (($step1)) ? '' : 'disabled' }}>Next</button>
+                            </div>
                         </div>
                         
                     </div>
@@ -238,7 +241,7 @@
 
                                                         <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
 
-                                                            <input type="text" class="form-control" placeholder="Enter Name" wire:model="gurantorsChoice.{{ $key }}.name" required>
+                                                            <input type="text" class="form-control" placeholder="Enter Name" wire:model="gurantorsChoice.{{ $key }}.name" required disabled>
 
                                                         </div>
 
@@ -280,9 +283,9 @@
                                 </div>
                             </div>
 
-                            <button class="btn btn-primary nextBtn btn-lg pull-right" type="button" wire:click="nextRequestStep"{{ (($step2)) ? '' : 'disabled' }}>Next</button>
-                            <button class="btn btn-success nextBtn btn-lg pull-right" type="button" wire:click="secondStepSave" {{ (($step2save)) ? '' : 'disabled' }}>Save</button>
-                            <button class="btn btn-danger nextBtn btn-lg pull-left" type="button" wire:click="previousRequestStep">Back</button>
+                            <button class="btn btn-primary nextBtn btn-md pull-right" type="button" wire:click="nextRequestStep"{{ (($step2)) ? '' : 'disabled' }}>Next</button>
+                            <button class="btn btn-success nextBtn btn-md pull-right" type="button" wire:click="secondStepSave" {{ (($step2save)) ? '' : 'disabled' }}>Save</button>
+                            <button class="btn btn-danger nextBtn btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
                         </div>
                     </div>
 
@@ -356,8 +359,8 @@
 
                             </div>
 
-                            <button class="btn btn-success btn-lg pull-right" wire:click="submitForm" type="button" {{ (($step3)) ? '' : 'disabled' }}>Finish!</button>
-                            <button class="btn btn-danger nextBtn btn-lg pull-left" type="button" wire:click="previousRequestStep">Back</button>
+                            <button class="btn btn-success btn-md pull-right" wire:click="submitForm" type="button" {{ (($step3)) ? '' : 'disabled' }}>Finish!</button>
+                            <button class="btn btn-danger nextBtn btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
                         </div>
                     </div>
                 

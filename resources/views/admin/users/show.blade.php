@@ -9,11 +9,11 @@
     <div class="card-body">
         <div class="form-group">
             <div class="container_fluid" style="width:200px;height:auto">
-                    @if(!empty(Auth::user()->avatar) && Auth::user()->avatar != 'default.jpg')
+                    @if($user->avatar != "default.jpg")
                         <img src="{{ asset( 'img/uploads/profileavatar/'.$user->avatar ) }}" width="40" height="40" class="rounded-circle">
-                    @else
-                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="60" height="auto" class="user-avatar-md rounded-circle">
-                    @endif            
+                       @else
+                        <img src="{{ asset( 'images/avatar.jpg' ) }}" width="40" height="40" class="rounded-circle">
+                       @endif            
             </div><br>
             <div class="row">
                 <div class="form-group col-md-6">
