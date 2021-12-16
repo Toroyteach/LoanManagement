@@ -278,10 +278,99 @@
             </div><br>
 
             <div class="container-fluid">
+                    <h2 class="section-title"> Guranteed Loans</h2>
+            </div>
+    
+            <div class="card">
+            <div class="card-body">
+                <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
+                    <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
+                        <thead>
+                            <tr>
+                                <th width="10">
+    
+                                </th>
+                                <th>
+                                    {{ trans('cruds.loanApplication.fields.id') }}
+                                </th>
+                                <th>
+                                    Loan Id
+                                </th>
+                                <th>
+                                    {{ trans('cruds.loanApplication.fields.loan_amount') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.loanApplication.fields.description') }}
+                                </th>
+                                <th>
+                                    {{ trans('cruds.loanApplication.fields.status') }}
+                                </th>
+                                <th>
+                                    Loan Type
+                                </th>
+                                <th>
+                                    Loan Applicant Name
+                                </th>
+                                <th>
+                                    Applicant Member No
+                                </th>
+    
+                                <th>
+                                    Member Applicant Number
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($gurantors as $key => $gurantor)
+                                <tr>
+                                    <td>
+                                        
+                                    </td>
+                                    <td>
+                                        {{ $key+1 }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->loan_entry_number }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->loan_amount }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->description }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->status->name }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->loan_type }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->created_by->name }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->created_by->idno }}
+                                    </td>
+                                    <td>
+                                        {{ $gurantor->loan->created_by->number }}
+                                    </td>
+    
+                                </tr>
+                        @empty
+                                <p class="alert alert-warning">Sorry you do not have any loan gurantees yet</p>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
                 <h2 class="section-title"> Next of Kin</h2>
             </div>
 
-            <div class="card-body">
+            <div class="card">
+                <div class="card-body">
                     <div class="table-responsive tile-body table-responsive-md table-responsive-lg table-responsive-xl table-responsive-sm">
                         <table class="table table-bordered table-striped table-hover datatable datatable-LoanApplication">
                             <thead>
@@ -333,9 +422,9 @@
                         </table>
                     </div>
                 </div>
-            </div><br>
-
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -348,13 +437,25 @@
             title: "Monthly Credit",
             icon: 'question',
             text: "{{ $user->firstname }} will be credited ksh {{ $user->monthlysavings->monthly_amount ?? '' }}. Please ensure this, then confirm!",
+            input: 'range',
+            inputAttributes: {
+                min: 1000,
+                max: 20000,
+                step: 500,
+            },
+            inputValue: "{{ $user->monthlysavings->monthly_amount ?? '' }}",
+            inputLabel: "Amount",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",
             reverseButtons: !0
         }).then(function (e) {
 
-            if (e.value === true) {
+            const value = document.getElementById("swal2-input").value; 
+            
+            if (e.isConfirmed) {
+
+                //console.log(value);
 
                 $.ajax({
                     type: 'POST',
@@ -362,7 +463,7 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         user_id: "{{ $user->id }}",
-                        amount: "{{ $user->monthlysavings->monthly_amount ?? '' }}"
+                        amount: value
                         },
                     dataType: 'JSON',
                     success: function (results) {

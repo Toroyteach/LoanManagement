@@ -72,16 +72,16 @@
       </tr>
     </thead>
     <tbody>
+      @foreach($loanstatements as $id => $loan)
       <tr>
-        @foreach($loanstatements as $id => $loan)
-        <td class="center">{{ $id++ }}</td>
-        <td class="left strong">{{ \Carbon\Carbon::parse($loan->created_at)->format('m-d-Y H:i:s') }}</td>
-        <td class="left">{{$loan->loan_type}}</td>
-        <td class="right">{{$loan->description}}</td>
-        <td class="left">{{$user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>
-        <td class="right">{{$loan->loan_amount}}</td>
-        @endforeach
+        <td\>{{ $id++ }}</td>
+        <td >{{ \Carbon\Carbon::parse($loan->created_at)->format('m-d-Y H:i:s') }}</td>
+        <td >{{$loan->loan_type}}</td>
+        <td >{{$loan->description}}</td>
+        <td >{{$user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>
+        <td >{{$loan->loan_amount}}</td>
       </tr>
+      @endforeach
     </tbody>
   </table>
 </div>

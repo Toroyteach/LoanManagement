@@ -41,6 +41,14 @@
                     </tr>
                     <tr>
                         <th>
+                           Member Elligible Amount
+                        </th>
+                        <td>
+                            {{ $elligibleAmount }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.loanApplication.fields.description') }}
                         </th>
                         <td>
@@ -319,7 +327,7 @@
             input: 'range',
             inputAttributes: {
                 min: 1000,
-                max: "{{ $loanApplication->loan_amount }}",
+                max: 20000,
                 step: 500,
             },
             inputValue: "{{ $loanApplication->loan_amount ?? '' }}",
@@ -330,10 +338,11 @@
             reverseButtons: !0
             }).then(function (e) {
 
+                const value = document.getElementById("swal2-input").value; 
 
                 if (e.isConfirmed) {
 
-                    const value = document.getElementById("swal2-input").value; 
+                    //console.log(value);
 
                     $.ajax({
                         type: 'POST',

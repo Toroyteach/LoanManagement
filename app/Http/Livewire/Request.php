@@ -736,7 +736,7 @@ class Request extends Component
 
         } else {
 
-            $totalAdded = $amountRequest * 0.1 * $loan_types_config['max_duration'];
+            $totalAdded = $amountRequest * 0.1 * 1;
             $this->interestamount = $totalAdded;
             $total = $totalAdded + $amountRequest;
 
@@ -754,6 +754,7 @@ class Request extends Component
         $accumulatedAmount = 0;
 
         $amounpaid = 0;//from db check the amount paid in last month
+        //dd($time);
 
         for($x = 0; $x < $time; $x++){
 

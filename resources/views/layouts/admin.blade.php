@@ -77,7 +77,7 @@
 
                       @else
                       
-                          <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <a class="nav-link nav-icons" style="color: #59f01d;" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-fw fa-bell"></i>
                             <span class="indicator"></span>{{ $notifications }}
                           </a>

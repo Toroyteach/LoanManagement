@@ -9,6 +9,7 @@ use App\Notifications\MonthlyContributionNotification;
 use Illuminate\Support\Facades\Notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use App\SmsTextsSent;
 
 class MonthlyContributionCron extends Command
 {
@@ -84,29 +85,9 @@ class MonthlyContributionCron extends Command
 
                         $memberNumber = $user->user;
                 
-                        //Http::fake();
-                        
-                        $response = Http::asForm()->post($this->url, [
-                            'user' => env('SMS_USERNAME', 'null'),
-                            'password' => env('SMS_PASSWORD', 'null'),
-                            'mobiles' => $memberNumber->number,
-                            'sms' =>  'Dear '.$memberNumber->name.' you are reminded to make your monthly contribution before on coming deadline',
-                            'unicode' => 0,
-                            'senderid' => env('SMS_SENDERID', 'null'),
-                        ]);
-                
-                        if($response->ok()){
-                
-                            \Log::info("SMS monthly notification sent to ".$memberNumber->name);
-                
-                        } else {
-                
-                            \Log::info(" Failed to send SMS monthly notification sent to ".$memberNumber->name);
-                            \Log::error(now());
-                
-                        }
+                        $text = "Dear $user->user->name Please ensure you make your monthly Contribution payment";
 
-                        \Log::info($key." Monthly notification sent to this user ".$user->user->name);
+                        $this->sendSms($user->user_id, $text);
                     }
             
 
@@ -147,7 +128,7 @@ class MonthlyContributionCron extends Command
                 if($loanItem->duration_count <= $loanItem->duration){
 
                     //check which type of loan it was to get if on reducing or normal
-                    if($loanItem->loan_type == 'instantloan'){ //the rest is on reducing
+                    if($loanItem->loan_type != 'instantloan'){ //the rest is on reducing
 
                         $accumulatedAmount = $this->getOnReducingBalance($loanItem->loan_amount);
                         $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
@@ -215,6 +196,58 @@ class MonthlyContributionCron extends Command
         $accumulatedAmount = (($principal * $rate) + $principal) - $amounpaid;
 
         return $accumulatedAmount;
+    }
+
+    public function sendSms($id, $message)
+    {
+
+        $usernameSMS = env('SMS_USERNAME', 'null');
+        $passwordSMS = env('SMS_PASSWORD', 'null');
+        $senderIdSMS = env('SMS_SENDERID', 'null');
+
+        $memberNumber = User::select(['number', 'id', 'name'])->findOrFail($id);
+
+        $response = Http::asForm()->post('http://smskenya.brainsoft.co.ke/sendsms.jsp', [
+            'user' => $usernameSMS,
+            'password' => $passwordSMS,
+            'mobiles' => $memberNumber->number,
+            'sms' =>  $message,
+            'unicode' => 0,
+            'senderid' => $senderIdSMS,
+        ]);
+
+        if($response->ok()){
+
+            $xml = simplexml_load_string($response->getBody(),'SimpleXMLElement',LIBXML_NOCDATA);
+
+            // json
+            $json = json_encode($xml);
+
+            $array = json_decode($json, true);
+
+            $collection = collect($array);
+
+            if($collection['sms']['mobile-no'] == $memberNumber->number){
+
+                SmsTextsSent::create([
+                    'smsclientid' => $collection['sms']['smsclientid'],
+                    'description' => " Auth code sent to ".$memberNumber->name,
+                    'user_id' => $memberNumber->id,
+                    'messageid' => $collection['sms']['messageid'],
+                    'type' => " Auth code"
+                ]);
+
+                \Log::info("SMS (".$message.") code sent to ".$memberNumber->name);
+
+            }
+
+        } else {
+
+            \Log::info(" Failed to send Code to ".$memberNumber->name);
+            \Log::error(now());
+
+        }
+
     }
 
 }

@@ -76,6 +76,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('status/rejected/loan-applications', 'LoanApplicationsController@rejectedLoans')->name('rejected.loans');
     Route::get('status/loan-applications/defaultors', 'LoanApplicationsController@defaultors')->name('defaultors');
 
+    //bulck upload details
+    Route::get('status/loan-applications/bulk-update', 'LoanApplicationsController@bulkView')->name('bulkView');
+    Route::post('status/loan-applications/bulk-file', 'LoanApplicationsController@bulkFile')->name('bulkFile');
+    Route::get('status/loan-applications/bulk/load-file', 'LoanApplicationsController@fetchDatatable')->name('loadFile');
+    Route::get('status/loan-applications/bulk/load-file-Mo', 'LoanApplicationsController@fetchDatatableMo')->name('loadFileMo');
+    Route::post('bulk/loan-applications/bulk/update', 'LoanApplicationsController@updateBulkFileDetails')->name('updatefileuploaddetails');
+    Route::post('bulk/loan-applications/bulk/delete', 'LoanApplicationsController@deleteBulkFileDetails')->name('deletefileuploaddetails');
+
     // Comments
     Route::delete('comments/destroy', 'CommentsController@massDestroy')->name('comments.massDestroy');
     Route::resource('comments', 'CommentsController');

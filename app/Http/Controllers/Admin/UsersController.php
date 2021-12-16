@@ -22,6 +22,7 @@ use Image;
 use Illuminate\Support\Str;
 use App\SaccoFile;
 use App\LoanApplication;
+use App\LoanGuarantor;
 use App\Traits\UploadAble;
 use App\NextKin;
 use Illuminate\Http\UploadedFile;
@@ -31,6 +32,8 @@ use PDF;
 use App\Services\FirebaseService;
 use App\Action\StoreUserAction;
 use Validator;
+use Mail;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -234,7 +237,9 @@ class UsersController extends Controller
         $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('created_by_id', $user->id)->get();
         $kins = NextKin::where('user_id', $user->id)->get();
 
-        return view('admin.users.show', compact('user', 'currentLoanAmount', 'loanApplications', 'kins'));
+        $gurantors = LoanGuarantor::where('user_id', $user->id)->get();
+
+        return view('admin.users.show', compact('user', 'currentLoanAmount', 'loanApplications', 'kins', 'gurantors'));
     }
 
     public function disableUser($id)
@@ -267,10 +272,18 @@ class UsersController extends Controller
                     
                     $user->update(['status' => 1]);
 
-                    return back()->with('success', 'User has been Re-enable');
+                    //send an email if the account was recently created to the user with the email and password details
+                    $email = $this->sendEmailDetailsToMember($id);
+                    
+                    if($email){
+
+                        return back()->with('success', 'User has been Re-enable');
+
+                    }
+                    
+                    return back()->with('error', 'Sorry could not Re-enable user');
                 //}
 
-                //return back()->with('error', 'Sorry could not Re-enable user');
                 
             }
 
@@ -318,13 +331,13 @@ class UsersController extends Controller
         $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
         $monthlystatement = MonthlySavings::where('user_id', $user->id)->first();
         //dd($loanstatements);
-        //dd($loanstatements, $monthlystatement);
+        //dd($loanstatements, $monthlystatement, $user);
   
         // download PDF file with download method
-        if($user and !($monthlystatement or $loanstatements)){
+        if($user and ($monthlystatement or $loanstatements)){
 
             //view()->share('employee',$data);
-            $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'));
+            $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
 
             return $pdf->stream($id.'_statement.pdf');
         }
@@ -334,7 +347,9 @@ class UsersController extends Controller
 
     public function memberStatements()
     {
-        return view('admin.users.userstatements');
+        $gurantors = LoanGuarantor::where('user_id', \Auth::user()->id)->get();
+
+        return view('admin.users.userstatements', compact('gurantors'));
     }
 
     public function memberLoans()
@@ -417,30 +432,33 @@ class UsersController extends Controller
     protected function updateMonthlyContribution(Request $request)
     {
         //ajax request to update database on users monthly contribution
+        //dd($request->all());
         abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //handle logic to update monthly amount
 
         $account = MonthlySavings::where('user_id', $request->user_id)->with('user')->first();
 
-        //dd(date('m'),date('m',strtotime($account->updated_at )) == date('m'));
-
         if(empty($account->modified_at)){
             //dd('update first time');
             $amountToAdd = $request->amount;
-            $account->update(['total_contributed' => $account->total_amount + $amountToAdd]);
+
+            $account->update(['total_contributed' => $account->total_contributed + $amountToAdd]);
             $account->update(['modified_at' => Carbon::now()->toDateTimeString()]);
-            return response()->json(array('response' => true, 'message' => 'Success '.$account->user->firstname.' was credited '.$request->amount), 200);
+
+            return response()->json(array('response' => true, 'message' => 'Success '.$account->user->firstname.' was credited '.$request->amount.' for this month'), 200);
 
         }else if(date('m',strtotime($account->modified_at )) == date('m')){
+
             return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$account->user->firstname.' He was already credited'), 200);
+
         }
         //dd('credited');
         $amountToAdd = $request->amount;
-        $account->update(['total_contributed' => $account->total_amount + $amountToAdd]);
+        $account->update(['total_contributed' => $account->total_contributed + $amountToAdd]);
         $account->update(['modified_at' => Carbon::now()->toDateTimeString()]);
 
-        return response()->json(array('response' => true, 'message' => 'Success '.$account->user->firstname.' was credited '.$request->amount), 200);
+        return response()->json(array('response' => true, 'message' => 'Success '.$account->user->firstname.' was credited '.$request->amount.' for this month'), 200);
 
     }
 
@@ -463,6 +481,37 @@ class UsersController extends Controller
         //dd($file, $folder, $disk, $filename, $name);
 
         return $file->storeAs($folder, $name . "." . $file->getClientOriginalExtension(), $disk );
+    }
+
+    public function sendEmailDetailsToMember($id)
+    {
+            $user = User::findOrFail($id);
+
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            $randomString = '';
+          
+            for ($i = 0; $i < 8; $i++) {
+                $index = rand(0, strlen($characters) - 1);
+                $randomString .= $characters[$index];
+            }
+          
+            $pass = Hash::make($randomString);
+            $user->update(['password'=> $pass]);
+
+            $data = [
+                'name' => $user->name,
+                'subject' => "Account Credentials",
+                'email' => $user->email,
+                'password' => $randomString,
+                'content' => "Please use the email ".$user->email." and password ".$randomString." to log into your account",
+              ];
+      
+            Mail::send('emails.emaildetails', $data, function($message) use ($data) {
+                $message->to($data['email'])
+                ->subject($data['subject']);
+              });
+
+            return true;
     }
 
 }

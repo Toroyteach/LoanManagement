@@ -174,6 +174,16 @@
                             </a>
                         </li>
                     @endcan
+                    @can('bulk_update')
+                        <li class="c-sidebar-nav-item">
+                            <a href="{{ route('admin.bulkView') }}" class="c-sidebar-nav-link {{ request()->is('admin/bulkView') || request()->is('admin/bulkView/*') ? 'active' : '' }}">
+                            <i class="fas fa-exclamation-circle c-sidebar-nav-icon"></i>
+
+                                </i>
+                                Bulk Update
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endcan

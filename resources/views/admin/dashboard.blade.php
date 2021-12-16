@@ -12,7 +12,7 @@
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
                     @if( $user == 'admin' )
-                        <h5 class="card-title mb-0">Sacco Total Amount</h5>
+                        <h5 class="card-title mb-0">Total Deposits</h5>
                     @else
                         <h5 class="card-title mb-0">Monthly contribution</h5>
                     @endif
@@ -42,7 +42,11 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Pending Loans</h5>
+                        @if( $user == 'admin' )
+                            <h5 class="card-title mb-0">Loan Book</h5>
+                        @else
+                            <h5 class="card-title mb-0">Pending Loan</h5>
+                        @endif
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">

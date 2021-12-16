@@ -18,6 +18,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Services\FirebaseService;
+use App\MonthlySavings;
+use App\Imports\LoanFilesImport;
+use App\Imports\MonthlyFilesImport;
+use App\LoanFileUpload;
+use App\MonthlyFile;
+use Maatwebsite\Excel\Facades\Excel;
+use DataTables;
+use DB;
 
 class LoanApplicationsController extends Controller
 {
@@ -159,9 +167,10 @@ class LoanApplicationsController extends Controller
         //dd($loanApplication->logs);
         $logs          = AuditLogService::generateLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
-        //dd($remaining);
+        $elligibleAmount = $this->getUserElligibleAmount();
+        //dd($elligibleAmount);
 
-        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining'));
+        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount'));
     }
 
     public function destroy(LoanApplication $loanApplication)
@@ -432,7 +441,6 @@ class LoanApplicationsController extends Controller
 
     public function makeRepaymentAmount(Request $request)
     {
-
         //check if the paid amount is full or partial them made
         //notify members here or use observers to notify member of the changes
 
@@ -464,7 +472,6 @@ class LoanApplicationsController extends Controller
 
         } else { //less than loan amount
 
-    
             $loanItem->last_month_amount_paid = $request->amount;
             $loanItem->date_last_amount_paid = now();
     
@@ -489,5 +496,193 @@ class LoanApplicationsController extends Controller
           $pathToFile = storage_path('files/uploads/loanfiles/' . $loan->file);
         
           return response()->download($pathToFile);
+    }
+
+    public function getUserElligibleAmount()
+    {
+        $monthlyContribution = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->where('user_id', auth()->user()->id)->first();
+        $a = $monthlyContribution->overpayment_amount;
+        $b = $monthlyContribution->total_contributed;
+        $totalMonthlyContribution = ($a + $b) * 3;
+        $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('loan_amount');
+        $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;
+        
+        return $eligibleAmount.'.00';
+
+    }
+
+    public function bulkView()
+    {
+
+        return view('admin.bulk.index');
+    }
+
+    public function bulkFile(Request $request)
+    {
+
+        request()->validate([
+            'file'  => 'required|mimes:xls,xlsx',
+          ]);
+     
+           if ($files = $request->file('file')) {
+                
+               //store file into document folder
+               $filename = $request->file('file')->getClientOriginalName();
+               $file = $request->file->storeAs('file', $filename, 'bulkfiles');
+    
+               $path = public_path('bulkfile/uploads').'/'.$file;
+
+               if($request->type == 'loan') {
+
+                   Excel::import(new LoanFilesImport, $path);
+
+                   return Response()->json([
+                       "success" => true,
+                       "file" => 'loan'
+                   ]);
+
+               } else {
+
+                   Excel::import(new MonthlyFilesImport, $path);
+
+                   return Response()->json([
+                        "success" => true,
+                        "file" => 'monthly'
+                    ]);
+
+               }
+     
+           }
+     
+           return Response()->json([
+                   "success" => false,
+             ]);
+
+    }
+
+    public function fetchDatatable()
+    {
+
+            $data = LoanFileUpload::all();
+
+            return Datatables::of($data)->addIndexColumn()->make(true);
+
+    }
+
+    public function fetchDatatableMo()
+    {
+
+            $data = MonthlyFile::all();
+
+            return Datatables::of($data)->addIndexColumn()->make(true);
+
+    }
+
+    public function updateBulkFileDetails(Request $request)
+    {
+        //update details from the table
+        //dd($request->all());
+        
+        if($request->type == 'loan'){
+
+            $data = LoanFileUpload::all();
+
+            foreach($data as $key => $item){
+
+                $loanItem = LoanApplication::select(['loan_amount', 'created_by_id'])
+                ->where('loan_entry_number', $item->entry_number)
+                ->first();
+
+
+                if($loanItem->loan_amount <= $item->amount){ //greater than or equal loan amount
+        
+                    $newAmount = $item->amount - $loanItem->loan_amount;
+
+        
+                    if($newAmount != 0){
+
+                        UsersAccount::select(['total_amount'])->where('user_id', $loanItem->created_by_id)->increment('total_amount', $newAmount);
+
+                    }
+                    
+
+                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)
+                    ->update([
+                        'repaid_status' => 1,
+                        'last_month_amount_paid' => $item->amount,
+                        'date_last_amount_paid' => now(),
+                        'status_id' => 10,
+                    ]);
+                    
+           
+                } else { //less than loan amount
+        
+
+                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)
+                    ->update([
+                        'last_month_amount_paid' => $item->amount,
+                        'date_last_amount_paid' => now(),
+                    ]);
+            
+        
+                }
+
+            }
+
+            LoanFileUpload::truncate();
+
+            return Response()->json([
+                "success" => true,
+            ]);
+
+        } else {
+
+            $data = MonthlyFile::all();
+
+            foreach($data as $key => $item){
+                
+                //$account = MonthlySavings::where('user_id', $data->user_id)->with('user')->first();
+                $idno = $item->member_number;
+
+                $amountToAdd = $item->amount;
+
+                $account = DB::table('monthly_savings')
+                ->join('users', 'monthly_savings.user_id', '=', 'users.id')
+                ->where('users.idno', '=', $idno)
+                ->increment('total_contributed', $amountToAdd, [
+                    'modified_at' => Carbon::now()->toDateTimeString()
+                ]);
+        
+            }
+
+            MonthlyFile::truncate();
+
+            return Response()->json([
+                "success" => true,
+            ]);
+        }
+    }
+
+    public function deleteBulkFileDetails(Request $request)
+    {
+        //delete details from the table
+        //dd($request->all());
+        if($request->type == 'loan'){
+
+            LoanFileUpload::truncate();
+
+            return Response()->json([
+                "success" => true,
+          ]);
+
+        } else {
+
+            MonthlyFile::truncate();
+
+            return Response()->json([
+                "success" => true,
+            ]);
+
+        }
     }
 }

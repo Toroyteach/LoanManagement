@@ -31,6 +31,7 @@
         "laravel/ui": "^3.0",
         "lcobucci/clock": "^1.2.0",
         "livewire/livewire": "^2.5",
+        "maatwebsite/excel": "~2.1.30",
         "mongodb/mongodb": "^1.9",
         "realrashid/sweet-alert": "^4.0",
         "webpatser/laravel-uuid": "^3.0",

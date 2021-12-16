@@ -62,6 +62,13 @@ return [
             'visibility' => 'public',
         ],
 
+        'bulkfiles' => [
+            'driver' => 'local',
+            'root' => public_path('bulkfile/uploads'),
+            'url' => '/bulkfile/uploads',
+            'visibility' => 'public',
+        ],
+
         'files' => [
             'driver' => 'local',
             'root' => storage_path('files/uploads/'),

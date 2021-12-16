@@ -44,6 +44,7 @@ class LoanApplication extends Model
         'created_by_id',
         'status_id',
         'file',
+        'repaid_status'
     ];
 
     protected static function booted()
