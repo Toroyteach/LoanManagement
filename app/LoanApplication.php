@@ -24,12 +24,16 @@ class LoanApplication extends Model
     protected $fillable = [
         'loan_entry_number',
         'loan_amount',
+        'loan_amount_plus_interest',
         'description',
         'repaid_amount',
         'accumulated_amount',
         'last_month_amount_paid',
+        'next_months_pay',
+        'next_months_pay_date',
         'date_last_amount_paid',
         'balance_amount',
+        'equated_monthly_instal',
         'duration',
         'duration_count',
         'repayment_date',
@@ -85,5 +89,10 @@ class LoanApplication extends Model
     public function logs()
     {
         return $this->morphMany(AuditLog::class, 'subject');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(LoanFile::class);
     }
 }

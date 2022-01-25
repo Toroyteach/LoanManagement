@@ -50,7 +50,7 @@
                             {{ trans('cruds.loanApplication.fields.loan_amount') }}
                         </th>
                         <th>
-                            {{ trans('cruds.loanApplication.fields.description') }}
+                            Gurantor Status
                         </th>
                         <th>
                             {{ trans('cruds.loanApplication.fields.status') }}
@@ -86,7 +86,7 @@
                                 {{ $gurantor->loan->loan_amount }}
                             </td>
                             <td>
-                                {{ $gurantor->loan->description }}
+                                {{ $gurantor->value }}
                             </td>
                             <td>
                                 {{ $gurantor->loan->status->name }}

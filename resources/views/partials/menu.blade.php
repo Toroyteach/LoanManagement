@@ -50,14 +50,6 @@
                                 Forms
                             </a>
                         </li>
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.user.loans") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/loans') || request()->is('admin/user/loans/*') ? 'active' : '' }}">
-                                <i class="fa-fw fas fa-wallet c-sidebar-nav-icon">
-
-                                </i>
-                                My Loans
-                            </a>
-                        </li>
                     @endcan
                     @can('permission_access')
                         <li class="c-sidebar-nav-item">
@@ -181,6 +173,16 @@
 
                                 </i>
                                 Bulk Update
+                            </a>
+                        </li>
+                    @endcan
+                    @can('view_self_user')
+                    <li class="c-sidebar-nav-item">
+                            <a href="{{ route("admin.user.loans") }}" class="c-sidebar-nav-link {{ request()->is('admin/user/loans') || request()->is('admin/user/loans/*') ? 'active' : '' }}">
+                                <i class="fa-fw fas fa-wallet c-sidebar-nav-icon">
+
+                                </i>
+                                My Loans
                             </a>
                         </li>
                     @endcan

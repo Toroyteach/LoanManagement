@@ -4,8 +4,9 @@ namespace App\Imports;
 
 use App\LoanFileUpload;
 use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class LoanFilesImport implements ToModel
+class LoanFilesImport implements ToModel, WithHeadingRow
 {
     /**
     * @param array $row
@@ -15,9 +16,9 @@ class LoanFilesImport implements ToModel
     public function model(array $row)
     {
         return new LoanFileUpload([
-            'entry_number'     => $row[0],
-            'member_number'    => $row[1], 
-            'amount'           => $row[2],
+            'entry_number'     => $row['loanno'],
+            'member_number'    => $row['memberno'], 
+            'amount'           => $row['amount'],
         ]);
     }
 }

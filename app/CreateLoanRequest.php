@@ -11,7 +11,7 @@ class CreateLoanRequest extends Model
     public $table = 'create_loan_requests';
 
     protected $fillable = [
-        'loan_amount', 'description', 'loan_type', 'duration', 'file', 'user_id',
+        'loan_amount', 'description', 'loan_type', 'duration', 'file', 'user_id', 'emi',
     ]; 
 
     protected $dates = [
@@ -23,5 +23,10 @@ class CreateLoanRequest extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
 
+    }
+
+    public function files()
+    {
+        return $this->hasMany(CreateLoanRequestFile::class, 'loan_requestor_id');
     }
 }

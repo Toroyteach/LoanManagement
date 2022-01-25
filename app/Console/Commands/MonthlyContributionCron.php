@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use App\SmsTextsSent;
+use App\User;
 
 class MonthlyContributionCron extends Command
 {
@@ -48,7 +49,7 @@ class MonthlyContributionCron extends Command
         
         $this->getDefaultors();
 
-        $this->calculateLoanInterest();
+        //$this->calculateLoanInterest();
 
         $this->info('MonthlyContribution:Cron Command Run successfully!');
     }
@@ -57,7 +58,7 @@ class MonthlyContributionCron extends Command
     {
         if(in_array(date('j'), [1, 3, 5])){
 
-            $usersNotify = MonthlySavings::whereRaw('MONTH(next_payment_date) = '.Carbon::now()->month)->with('user')->get();
+            $usersNotify = MonthlySavings::whereRaw('MONTH(next_payment_date) = '. Carbon::now()->month)->with('user')->get();
 
             if($usersNotify->count() < 1){
                 

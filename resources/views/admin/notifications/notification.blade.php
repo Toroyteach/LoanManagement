@@ -5,7 +5,8 @@
         @if($notice->data['notification_type'] == 'NewLoanApplication')
                                   <!-- new loan application notification -->
 
-                                    <div class="container_fluid bg-secondary" style="padding:1em;">
+                                <div class="container_fluid bg-secondary" style="padding:1em;">
+                                    <div class="alert alert-warning" role="alert">
                                     @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
@@ -125,7 +126,7 @@
                                   <!-- Monthly payment Analysis -->
 
                                     <div class="container_fluid bg-secondary" style="padding:1em;">
-                                        <div class="alert alert-success" role="alert">
+                                        <div class="alert alert-warning" role="alert">
                                         @if(empty($notice->read_at))
                                             <div class="conatiner">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
@@ -154,7 +155,7 @@
                                   <!-- Monthly payment Analysis -->
 
                                   <div class="container-fluid bg-secondary gurantor" style="padding:1em;">
-                                        <div class="alert alert-success">
+                                        <div class="alert alert-warning">
                                             @if(empty($notice->read_at))
                                             <div class="conatiner" role="alert">
                                                 <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">

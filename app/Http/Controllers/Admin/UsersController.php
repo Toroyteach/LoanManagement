@@ -63,7 +63,6 @@ class UsersController extends Controller
 
     public function store(StoreUserRequest $request, StoreUserAction $action)
     {
-        //dd($request->validated());
         
         $this->validate(request(), [
             'number' => 
@@ -114,7 +113,6 @@ class UsersController extends Controller
 
         $user->name = $request->firstname.' '.$request->lastname;
         $user->middlename = $request->middlename;
-        //$user->firebaseid = $uid;
         $user->save();
         $user->roles()->sync($request->input('roles', []));
 
@@ -192,8 +190,6 @@ class UsersController extends Controller
     {
 
         //updating the profile image of the admin
-        //dd('arrived');
-
 
         $filename = time() . '_' . $request->file('file')->getClientOriginalName();
 
@@ -211,7 +207,6 @@ class UsersController extends Controller
 
     public function updateUserProfile(UpdateUserProfileRequest $request, User $user)
     {
-        //dd($request->validated());
         //updates from users control
         $user->update($request->validated());
 
@@ -249,26 +244,13 @@ class UsersController extends Controller
         $user = User::find($id);
         $status = $user->status;
 
-        //if(!empty($user->firebaseid)){
-
             if($status == 1){
-
-                //$firebaseDisable = $service->disableUser($user->firebaseid);
-
-                //if( $firebaseDisable){
 
                     $user->update(['status' => 0]);
                 
                     return back()->with('success', 'User has been disabled');   
-                //}
-
-                //return back()->with('error', 'Sorry could not Disable this user');   
 
             } else {
-
-                //$firebaseEnable = $service->enableUser($user->firebaseid);
-
-                //if( $firebaseEnable){
                     
                     $user->update(['status' => 1]);
 
@@ -282,14 +264,9 @@ class UsersController extends Controller
                     }
                     
                     return back()->with('error', 'Sorry could not Re-enable user');
-                //}
 
                 
             }
-
-        //}
-
-        //return back()->with('error', 'Sorry Can not Disable this user');
 
     }
 
@@ -303,11 +280,6 @@ class UsersController extends Controller
         $totalmonthlysavings = MonthlySavings::where('user_id', $user->id)->sum('total_contributed');
         $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('created_by_id', $user->id)->get();
         $kins = NextKin::where('user_id', $user->id)->get();
-
-
-        //$files = SaccoFile::get();
-
-        //dd($currentLoanAmount);
 
         return view('admin.users.usershow', compact('user', 'currentLoanAmount', 'totalmonthlysavings', 'loanApplications', 'kins'));
     }
@@ -330,8 +302,6 @@ class UsersController extends Controller
         // share data to view
         $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
         $monthlystatement = MonthlySavings::where('user_id', $user->id)->first();
-        //dd($loanstatements);
-        //dd($loanstatements, $monthlystatement, $user);
   
         // download PDF file with download method
         if($user and ($monthlystatement or $loanstatements)){
@@ -378,21 +348,10 @@ class UsersController extends Controller
     {
         abort_if(Gate::denies('user_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        // if(!$user->firebaseid){
-        //     return redirect()->back()->with('error','Failed to Delete user Firebase details missing');
-        // }
+        $user->delete();
 
-        //$updatedUser = $service->deleteUser($user->firebaseid);
+        return back()->with('success', 'User was deleted successfully');;
 
-        //if($updatedUser){
-
-            $user->delete();
-            return back()->with('success', 'User was deleted successfully');;
-
-        //}
-
-
-        //return back()->with('error', 'sorry could not delete this user');
     }
 
     public function massDestroy(MassDestroyUserRequest $request)
@@ -404,35 +363,9 @@ class UsersController extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
-    public function createUser($user)
-    {
-        // $auth = app('firebase.auth');
-        // $auth->createUser($user);
-        // return $auth;
-    }
-
-    protected function checkUserDetails($params)
-    {
-
-        // $auth = app('firebase.auth');
-
-        // try {
-
-        //     $user = $auth->getUserByPhoneNumber('+'.$params);
-
-        // } catch (\Kreait\Firebase\Exception\Auth\UserNotFound $e) {
-
-        //     //echo $e->getMessage();
-        //     return true;
-
-        // }
-
-    }
-
     protected function updateMonthlyContribution(Request $request)
     {
         //ajax request to update database on users monthly contribution
-        //dd($request->all());
         abort_if(Gate::denies('update_monthly_contribution'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //handle logic to update monthly amount
@@ -440,7 +373,7 @@ class UsersController extends Controller
         $account = MonthlySavings::where('user_id', $request->user_id)->with('user')->first();
 
         if(empty($account->modified_at)){
-            //dd('update first time');
+
             $amountToAdd = $request->amount;
 
             $account->update(['total_contributed' => $account->total_contributed + $amountToAdd]);
@@ -453,7 +386,7 @@ class UsersController extends Controller
             return response()->json(array('response' => false, 'failure' => 'Sorry cannot credit '.$account->user->firstname.' He was already credited'), 200);
 
         }
-        //dd('credited');
+
         $amountToAdd = $request->amount;
         $account->update(['total_contributed' => $account->total_contributed + $amountToAdd]);
         $account->update(['modified_at' => Carbon::now()->toDateTimeString()]);
@@ -478,7 +411,6 @@ class UsersController extends Controller
     public function uploadOne(UploadedFile $file, $folder = null, $disk = 'public', $filename = null)
     {
         $name = !is_null($filename) ? $filename : Str::random(25);
-        //dd($file, $folder, $disk, $filename, $name);
 
         return $file->storeAs($folder, $name . "." . $file->getClientOriginalExtension(), $disk );
     }

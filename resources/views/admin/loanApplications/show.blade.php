@@ -36,7 +36,15 @@
                             {{ trans('cruds.loanApplication.fields.loan_amount') }}
                         </th>
                         <td>
-                            {{ $loanApplication->loan_amount }}
+                            ksh {{ $loanApplication->loan_amount }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Loan Interest
+                        </th>
+                        <td>
+                            ksh {{ $loanApplication->loan_amount_plus_interest }}
                         </td>
                     </tr>
                     <tr>
@@ -44,7 +52,7 @@
                            Member Elligible Amount
                         </th>
                         <td>
-                            {{ $elligibleAmount }}
+                            ksh {{ $elligibleAmount }}
                         </td>
                     </tr>
                     <tr>
@@ -71,7 +79,7 @@
                                         {{ trans('cruds.loanApplication.fields.amountremaining') }}
                                     </th>
                                     <td>
-                                        {{ $remaining }}
+                                        Ksh {{ $remaining }}
                                     </td>
                                 @else
                                     <th>
@@ -87,7 +95,7 @@
                                         {{ trans('cruds.loanApplication.fields.amountremaining') }}
                                     </th>
                                     <td>
-                                        {{ $remaining }}
+                                        Ksh {{ $remaining }}
                                     </td>
                                 @else
                                     <th>
@@ -106,6 +114,22 @@
                         </th>
                         <td>
                             {{ $loanApplication->duration }} Months
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Equated Monthly Instalments
+                        </th>
+                        <td>
+                            ksh {{ $loanApplication->equated_monthly_instal }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Next Months Due Payment
+                        </th>
+                        <td>
+                        {{ $loanApplication->next_months_pay_date }}
                         </td>
                     </tr>
                     <tr>
@@ -174,10 +198,14 @@
                     </tr>
                     <tr>
                         <th>
-                            Files Attached
+                            Files Attached ({{$loanApplication->files->count()}})
                         </th>
                         <td>
-                            @if(!empty($loanApplication->file))<a class="btn btn-md btn-primary" href="{{ route('admin.loans.pdf', $loanApplication->id ) }}">Download Attached File</a>@endif
+                            @forelse($loanApplication->files as $key => $value)
+                                <a class="btn btn-xs btn-primary" href="{{ route('admin.loans.pdf', $value->id ) }}">Download File {{ $key + 1 }}</a>
+                            @empty
+                                <span class="badge badge-danger">No File Uploaded</span>
+                            @endforelse
                         </td>
                     </tr>
                     @if(!$user->is_member)
@@ -319,6 +347,8 @@
 
     function makeLoanRepaymenRequest() {
 
+        let maxAmount = "{{ $maximumPayable }}"
+
 
             swal.fire({
             title: "Loan Repayment Request",
@@ -327,7 +357,7 @@
             input: 'range',
             inputAttributes: {
                 min: 1000,
-                max: 20000,
+                max: maxAmount,
                 step: 500,
             },
             inputValue: "{{ $loanApplication->loan_amount ?? '' }}",

@@ -38,6 +38,9 @@
                                     <th>
                                         Loan Type
                                     </th>
+                                    <th>
+                                        Action
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -71,6 +74,11 @@
                                         </td>
                                         <td>
                                             {{ $loanApplication->loan_type }}
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-xs btn-primary" href="{{ route('admin.loan-applications.show', $loanApplication->id) }}">
+                                                {{ trans('global.view') }}
+                                            </a>
                                         </td>
 
 

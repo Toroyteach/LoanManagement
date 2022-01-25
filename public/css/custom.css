@@ -743,6 +743,14 @@ table.dataTable thead .sorting_desc {
         top: 2rem;
     }
 
+    /* @media (max-width: 414px) {
+
+        .applycard .step1Buttons{
+            position: relative;
+            top: 80px !important;
+        }
+    } */
+
     @media (max-width: 415px) {
         #nextBtn {
             bottom: 5em;
@@ -752,6 +760,15 @@ table.dataTable thead .sorting_desc {
             position: relative !important;
             height: 54em !important;
         }
+
+        .applycard .step1Buttons{
+            position: relative;
+            top: 110px !important;
+        }
+
+        /* .applycard .inputAmount{
+
+        } */
 
         #amount {
             position: relative;
@@ -779,16 +796,33 @@ table.dataTable thead .sorting_desc {
         }
     }
 
-    /* @media (max-width: px) {
-        #nextBtn {
-            bottom: 5em;
+    @media (max-width: 574px) {
+
+
+        .applycard .inputDuration{
+            position: relative;
+            top: 20px !important;
         }
 
-        .applycard {
+
+        .applycard .inputDescription{
             position: relative;
-            height: 54em !important;
+            top: 30px !important;
         }
-    } */
+
+        .applycard .step1Buttons{
+            position: relative;
+            top: 110px !important;
+        }
+    }
+
+    @media (max-width: 767px) {
+
+        .applycard .step1Buttons{
+            position: relative;
+            top: 110px !important;
+        }
+    }
 
 
 
@@ -816,6 +850,11 @@ table.dataTable thead .sorting_desc {
 
         .medianews {
             padding-top: 20px !important;
+        }
+
+        .applycard .step1Buttons{
+            position: relative;
+            top: 40px !important;
         }
     }
     @media (min-width: 992px) {
@@ -858,3 +897,17 @@ table.dataTable thead .sorting_desc {
         height: 48em;
         border: 10px solid #f4f4f4;
     }
+
+    /* @media (min-width: 768px) {
+        .applycard {
+            position: relative;
+            height: 40px;
+        }
+    } */
+
+    /* @media (max-width: 767px) {
+        .applycard {
+            position: relative;
+            height: 50px;
+        }
+    } */

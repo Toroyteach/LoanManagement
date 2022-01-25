@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('monthlycontribution:cron')->everyDay();
-        //$schedule->command('defaultorsinterest:cron')->everyDay();
+        $schedule->command('calculateloan:cron')->everyMinute();
     }
 
     /**

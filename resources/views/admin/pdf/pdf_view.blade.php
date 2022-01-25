@@ -23,8 +23,7 @@
             <div>
             <strong>{{ $user->name}}</strong>
             </div>
-            <div>{{ $user->idno}}</div>
-            <div>{{ $user->name}}</div>
+            <div>{{ $user->idno}}</div> 
             <div>{{ $user->email}}</div>
             <div>{{ $user->number}}</div>
           </div>
@@ -43,7 +42,7 @@
         <th class="center">#</th>
         <th>Date last contributed</th>
         <th>Total Amount Contributed</th>
-
+        <th>Monthly Amount</th>
       </tr>
     </thead>
     <tbody>
@@ -51,6 +50,7 @@
         <td class="center">1</td>
         <td class="left strong">{{ \Carbon\Carbon::parse($monthlystatement->modified_at)->format('m-d-Y H:i:s') }}</td>
         <td class="left">ksh {{ $monthlystatement->total_contributed }}</td>
+        <td class="left">ksh {{ $monthlystatement->monthly_amount }}</td>
       </tr>
     </tbody>
   </table>
@@ -68,7 +68,10 @@
         <th>Loan type</th>
         <th>Description</th>
         <th>Status</th>
-        <th class="right">Amount</th>
+        <th class="">Amount</th>
+        <th class="">Interest</th>
+        <th>EMI</th>
+        <th class="right">Next Due Payment</th>
       </tr>
     </thead>
     <tbody>
@@ -79,7 +82,10 @@
         <td >{{$loan->loan_type}}</td>
         <td >{{$loan->description}}</td>
         <td >{{$user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>
-        <td >{{$loan->loan_amount}}</td>
+        <td >ksh {{$loan->loan_amount}}</td>
+        <td >ksh {{ ( $loan->loan_amount_plus_interest - $loan->loan_amount )}}</td>
+        <td >{{$loan->equated_monthly_instal}} </td>
+        <td >Today </td>
       </tr>
       @endforeach
     </tbody>

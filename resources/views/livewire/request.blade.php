@@ -95,28 +95,25 @@
 
         </div>
             
-            <div class="col-md-12 col-sm-12 col-xs-12 card-body applycard" style="position:relative; background-color: #d7ded7; @if($currentStep == 3) height: 68em; @elseif($currentStep ==2) height: 38em !important; @endif">
+            <div class="col-md-12 col-sm-12 col-xs-12 card-body applycard" style="position:relative; background-color: #d7ded7; @if($currentStep == 3) height: 50em; @elseif($currentStep == 2) height: 38em !important; @endif">
                 
                     <div class="stepwizard">
                         <div class="stepwizard-row setup-panel">
                             <div class="multi-wizard-step">
-                                <a href="#step-1" type="button"
-                                    class="btn {{ $currentStep != 1 ? 'btn-default' : 'btn-primary' }}">1</a>
+                                <a href="#step-1" type="button" class="btn {{ $currentStep != 1 ? 'btn-default' : 'btn-primary' }}">1</a>
                                 <p>Loan Details</p>
                             </div>
                             <div class="multi-wizard-step">
-                                <a href="#step-2" type="button"
-                                    class="btn {{ $currentStep != 2 ? 'btn-default' : 'btn-primary' }}">2</a>
+                                <a href="#step-2" type="button" class="btn {{ $currentStep != 2 ? 'btn-default' : 'btn-primary' }}">2</a>
                                 <p>Choose Gurantors</p>
                             </div>
                             <div class="multi-wizard-step">
-                                <a href="#step-3" type="button"
-                                    class="btn {{ $currentStep != 3 ? 'btn-default' : 'btn-primary' }}"
-                                    disabled="disabled">3</a>
+                                <a href="#step-3" type="button" class="btn {{ $currentStep != 3 ? 'btn-default' : 'btn-primary' }}" disabled="disabled">3</a>
                                 <p>Submit Application</p>
                             </div>
                         </div>
                     </div>
+                    
                     <div class="row setup-content {{ $currentStep != 1 ? 'display-none' : '' }}" id="step-1">
                         <div class="col-md-12">
                             <h3> Fill in Loan Details</h3>
@@ -138,14 +135,14 @@
                             </div>
 
                             <div class="row ic1">
-                                <div class=" col-md-6 col-sm-6 col-xs-12 input-container" id="amount">
+                                <div class=" col-md-6 col-sm-6 col-xs-12 input-container inputAmount" id="amount">
                                     <input type="number" wire:model="amount" name="amount" class="input" placeholder=" " id="amount" required>
                                     <div class="cut"></div>
                                     <label for="amount" class="placeholder">Amount</label>
                                     @error('amount') <span class="text-danger">{{ $message }}</span> @enderror
-                                </div><br><br><br><br>
+                                </div>
 
-                                <div class=" col-md-6 col-sm-6 col-xs-12 input-container" id="duration">
+                                <div class=" col-md-6 col-sm-6 col-xs-12 input-container inputDuration" id="duration">
                                     <input type="number" wire:model="duration" name="duration" class="input" id="duration" placeholder=" " disabled/>
                                     @error('duration') <span class="text-danger">{{ $message }}</span> @enderror
                                     <div class="cut"></div>
@@ -154,10 +151,10 @@
                             </div>
 
                             <div class="row ic2">
-                                <div class="col-md-6 col-sm-6 col-xs-12" id="type">
+                                <div class="col-md-6 col-sm-6 col-xs-12 inputType" id="type">
 
-                                <h4>Loan Type</h4>
-                                @if($loan_type)<p class="text-info text-uppercase">{{ $loan_type }}</p>@else<p>None Selected</p>@endif
+                                    <h4>Loan Type</h4>
+                                    @if($loan_type)<p class="text-info text-uppercase">{{ $loan_type }}</p>@else<p>None Selected</p>@endif
                                     
                                     <select class="form-select" wire:model="loan_type" id='loan_type' name="loan_type" wire:change="updateDuration" aria-label="Default select example" required>
                                         <option>Choose Loan Type</option>
@@ -168,19 +165,19 @@
                                     </select>
                                     @error('loan_type') <span class="text-danger">{{ $message }}</span> @enderror
                                     
-                                </div><br><br><br>
+                                </div>
 
-                                <div class="col-md-6 col-sm-6 col-xs-12 input-container" id="loanDesc">
+                                <div class="col-md-6 col-sm-6 col-xs-12 input-container inputDescription" id="loanDesc">
                                     <textarea type="text" wire:model="description" class="input" id="description" placeholder=" " required></textarea>
                                     @error('description') <span class="text-danger">{{ $message }}</span> @enderror
                                     <div class="cut"></div>
                                         <label for="detail" class="placeholder">Loan Description</label>
                                 </div>
-                            </div><br><br><br><br>
+                            </div>
 
-                            <div class="container_fluid">
+                            <div class="container_fluid step1Buttons">
                                 <button class="btn btn-primary nextBtn btn-md" id="nextBtn" wire:click="firstStepSubmit" type="button" style="">Save</button>
-                                <button class="btn btn-warning nextBtn btn-md"  id="nextBtn"wire:click="cofirmDeleteRequest" type="button" style=""{{ (($delReqBtn)) ? '' : 'disabled' }}>Delete Application</button>
+                                <button class="btn btn-danger nextBtn btn-md"  id="nextBtn"wire:click="cofirmDeleteRequest" type="button" style=""{{ (($delReqBtn)) ? '' : 'disabled' }}>Delete Application</button>
                                 <button class="btn btn-success btn-md pull-right nextBtn" id="nextBtn" wire:click="nextRequestStep" type="button" style="" {{ (($step1)) ? '' : 'disabled' }}>Next</button>
                             </div>
                         </div>
@@ -275,7 +272,7 @@
                                     <div class="container">
                                         <div class="">
                                             <label for="detail">Upload request document</label><br>
-                                            <input type="file" wire:model="fileTest" class="form-input" id="fileTest" placeholder=" " /><br>
+                                            <input type="file" wire:model="fileTest" class="form-input" id="fileTest" placeholder=" " multiple><br>
                                             @error('fileTest')<span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
@@ -285,7 +282,7 @@
 
                             <button class="btn btn-primary nextBtn btn-md pull-right" type="button" wire:click="nextRequestStep"{{ (($step2)) ? '' : 'disabled' }}>Next</button>
                             <button class="btn btn-success nextBtn btn-md pull-right" type="button" wire:click="secondStepSave" {{ (($step2save)) ? '' : 'disabled' }}>Save</button>
-                            <button class="btn btn-danger nextBtn btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
+                            <button class="btn btn-warning nextBtn btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
                         </div>
                     </div>
 
@@ -305,9 +302,8 @@
                                             <p class="card-text">Loan Type : {{ $loan_type }}</p>
                                             <p class="card-text">Description : {{ $description }}</p>
                                             <p class="card-text">File </p>
-                                            @if(!empty($file))
-                                            <button class="btn-sm btn-info" style="position:relative; top:-1em !important;" type="button" wire:click="downloadUploadedFile">Download file</button>
-                                            <button class="btn-sm btn-warning pull-right" style="position:relative; top:-1em !important;" type="button" wire:click="deleteUploadedFile">Delete file</button>
+                                            @if($file)
+                                            <button class="btn-sm btn-danger" style="position:relative; top:-1em !important;" type="button" wire:click="deleteUploadedFile">Delete {{$file}} files</button>
                                             @else
                                                 no file uploaded
                                             @endif
@@ -317,35 +313,37 @@
 
                                 <div class="col-md-8">
                                     <div class="card border-success mb-3" style="max-width: 20rem;">
-                                        <div class="card-header bg-transparent border-success">Guranotors List</div>
+                                        <div class="card-header bg-transparent border-success">Gurantors List</div>
                                             <ul class="list-group list-group-flush">
 
                                                  @forelse($finalGurantorsChoice as $key => $value)
+                                                 
                                                     <div class="container">
-                                                        <div class="row">
+                                                        <div class="row d-flex justify-content-between">
 
-                                                            <div class="col-md-2 col-sm-2 col-xs-2">
-                                                                <p>{{ $key+1 }}</p>
+                                                            <div class=" ml-3">
+                                                                <p style="">{{ $key+1 }}</p>
                                                             </div>
 
-                                                            <div class="col-md-8 col-sm-7 col-xs-7">
-                                                                <p>{{ $value->user->name }}</p>
+                                                            <div class="">
+                                                                <p style="">{{ $value->user->name }}</p>
                                                             </div>
 
                                                             @if($value->request_status == 'Accepted')
 
-                                                            <div class="col-md-2 col-sm-3 col-xs-3" style="position:relative; top: 8px;">
+                                                            <div class="mr-3" style="position:relative; top: 5px;">
                                                                     <i class="fas fa-check"></i>
                                                             </div>
                                                             @else
 
-                                                            <div class="col-md-2 col-sm-3 col-xs-3" style="position:relative; top: 8px;">
+                                                            <div class="mr-3" style="position:relative; top: 4px;">
                                                                 <div class="spinner-border pull-right" role="status">
-                                                                    <span class="sr-only">Loading...</span>
+                                                                    <span class="sr-only" style="font: 10px;">Loading...</span>
                                                                 </div>
                                                             </div>
                                                             
                                                             @endif
+                                                            
                                                         </div>
                                                     </div>
 
@@ -360,7 +358,7 @@
                             </div>
 
                             <button class="btn btn-success btn-md pull-right" wire:click="submitForm" type="button" {{ (($step3)) ? '' : 'disabled' }}>Finish!</button>
-                            <button class="btn btn-danger nextBtn btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
+                            <button class="btn btn-warning btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
                         </div>
                     </div>
                 
@@ -368,10 +366,7 @@
 
         </div>
     </div>
-
-
-</div>
-
+    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 <script type="text/javascript">
 
@@ -513,3 +508,6 @@ window.addEventListener('swal:modal', event => {
     });
 
 </script>
+
+</div>
+

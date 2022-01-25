@@ -6,7 +6,9 @@ use Livewire\Component;
 use App\LoanApplication;
 use App\LoanGuarantor;
 use App\CreateLoanRequest;
+use App\CreateLoanRequestFile;
 use App\CreateGuarantorLoanRequest;
+use App\LoanFile;
 use Illuminate\Support\Str;
 use App\Services\FirebaseService;
 use Livewire\WithFileUploads;
@@ -53,6 +55,9 @@ class Request extends Component
     public $highlightIndex = 0;
     public $showDropdown;
     public $typeAheadInput = true;
+
+    //emi
+    public $equatedMonthlyInstallments = 0;
 
     public function reset(...$properties)
     {
@@ -227,13 +232,13 @@ class Request extends Component
             //check if user had already created an application
         if($this->checkRequestStatus()){
 
-    
             $user = CreateLoanRequest::create([
                 'loan_amount' => $this->amount,
                 'description' => $this->description,
                 'loan_type' => $this->loan_type,
                 'duration' => $this->duration,
-                'user_id' => auth()->user()->id
+                'user_id' => auth()->user()->id,
+                'emi' => $this->equatedMonthlyInstallments
             ]);
 
             //activate buttons and fill in form with new details
@@ -259,9 +264,10 @@ class Request extends Component
                 $request->description = $validatedData['description'];
                 $request->duration    = $validatedData['duration'];
                 $request->loan_type   = $validatedData['loan_type'];
+                $request->emi = $this->equatedMonthlyInstallments;
 
 
-                if($request->isDirty('description') || $request->isDirty('loan_type') || $request->isDirty('loan_amount')){
+                if($request->isDirty('description') || $request->isDirty('loan_type') || $request->isDirty('loan_amount') || $request->isDirty('emi')){
 
                     $request->save();
 
@@ -294,7 +300,15 @@ class Request extends Component
                     $this->duration = $request->duration;
                     $this->loan_request_id = $request->id;
                     $this->step1 = true;
-                    $this->file = $request->file;
+
+                    if($request->files->count() > 1){
+
+                        $this->file = $request->files->count();
+
+                    } else {
+
+                        $this->file = false;
+                    }
 
                     // $this->getGurantors();
                     $this->delReqBtn = true;
@@ -491,8 +505,6 @@ class Request extends Component
 
                 $this->getGurantors();
 
-                //session()->flash('success','Loan Application Gurantors Added Successfully!');
-
             }
 
             //check if memeber has 3 or more gurantors then enable step 3
@@ -502,24 +514,34 @@ class Request extends Component
                 //check if file is empty if not warn user can not upload twice
 
                 $this->validate([
-                    'fileTest' => 'required|mimes:png,jpg,jpeg,csv,txt,xlx,xls,pdf|max:2048'
+                    'fileTest.*' => 'required|mimes:png,jpg,jpeg,docx,txt,pdf|max:2048'
                 ]);
-    
-                $filename = md5($this->fileTest . microtime()).'.'.$this->fileTest->extension();
-    
-                $this->fileTest->storeAs('loanfiles', $filename, 'files');
 
-                $requestId->update([
-                    'file' => $filename
-                ]);
                 
+                foreach ($this->fileTest as $file) {
+
+                    $file->store('photos');
+
+                    $filename = md5($file . microtime()).'.'.$file->extension();
+    
+                    $file->storeAs('loanfiles', $filename, 'files');
+
+                    CreateLoanRequestFile::create([
+                        'title' => $filename,
+                        'loan_requestor_id' => $requestId->id
+                    ]);
+        
+                }
+
                 $fileUploaded = true;
 
                 $this->fileTest = null;
 
+                $this->file = true;
+
                 session()->flash('success','Loan Application File Added Successfully!');
 
-    
+
             }
             
             if(CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->count() >= 3){
@@ -533,9 +555,7 @@ class Request extends Component
                 session()->flash('success','Loan Application File and Gurantor Added Successfully!');
 
             }
-
-            //return redirect(request()->header('Referer'));
-            
+         
 
     }
 
@@ -550,17 +570,20 @@ class Request extends Component
     {
 
         
-        $requestId = CreateLoanRequest::find($this->loan_request_id);
+        $requestId = CreateLoanRequestFile::where('loan_requestor_id', $this->loan_request_id)->get();
 
-        $requestId->file = null;
+        
+        foreach($requestId as $file){
+            
+            $file->delete();
+            
+            Storage::delete(storage_path('files/uploads/loanfiles/'.$file->title));
+        }
 
-        $requestId->save();
-
-        Storage::delete(storage_path('files/uploads/loanfiles/'.$this->file));
 
         $this->file = null;
 
-        session()->flash('success','Loan Application File Deleted Successfully');
+        session()->flash('success','Loan Application Files were Deleted Successfully');
 
 
     }
@@ -597,9 +620,8 @@ class Request extends Component
     {
             // dd('ready to submit form');
             $this->step3 = false;
-            //dd($this->file);
 
-            $loanDetails = CreateLoanRequest::select(['loan_amount', 'description', 'loan_type', 'duration', 'file'])->findOrFail($this->loan_request_id);
+            $loanDetails = CreateLoanRequest::findOrFail($this->loan_request_id);
 
             $entryNumber = mt_rand(100000, 1000000);
             //$defaluted = Carbon::
@@ -611,34 +633,42 @@ class Request extends Component
                 'loan_type' => $loanDetails->loan_type,
                 'duration' => $loanDetails->duration,
                 'defaulted_date' => Carbon::now()->addMonths($loanDetails->duration + 3),
-                // 'analyst_id' => 3,
-                'file' => $loanDetails->file,
-                'repayment_date' => date('Y-m-d', strtotime($this->duration.' months'))
+                'repayment_date' => date('Y-m-d', strtotime($this->duration.' months')),
+                'equated_monthly_instal' => $loanDetails->emi,
+                'next_months_pay' => $loanDetails->emi,
+                'next_months_pay_date' => Carbon::now()->addMonths(1),
+                'balance_amount' => $this->totalplusinterest,
+                'loan_amount_plus_interest' => $this->totalplusinterest
             ]);
 
             $gurantors = CreateGuarantorLoanRequest::where('request_id', $this->loan_request_id)->get();
-
-            //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration, $this->loan_request_id, $gurantors);
-
 
             foreach($gurantors as $key => $guarantor){
                 LoanGuarantor::create([
                     'user_id' => $guarantor->user_id,
                     'loan_application_id' => $loanApplication->id,
+                    'value' => $guarantor->request_status,
                 ]);
             }
 
-    
+            //get files from request files to the new loan files
+            foreach($loanDetails->files as $file){
+                LoanFile::create([
+                    'title' => $file->title,
+                    'loan_application_id' => $loanApplication->id
+                ]);
+            }
+
 
                 //deleted record from loan request
-                $requestDetails = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
-                $requestDetails->delete();
+            $requestDetails = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
+            $requestDetails->delete();
     
-                session()->flash('success','Loan Application was created successfully!');
+            session()->flash('success','Loan Application was created successfully!');
   
-                $this->resetInputFields();
+            $this->resetInputFields();
           
-                $this->currentStep = 1;
+            $this->currentStep = 1;
     
     }
   
@@ -722,17 +752,19 @@ class Request extends Component
      public function totalWithInterest($type)
      {
 
-        $loan_types_config = config('loantypes.'.$type);
-        //dd(config('loantypes.'.$type));
-        $amountRequest = $this->amount;
-
+         
+         $loan_types_config = config('loantypes.'.$type);
+         //dd(config('loantypes.'.$type));
+         $amountRequest = $this->amount;
+         
+         if($amountRequest <= 1000){
+             
+             return 0.00;
+         }
 
         if($type == 'Emergency' || $type == 'SchoolFees' || $type == 'Development'){
             
             $total = $this->onReducingLoanBalance($loan_types_config['max_duration'], $loan_types_config['interest']);
-            $this->interestamount = $total - $amountRequest;
-            //add the new interest amount in the the display amount
-            //dd($total);
 
         } else {
 
@@ -748,40 +780,74 @@ class Request extends Component
 
      public function onReducingLoanBalance($time, $rate)
      {
-        
+
+        // $principal = $this->amount;
+        // $totalInterestPaid = 0;
+        // $monthlyAmountEMI = $this->getMonthlyEmi($principal, $rate, $time);
+        // $interestCalculator = ( 1 + (( $rate / 100) / $time));
+        // $principalValue = 0;
+
+        // for($x = 0; $x < $time; $x++){
+
+        //     if($x == 0){
+
+        //         $principalValue = $this->amount;
+
+        //         continue;
+
+        //     } else {
+
+        //         $amount = $principalValue * $interestCalculator;
+
+        //         $interest = ($amount - $principalValue);
+
+        //         $totalInterestPaid += $interest;
+
+        //         $principalValue = $amount - ( $monthlyAmountEMI - $interest);
+
+        //     }
+
+
+        // }
+        ///////////////////////////////////////
         
         $principal = $this->amount;
-        $accumulatedAmount = 0;
-
-        $amounpaid = 0;//from db check the amount paid in last month
-        //dd($time);
+        $totalInterestPaid = 0;
+        $emi = $this->getMonthlyEmi($principal, $rate, $time);
+        $this->equatedMonthlyInstallments = $emi;
+        $interestCalculator = ( 1 + ( $rate / 100));
+        $principalValue = 0;
 
         for($x = 0; $x < $time; $x++){
 
             if($x == 0){
 
-                $startingAmount = $principal;
+                $principalValue = $this->amount;
 
-                $accumulatedAmount =  ($startingAmount * ($rate / 100)) + $principal;
-
+                continue;
 
             } else {
 
-                $startingAmount = $accumulatedAmount;
+                $amount = $principalValue * $interestCalculator;
 
-                $secondAmount = (($startingAmount * ($rate / 100)) + $startingAmount) - $amounpaid;
+                $interest = ($amount - $principalValue);
 
-                unset($accumulatedAmount);
+                $totalInterestPaid += $interest;
 
-                $accumulatedAmount = $secondAmount;
+                $principalValue = $amount - ( $this->equatedMonthlyInstallments - $interest);
 
             }
 
 
         }
 
-        $rounded = number_format((float)$accumulatedAmount, 2, '.', '');
-        return $rounded;
+        
+        $rounded = number_format((float)$totalInterestPaid, 2, '.', '');
+
+        $this->interestamount = $rounded;
+
+        return $rounded + $principal;
+
      }
 
      public function alertSuccess()
@@ -798,8 +864,6 @@ class Request extends Component
              ]);
  
      }
- 
-   
  
      /**
  
@@ -861,6 +925,12 @@ class Request extends Component
         $requestDetails->delete();
         session()->flash('success','Loan Application was deleted successfully!');
         $this->resetInputFields();
+     }
+
+     public function getMonthlyEmi($principal, $Rate, $time)
+     {
+        $rate = $Rate / 100;
+        return $principal * $rate * ( pow( 1 + $rate, $time ) / ( ( pow( 1 + $rate, $time) - 1 )));
      }
 
 }

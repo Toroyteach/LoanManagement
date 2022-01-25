@@ -11,7 +11,7 @@ class LoanGuarantor extends Model
     public $table = 'loan_guarantors';
 
     protected $fillable = [
-        'user_id', 'loan_application_id',
+        'user_id', 'loan_application_id', 'value'
     ]; 
 
     protected $dates = [

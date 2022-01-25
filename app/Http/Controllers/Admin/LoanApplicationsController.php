@@ -7,6 +7,7 @@ use App\Http\Requests\MassDestroyLoanApplicationRequest;
 use App\Http\Requests\StoreLoanApplicationRequest;
 use App\Http\Requests\UpdateLoanApplicationRequest;
 use App\LoanApplication;
+use App\LoanFile;
 use App\UsersAccount;
 use App\Role;
 use App\Services\AuditLogService;
@@ -37,8 +38,7 @@ class LoanApplicationsController extends Controller
         $loanApplications = LoanApplication::with('status', 'accountant')->whereIn('status_id', $statusId)->orderBy('updated_at', 'ASC')->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
-        //dd($user->getIsCfoAttribute());
-        //dd($loanApplications);
+
         if($user->getIsMemberAttribute()){
 
             //modify to show application details and some news for user
@@ -66,7 +66,7 @@ class LoanApplicationsController extends Controller
 
     public function store(StoreLoanApplicationRequest $request)
     {
-        //dd($request->all());
+
         $entryNumber = mt_rand(100000, 1000000);
         $loanApplication = LoanApplication::create([
             'loan_entry_number' => $entryNumber,
@@ -78,17 +78,6 @@ class LoanApplicationsController extends Controller
 
         //create firebase calls to insert to firebase
         $random = Str::random(20);
-        //dd($random);
-
-        // $loanDetails = [
-        //     'loanentrynumber' => $entryNumber,
-        //     'loandescription' => $loanApplication->description,
-        //     'amount' => $loanApplication->loan_amount,
-        //     'created_at' => $loanApplication->created_at,
-        //     'id' => $loanApplication->created_by->firebaseid,
-        //     'status' => $loanApplication->status_id,
-        //     'docID' => $random,
-        // ];
         
         $repaymentDate = date('Y-m-d', strtotime($request->duration.' months'));
 
@@ -98,12 +87,11 @@ class LoanApplicationsController extends Controller
         $loanApplication->save();
         
 
-            return redirect()->route('admin.loan-applications.index')->with('success','Loan Application Request was created successfully!');
+        return redirect()->route('admin.loan-applications.index')->with('success','Loan Application Request was created successfully!');
     }
 
     public function edit(LoanApplication $loanApplication)
     {
-        //dd($loanApplication);
         //returns view with loan to change the status to the final stage of the loan i.e rejected or approved
         abort_if(
             Gate::denies('loan_application_edit') || !in_array($loanApplication->status_id, [6,7]),
@@ -115,7 +103,6 @@ class LoanApplicationsController extends Controller
 
         $loanApplication->load('status');
 
-        //dd('edit'.$loanApplication);
         //getting data from cfo to ceo to approve to send to client money(after submit goes to update method below)
 
         return view('admin.loanApplications.edit', compact('statuses', 'loanApplication'));
@@ -123,12 +110,10 @@ class LoanApplicationsController extends Controller
 
     public function update(UpdateLoanApplicationRequest $request, LoanApplication $loanApplication)
     {
-        //dd('give out the money');
         //makes the status change to approved or rejected to give out also update firebase
 
         //when updating the paymnent status of the loan to send money to user
 
-        //dd($request, $loanApplication);
         //update firebase data as well
 
         if($request->status_id == 8){
@@ -143,7 +128,6 @@ class LoanApplicationsController extends Controller
             
             $userData = UsersAccount::where('user_id', $loanApplication->created_by_id)->firstOrFail();
             $userData->increment('total_amount', $loanApplication->loan_amount);
-            //dd('success');
 
         } else if($request->status_id == 9){
 
@@ -164,13 +148,12 @@ class LoanApplicationsController extends Controller
         $loanApplication->load('status', 'accountant', 'creditCommittee', 'created_by', 'logs.user', 'comments');
         $defaultStatus = Status::find(1);
         $user          = auth()->user();
-        //dd($loanApplication->logs);
         $logs          = AuditLogService::generateLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
+        $maximumPayable = $remaining + 5000;
         $elligibleAmount = $this->getUserElligibleAmount();
-        //dd($elligibleAmount);
 
-        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount'));
+        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount', 'maximumPayable'));
     }
 
     public function destroy(LoanApplication $loanApplication)
@@ -194,7 +177,6 @@ class LoanApplicationsController extends Controller
     public function showSend(LoanApplication $loanApplication)
     {
         
-        //dd('here');
         if(!auth()->user()->is_admin){
 
             abort_if(!auth()->user()->is_accountant, Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -228,7 +210,6 @@ class LoanApplicationsController extends Controller
         // (cfo(proccesing,approved, rejected))
         // 2nd if statement is excecuted
 
-        //dd('send back to admin');
         //also update firebase data here
         if(!auth()->user()->is_admin){
 
@@ -263,12 +244,6 @@ class LoanApplicationsController extends Controller
             'approved' => false,
         ];
 
-        //dd($loanApplication);
-
-       // $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
-
-        //if($updateFirebaseLoan){
-
             $loanApplication->update([
                 $column => $request->user_id,
                 'status_id' => $status
@@ -276,16 +251,11 @@ class LoanApplicationsController extends Controller
     
             return redirect()->route('admin.loan-applications.index')->with('success', 'Loan Application forwaded for analysis');
 
-        //}
-
-        //return redirect()->back()->with('error', 'Loan Application was not processed successfuly');
-
     }
 
     public function showAnalyze(LoanApplication $loanApplication)
     {
         //accountant and credit committee to comment on the loan status
-        //dd($loanApplication);
         $user = auth()->user();
 
         if(!$user->is_admin){
@@ -306,7 +276,6 @@ class LoanApplicationsController extends Controller
         // once analyst approves or rejects a loan this is where it comes back to for further udpating
 
         //once the cfo has approved the loan the loan comes back here to be sent to admin for final approval to be disbursed the amount
-        //dd('analysis updating');
         $user = auth()->user();
 
         if ($user->is_accountant && $loanApplication->status_id == 1) {
@@ -332,13 +301,6 @@ class LoanApplicationsController extends Controller
             'approved' => false,
         ];
 
-        //dd($data, $loanApplication->firebaseid);
-
-
-       // $updateFirebaseLoan = $service->updateLoan($data, $loanApplication->firebaseid);
-
-
-        //if($updateFirebaseLoan){
 
             $loanApplication->comments()->create([
                 'comment_text' => $request->comment_text,
@@ -351,36 +313,6 @@ class LoanApplicationsController extends Controller
     
             return redirect()->route('admin.loan-applications.index')->with('message', 'Loan Application forwaded for analysis');
 
-        //}
-
-        //return redirect()->back()->with('error', 'Analysis was not submitted successfully');
-    }
-
-    public function createLoan($params)
-    {
-        // $newLoan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docID']);
-        // $newLoan->set([
-        //     'user_id' => $params['id'],
-        //     'loanentrynumber' => $params['loanentrynumber'],
-        //     'description' => $params['loandescription'],
-        //     'amount' => $params['amount'],
-        //     'created_at' => $params['created_at'],
-        //     'status' => $params['status'],
-        //     'approved' => false
-        // ]);
-        // return $newLoan;
-    }
-
-    public function updateLoan($params)
-    {
-        //dd($params);
-        // $loan = app('firebase.firestore')->database()->collection('LoanRequest')->document($params['docId'])
-        //         ->update([
-        //             ['path' => 'status', 'value' => $params['status']],
-        //             ['path' => 'approved', 'value' => $params['approved']]
-        //         ]);
-
-        // return $loan; 
     }
 
     public function activeLoans()
@@ -434,7 +366,6 @@ class LoanApplicationsController extends Controller
         $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('status_id', '=', 11)->where('repaid_status', 0)->get();
         $defaultStatus    = Status::find(1);
         $user             = auth()->user();
-        //dd($loanApplications);
 
         return view('admin.loanApplications.defaultors', compact('loanApplications', 'defaultStatus', 'user'));
     }
@@ -442,29 +373,31 @@ class LoanApplicationsController extends Controller
     public function makeRepaymentAmount(Request $request)
     {
         //check if the paid amount is full or partial them made
-        //notify members here or use observers to notify member of the changes
 
-        $loanItem = LoanApplication::select(['last_month_amount_paid', 'date_last_amount_paid', 'loan_amount', 'repaid_status', 'created_by_id'])->find($request->loan_id);
+        $loanItem = LoanApplication::find($request->loan_id);
 
         if($loanItem->loan_amount <= $request->amount){ //greater than or equal loan amount
 
-            $newAmount = $request->amount - $loanItem->loan_amount;
+            $newAmount = $request->amount - $loanItem->balance_amount;
 
             if($newAmount != 0){
-                $memberAccount = UserAccount::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                $memberAccount = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail();
                 $memberAccount->increment('total_amount', $newAmount);
             }
 
             $loanItem->last_month_amount_paid = $request->amount;
             $loanItem->date_last_amount_paid = now();
             $loanItem->status_id = 10;
+            $loanItem->repaid_status = 1;
+            $loanItem->increment('repaid_amount', $request->amount);
+            $loanItem->decrement('balance_amount', $request->amount);
 
-            
-            if($loanItem->isDirty() && $memberAccount->isDirty()){
+
+            if($loanItem->isDirty()){
                 
                 $loanItem->save();
 
-                return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated Succesfully. Memeber has fully settled Loan and Overpayment added to Member account'), 200);
+                return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated Succesfully. Member has fully settled Loan and Overpayment added to Member account'), 200);
 
             }
 
@@ -472,12 +405,66 @@ class LoanApplicationsController extends Controller
 
         } else { //less than loan amount
 
-            $loanItem->last_month_amount_paid = $request->amount;
+            switch($loanItem->loan_type){
+                case "emergency":
+
+                    $rate = config('loantypes.Emergency.interest');
+                    $time = config('loantypes.Emergency.max_duration');
+                    $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+
+                    break;
+                case "education":
+                    
+                    $rate = config('loantypes.SchoolFees.interest');
+                    $time = config('loantypes.SchoolFees.max_duration');
+                    $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+
+                    break;
+                case "development":
+
+                    $rate = config('loantypes.Development.interest');
+                    $time = config('loantypes.Development.max_duration');
+                    $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+
+                    break;
+                case "instantloan":
+
+                    $rate = config('loantypes.InstantLoan.interest');
+                    $time = config('loantypes.InstantLoan.max_duration');
+                    $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+
+                    break;
+
+                default:
+                    $interest = 0.00;
+            }
+
+            $amountPaid = 100;
+            $monthlyEmi = $loanItem->next_months_pay;
+        
+            if($amountPaid >= $monthlyEmi){
+
+                $overpayemntOfEmi = $amountPaid - $monthlyEmi;
+                $loanItem->next_months_pay = $loanItem->equated_monthly_instal - $overpayemntOfEmi;
+                $cashPayment = $amountPaid - $interest;
+
+            } else {
+
+                $underpayemntOfEmi = $monthlyEmi - $amountPaid;
+                $nextAmount = $loanItem->equated_monthly_instal + $underpayemntOfEmi;
+                $loanItem->next_months_pay =  $nextAmount;
+                $cashPayment = $amountPaid - $interest;
+            }
+            
+
+            $loanItem->decrement('balance_amount', $cashPayment);
+            $loanItem->last_month_amount_paid = $amountPaid ;
             $loanItem->date_last_amount_paid = now();
+            $loanItem->increment('repaid_amount', $amountPaid);
     
             
-            if($loanItem->isDirty() && $memberAccount->isDirty()){
-                
+            if($loanItem->isDirty()){
+
                 $loanItem->save();
                 
                 return response()->json(array('response' => true, 'message' => 'Success Repayment Amount Updated'), 200);
@@ -491,9 +478,9 @@ class LoanApplicationsController extends Controller
 
     public function createPdf($id)
     {      
-          $loan = LoanApplication::select(['file'])->findOrFail($id);
+          $loan = LoanFile::findOrFail($id);
 
-          $pathToFile = storage_path('files/uploads/loanfiles/' . $loan->file);
+          $pathToFile = storage_path('files/uploads/loanfiles/' . $loan->title);
         
           return response()->download($pathToFile);
     }
@@ -581,7 +568,6 @@ class LoanApplicationsController extends Controller
     public function updateBulkFileDetails(Request $request)
     {
         //update details from the table
-        //dd($request->all());
         
         if($request->type == 'loan'){
 
@@ -589,9 +575,7 @@ class LoanApplicationsController extends Controller
 
             foreach($data as $key => $item){
 
-                $loanItem = LoanApplication::select(['loan_amount', 'created_by_id'])
-                ->where('loan_entry_number', $item->entry_number)
-                ->first();
+                $loanItem = LoanApplication::where('loan_entry_number', $item->entry_number)->first();
 
 
                 if($loanItem->loan_amount <= $item->amount){ //greater than or equal loan amount
@@ -601,30 +585,51 @@ class LoanApplicationsController extends Controller
         
                     if($newAmount != 0){
 
-                        UsersAccount::select(['total_amount'])->where('user_id', $loanItem->created_by_id)->increment('total_amount', $newAmount);
+                        UsersAccount::where('user_id', $loanItem->created_by_id)->increment('total_amount', $newAmount);
 
                     }
-                    
 
-                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)
-                    ->update([
-                        'repaid_status' => 1,
-                        'last_month_amount_paid' => $item->amount,
-                        'date_last_amount_paid' => now(),
-                        'status_id' => 10,
-                    ]);
+                    
+                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
+
+                    $loanItemUpdate->last_month_amount_paid = $item->amount;
+                    $loanItemUpdate->date_last_amount_paid = now();
+                    $loanItemUpdate->status_id = 10;
+                    $loanItemUpdate->repaid_status = 1;
+                    $loanItemUpdate->increment('repaid_amount', $item->amount);
+                    $loanItemUpdate->decrement('balance_amount', $item->amount);
+                    $loanItemUpdate->save();
                     
            
                 } else { //less than loan amount
         
 
-                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)
-                    ->update([
-                        'last_month_amount_paid' => $item->amount,
-                        'date_last_amount_paid' => now(),
-                    ]);
-            
+                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
+
+                    $amountPaid = $item->amount;
+                    $monthlyEmi = $loanItemUpdate->next_months_pay;
+                
+                    if($amountPaid >= $monthlyEmi){
         
+                        $overpayemntOfEmi = $amountPaid - $monthlyEmi;
+                        $loanItemUpdate->next_months_pay = $loanItemUpdate->equated_monthly_instal - $overpayemntOfEmi;
+                        $cashPayment = $amountPaid - $interest;
+        
+                    } else {
+        
+                        $underpayemntOfEmi = $monthlyEmi - $amountPaid;
+                        $nextAmount = $loanItemUpdate->equated_monthly_instal + $underpayemntOfEmi;
+                        $loanItemUpdate->next_months_pay =  $nextAmount;
+                        $cashPayment = $amountPaid - $interest;
+                    }
+                    
+        
+                    $loanItemUpdate->decrement('balance_amount', $cashPayment);
+                    $loanItemUpdate->last_month_amount_paid = $amountPaid ;
+                    $loanItemUpdate->date_last_amount_paid = now();
+                    $loanItemUpdate->increment('repaid_amount', $amountPaid);
+                    $loanItemUpdate->save();
+            
                 }
 
             }
@@ -666,7 +671,6 @@ class LoanApplicationsController extends Controller
     public function deleteBulkFileDetails(Request $request)
     {
         //delete details from the table
-        //dd($request->all());
         if($request->type == 'loan'){
 
             LoanFileUpload::truncate();

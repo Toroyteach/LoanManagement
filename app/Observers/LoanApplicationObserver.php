@@ -12,6 +12,7 @@ use App\Status;
 use App\User;
 use Illuminate\Support\Facades\Notification;
 use App\SmsTextsSent;
+use Illuminate\Support\Facades\Http;
 
 class LoanApplicationObserver
 {
@@ -109,13 +110,35 @@ class LoanApplicationObserver
                 $loanApplication->accountant->notify(new StatusChangeNotification($loanApplication));
                 $loanApplication->creditCommittee->notify(new StatusChangeNotification($loanApplication));
 
-                $message = "Dear ".$loanApplication->created_by->name.". Your loan application was ".$loanApplication->status->name;
+                if($this->smsEnabled()){
 
-                $this->sendSms($loanApplication->created_by_id, $message);
+                    $message = "Dear ".$loanApplication->created_by->name.". Your loan application was ".$loanApplication->status->name;
+                    
+                    $this->sendSms($loanApplication->created_by_id, $message);
+                }
+
 
             }
 
         }
+    }
+
+    public function smsEnabled()
+    {
+        $sms = env("SMS_ENABLED"); 
+        
+        //dd($sms);
+        
+        if($sms == 1){
+            
+            return true;
+            
+        } else {
+            
+            return false;
+        }
+        
+        
     }
 
     public function sendSms($id, $message)
