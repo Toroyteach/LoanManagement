@@ -114,8 +114,8 @@
 <script type="text/javascript">
 
 
-    var loanDataTable = document.getElementById("loantableV");
-    var MonthlyDataTable = document.getElementById("monthlytableV");
+    let loanDataTable = document.getElementById("loantableV");
+    let MonthlyDataTable = document.getElementById("monthlytableV");
     let _token   = $('meta[name="csrf-token"]').attr('content');
 
     //fetchDataTableLoan()
@@ -221,7 +221,7 @@
 
         $('#submitfileM').click(function () {
 
-        var type = document.getElementById('typeM').value;
+            let type = document.getElementById('typeM').value;
             $.ajax({
                 type:'POST',
                 url: "{{ route('admin.updatefileuploaddetails') }}",
@@ -249,8 +249,8 @@
 
         $('#deletefileM').click(function () {
 
-        var type = document.getElementById('typeM').value;
-        console.log(type)
+         var type = document.getElementById('typeM').value;
+            console.log(type)
             $.ajax({
                 type:'POST',
                 url: "{{ route('admin.deletefileuploaddetails') }}",

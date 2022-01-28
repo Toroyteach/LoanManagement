@@ -104,7 +104,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //update monthly contribution amount
     Route::post('/updatemonthlycontributionamount','UsersController@updateMonthlyContributionAmount')->name('monthly.update.amount');
 
-
     //get pdf for statements
     Route::get('/users/pdf/{id}', 'UsersController@createPdf')->name('users.pdf');
     Route::get('/user/statements', 'UsersController@memberStatements')->name('user.statements');

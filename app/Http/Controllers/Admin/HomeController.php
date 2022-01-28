@@ -46,7 +46,7 @@ class HomeController extends Controller
             $approved_loan = LoanApplication::select(['loan_amount', 'status_id'])->whereIn('status_id', [8, 10])->sum('loan_amount');
             $loan_pending = LoanApplication::select(['loan_amount'])->where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('loan_amount');//loan which havent been paid back //loan book
             $amount_paid = LoanApplication::sum('repaid_amount');// amount paied back for all
-            $user = 'admin';
+            $user = 'Admin';
                     //logic to return data for the chart js of loan and loan types for admin
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );

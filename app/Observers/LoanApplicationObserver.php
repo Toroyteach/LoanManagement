@@ -78,7 +78,7 @@ class LoanApplicationObserver
 
                 Notification::send($user, new SentForAnalysisNotification($loanApplication));
 
-            } elseif (in_array($loanApplication->status_id, [3, 4, 6, 7])) {
+            } else if (in_array($loanApplication->status_id, [3, 4, 6, 7])) {
 
                 //sends notification to admin accountant and credit committee that loan was rejected or any other analysis
                 $users = Role::find(1)->users;
@@ -96,14 +96,14 @@ class LoanApplicationObserver
 
                 } else if(in_array($loanApplication->status_id, [6, 7])){
 
-                   $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
-                    //only accountant and admin should be notified that the credoit committee rejected the
+                    $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
+                        //only accountant and admin should be notified that the credoit committee rejected the
 
                 }
 
                 Notification::send($emails, new SubmittedAnalysisNotification($loanApplication));
 
-            } elseif (in_array($loanApplication->status_id, [8, 9])) {
+            } else if (in_array($loanApplication->status_id, [8, 9])) {
 
                 //notification for either rejected or the final approved
                 $loanApplication->created_by->notify(new StatusChangeNotification($loanApplication));//user

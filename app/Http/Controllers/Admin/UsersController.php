@@ -293,26 +293,40 @@ class UsersController extends Controller
 
             $type = 'monthly';
 
+            $monthlystatement = MonthlySavings::where('user_id', $user->id)->first();
+            $loanstatements = null;
+      
+            // download PDF file with download method
+            if(!empty($monthlystatement)){
+    
+                //view()->share('employee',$data);
+                $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
+    
+                return $pdf->stream($id.'_statement.pdf');
+            }
+    
+            return back()->with('error', 'No values to prepare Statement of Account');
+
         } else if($id == 'loan'){
 
             $type = 'loan';
 
+            $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
+            $monthlystatement = null;
+      
+            // download PDF file with download method
+            if(count($loanstatements) >= 1 ){
+    
+                //view()->share('employee',$data);
+                $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
+    
+                return $pdf->stream($id.'_statement.pdf');
+            }
+    
+            return back()->with('error', 'No values to prepare Statement of Account');
+
         }
 
-        // share data to view
-        $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
-        $monthlystatement = MonthlySavings::where('user_id', $user->id)->first();
-  
-        // download PDF file with download method
-        if($user and ($monthlystatement or $loanstatements)){
-
-            //view()->share('employee',$data);
-            $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
-
-            return $pdf->stream($id.'_statement.pdf');
-        }
-
-        return back()->with('error', 'No values to prepare Statement of Account');
     }
 
     public function memberStatements()

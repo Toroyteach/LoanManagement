@@ -5,31 +5,31 @@
         @if($notice->data['notification_type'] == 'NewLoanApplication')
                                   <!-- new loan application notification -->
 
-                                <div class="container_fluid bg-secondary" style="padding:1em;">
-                                    <div class="alert alert-warning" role="alert">
-                                    @if(empty($notice->read_at))
-                                            <div class="conatiner">
-                                                <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
-                                                    Mark as read
-                                                </a>
-                                            </div>
+                                <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                    <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                        
+                                        <div class="container">
+                                            @if(Auth::user()->is_user)
+                                            <strong class="">Dear {{ $notice->data['message_name'] }}</strong>
+                                            @else
+                                            <strong class="">New Loan Application</strong>
                                             @endif
-
-                                            <div class="container">
-                                                @if(Auth::user()->is_user)
-                                                    <strong class="">Dear {{ $notice->data['message_name'] }}</strong>
-                                                @else
-                                                    <strong class="">New Loan Application</strong>
-                                                @endif
-                                                <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                            <div>
+                                                <p class="">{{ $notice->data['message_desc'] }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="float-right">
+                                            <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
+                                        </div>
+                                        
+                                        @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
                                                 </div>
-                                            </div>
-
-                                            <div class="float-right">
-                                                <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
-                                            </div>
-
+                                                @endif
                                         </div>
 
                                     </div>
@@ -37,27 +37,28 @@
                               @elseif($notice->data['notification_type'] == 'StatusAnalysis')
                                   <!-- status analysis internal -->
 
-                                    <div class="container_fluid bg-secondary" style="padding:1em;">
-                                        <div class="alert alert-success" role="alert">
-                                        @if(empty($notice->read_at))
-                                            <div class="conatiner">
-                                                <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
-                                                    Mark as read
-                                                </a>
-                                            </div>
-                                            @endif
-
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
                                             <div class="container">
                                                 <strong class="">New Loan Application Status</strong>
                                                 <div>
                                                     <p class="">{{ $notice->data['message_desc'] }}</p>
                                                 </div>
                                             </div>
-
+                                            
                                             <div class="float-right">
                                                 <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
                                             </div>
-
+                                            <br>
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
                                         </div>
 
                                     </div>
@@ -65,27 +66,27 @@
                               @elseif($notice->data['notification_type'] == 'LoanAnalysis')
                                   <!-- loanAnalysis notice -->
 
-                                    <div class="container_fluid bg-secondary" style="padding:1em;">
-                                        <div class="alert alert-success" role="alert">
-                                        @if(empty($notice->read_at))
-                                            <div class="conatiner">
-                                                <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
-                                                    Mark as read
-                                                </a>
-                                            </div>
-                                            @endif
-
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
                                             <div class="container">
                                                 <strong class="">New Loan Analysis Report</strong>
                                                 <div>
                                                     <p class="">{{ $notice->data['message_desc'] }}</p>
                                                 </div>
                                             </div>
-
+                                            
                                             <div class="float-right">
                                                 <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
                                             </div>
-
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
                                         </div>
 
                                     </div>
@@ -95,27 +96,27 @@
                                   <!-- StatusAnalyis user (approved or rejected) -->
 
 
-                                    <div class="container_fluid bg-secondary" style="padding:1em;">
-                                        <div class="alert alert-success" role="alert">
-                                        @if(empty($notice->read_at))
-                                            <div class="conatiner">
-                                                <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
-                                                    Mark as read
-                                                </a>
-                                            </div>
-                                            @endif
-
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
                                             <div class="container">
                                                 <strong class="">Loan Application Status </strong>
                                                 <div>
                                                     <p class="">{{ $notice->data['message_desc'] }}</p>
                                                 </div>
                                             </div>
-
+                                            
                                             <div class="float-right">
                                                 <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
                                             </div>
-
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
                                         </div>
 
                                     </div>
@@ -125,27 +126,27 @@
 
                                   <!-- Monthly payment Analysis -->
 
-                                    <div class="container_fluid bg-secondary" style="padding:1em;">
-                                        <div class="alert alert-warning" role="alert">
-                                        @if(empty($notice->read_at))
-                                            <div class="conatiner">
-                                                <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
-                                                    Mark as read
-                                                </a>
-                                            </div>
-                                            @endif
-
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
                                             <div class="container">
                                                 <strong class="">Monthly Contribution</strong>
                                                 <div>
                                                     <p class="">{{ $notice->data['message_desc'] }}</p>
                                                 </div>
                                             </div>
-
+                                            
                                             <div class="float-right">
                                                 <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
                                             </div>
-
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
                                         </div>
 
                                     </div>
@@ -154,16 +155,9 @@
 
                                   <!-- Monthly payment Analysis -->
 
-                                  <div class="container-fluid bg-secondary gurantor" style="padding:1em;">
-                                        <div class="alert alert-warning">
-                                            @if(empty($notice->read_at))
-                                            <div class="conatiner" role="alert">
-                                                <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
-                                                    Mark as read
-                                                </a>
-                                            </div>
-                                            @endif
-
+                                  <div class="container_fluid bg-secondary gurantor" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}">
+                                            
                                             <div class="container">
                                                 <div class="row">
                                                     <div class="col-md-7">
@@ -172,9 +166,9 @@
                                                             <p class="">{{ $notice->data['message_desc'] }}</p>
                                                         </div>
                                                     </div>
-                                                @if(empty($notice->read_at))
+                                                    @if(empty($notice->read_at))
                                                     <div class="col-md-5">
-                                                    <input type="hidden" value="{{ $notice->data['member_id'] ?? '' }}" id="loanrequestid">
+                                                        <input type="hidden" value="{{ $notice->data['member_id'] ?? '' }}" id="loanrequestid">
                                                         <div>
                                                             <button class="btn btn-sm btn-warning " onclick="submitResponse('Rejected')">Reject</button>
                                                         </div>
@@ -182,8 +176,15 @@
                                                             <button class="btn btn-sm btn-success " onclick="submitResponse('Accepted')">Accept</button>
                                                         </div>
                                                     </div>
-                                                @endif
-                                                
+                                                    @endif
+                                                    
+                                                    @if(empty($notice->read_at))
+                                                    <div class="container" role="alert">
+                                                        <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                            Mark as read
+                                                        </a>
+                                                    </div>
+                                                    @endif
                                                 </div>
                                             </div>
 

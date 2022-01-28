@@ -40,7 +40,7 @@ trait MultiTenantModelTrait
 
                         $field = sprintf('%s.%s', $builder->getQuery()->from, $column);
 
-                        $builder->whereIn($field, [3, 5]);
+                        $builder->whereIn($field, [6, 7, 8]);
 
                     } else {
 

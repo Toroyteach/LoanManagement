@@ -176,7 +176,8 @@ class LoanApplicationsController extends Controller
 
     public function showSend(LoanApplication $loanApplication)
     {
-        
+        // dd('here');
+        //the admin can nnot sent the loan item to an accountant
         if(!auth()->user()->is_admin){
 
             abort_if(!auth()->user()->is_accountant, Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -186,12 +187,17 @@ class LoanApplicationsController extends Controller
         //this stage should only be used to send the loan application status to the credit commiteefor further editing
         //loan status id is 3 by default
 
-        if (in_array($loanApplication->status_id, [3, 4, 5])) {
+        if($loanApplication->status_id == 1) {
+
+            $role = 'Accountant';
+            $users = Role::find(3)->users->pluck('name', 'id');
+
+        } else if (in_array($loanApplication->status_id, [3, 4, 5])) {
 
             $role = 'Credit Committee';
             $users = Role::find(4)->users->pluck('name', 'id');
 
-        } else {
+        } else { 
 
             abort(Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -223,7 +229,7 @@ class LoanApplicationsController extends Controller
             $users  = Role::find(3)->users->pluck('id');
             $status = 2;
 
-        } else if (in_array($loanApplication->status_id, [3,4])) {
+        } else if (in_array($loanApplication->status_id, [3, 4])) {
 
             $column = 'cfo_id'; //creditcommittee_id
             $users  = Role::find(4)->users->pluck('id');
@@ -260,7 +266,7 @@ class LoanApplicationsController extends Controller
 
         if(!$user->is_admin){
 
-            abort_if((!$user->is_accountant || $loanApplication->status_id != 1) && (!$user->is_creditCommittee || !in_array($loanApplication->status_id, [5, 3])),
+            abort_if((!$user->is_accountant || $loanApplication->status_id != 2) && (!$user->is_creditCommittee || !in_array($loanApplication->status_id, [5, 3])),
                 Response::HTTP_FORBIDDEN,'403 Forbidden'
             );
 
@@ -278,7 +284,7 @@ class LoanApplicationsController extends Controller
         //once the cfo has approved the loan the loan comes back here to be sent to admin for final approval to be disbursed the amount
         $user = auth()->user();
 
-        if ($user->is_accountant && $loanApplication->status_id == 1) {
+        if ($user->is_accountant && $loanApplication->status_id == 2) {
 
             $status = $request->has('approve') ? 3 : 4;
 

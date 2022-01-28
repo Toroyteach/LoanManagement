@@ -211,18 +211,18 @@
                     @if(!$user->is_member)
                         <tr>
                             <th>
-                                {{ trans('cruds.loanApplication.fields.analyst') }}
+                                Accountant
                             </th>
                             <td>
-                                {{ $loanApplication->analyst->name ?? 'Not Processed' }}
+                                {{ $loanApplication->accountant->name ?? 'Not Processed' }}
                             </td>
                         </tr>
                         <tr>
                             <th>
-                                {{ trans('cruds.loanApplication.fields.cfo') }}
+                                Credit Committee
                             </th>
                             <td>
-                                {{ $loanApplication->cfo->name ?? 'Not Processed' }}
+                                {{ $loanApplication->creditCommittee->name ?? 'Not Processed' }}
                             </td>
                         </tr>
                     @endif
@@ -300,7 +300,7 @@
                                 </a>
                             @endif  
 
-                @if((Gate::allows('loan_application_edit') and ($user->is_admin or $user->accountant)) && $loanApplication->status_id == 6)
+                @if((Gate::allows('loan_application_edit') and ($user->is_admin or $user->is_accountant)) && $loanApplication->status_id == 6)
                     <form method="POST" action="{{ route('admin.loan-applications.update', [$loanApplication->id]) }}">
                         @method('PUT')
                         @csrf
