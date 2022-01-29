@@ -625,6 +625,7 @@ class Request extends Component
 
             $entryNumber = mt_rand(100000, 1000000);
             //$defaluted = Carbon::
+            $nextMonthsPay = $this->getFirstMonthsPayInterest($loanDetails->loan_amount, config('loantypes.'.$loanDetails->loan_type.'.interest'));
             //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration);
             $loanApplication = LoanApplication::create([
                 'loan_entry_number' => $entryNumber,
@@ -635,7 +636,7 @@ class Request extends Component
                 'defaulted_date' => Carbon::now()->addMonths($loanDetails->duration + 3),
                 'repayment_date' => date('Y-m-d', strtotime($this->duration.' months')),
                 'equated_monthly_instal' => $loanDetails->emi,
-                'next_months_pay' => $loanDetails->emi,
+                'next_months_pay' => $loanDetails->emi + $nextMonthsPay,
                 'next_months_pay_date' => Carbon::now()->addMonths(1),
                 'balance_amount' => $this->totalplusinterest,
                 'loan_amount_plus_interest' => $this->totalplusinterest
@@ -780,45 +781,15 @@ class Request extends Component
 
      public function onReducingLoanBalance($time, $rate)
      {
-
-        // $principal = $this->amount;
-        // $totalInterestPaid = 0;
-        // $monthlyAmountEMI = $this->getMonthlyEmi($principal, $rate, $time);
-        // $interestCalculator = ( 1 + (( $rate / 100) / $time));
-        // $principalValue = 0;
-
-        // for($x = 0; $x < $time; $x++){
-
-        //     if($x == 0){
-
-        //         $principalValue = $this->amount;
-
-        //         continue;
-
-        //     } else {
-
-        //         $amount = $principalValue * $interestCalculator;
-
-        //         $interest = ($amount - $principalValue);
-
-        //         $totalInterestPaid += $interest;
-
-        //         $principalValue = $amount - ( $monthlyAmountEMI - $interest);
-
-        //     }
-
-
-        // }
-        ///////////////////////////////////////
         
         $principal = $this->amount;
         $totalInterestPaid = 0;
         $emi = $this->getMonthlyEmi($principal, $rate, $time);
         $this->equatedMonthlyInstallments = $emi;
-        $interestCalculator = ( 1 + ( $rate / 100));
+        $interestCalculator =  number_format((float)($rate / 100), 2, '.', '');
         $principalValue = 0;
 
-        for($x = 0; $x < $time; $x++){
+        for($x = 0; $x <= $time; $x++){
 
             if($x == 0){
 
@@ -828,13 +799,11 @@ class Request extends Component
 
             } else {
 
-                $amount = $principalValue * $interestCalculator;
-
-                $interest = ($amount - $principalValue);
-
+                $interest = $interestCalculator * $principalValue;
+                $expectedMonthlyPayment = $emi + $interest;
+                $principalValue = $principalValue - $emi;
                 $totalInterestPaid += $interest;
-
-                $principalValue = $amount - ( $this->equatedMonthlyInstallments - $interest);
+                //\Log::info("Emi = ".$emi." Interets = ".$totalInterestPaid." Expected Monthly = ".$expectedMonthlyPayment." principal value = ".$principalValue." time =".$x);
 
             }
 
@@ -929,8 +898,13 @@ class Request extends Component
 
      public function getMonthlyEmi($principal, $Rate, $time)
      {
-        $rate = $Rate / 100;
-        return $principal * $rate * ( pow( 1 + $rate, $time ) / ( ( pow( 1 + $rate, $time) - 1 )));
+        $rate = $principal / $time;
+        return number_format((float)$rate, 2, '.', '');
+     }
+
+     public function getFirstMonthsPayInterest($principal, $rate)
+     {
+        return number_format((float)($principal * $rate), 2, '.', '');
      }
 
 }

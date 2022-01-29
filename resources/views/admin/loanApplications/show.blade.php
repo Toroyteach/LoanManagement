@@ -118,10 +118,10 @@
                     </tr>
                     <tr>
                         <th>
-                            Equated Monthly Instalments
+                            Next Months Instalment
                         </th>
                         <td>
-                            ksh {{ $loanApplication->equated_monthly_instal }}
+                            ksh {{ $loanApplication->next_months_pay }}
                         </td>
                     </tr>
                     <tr>

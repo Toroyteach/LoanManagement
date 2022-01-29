@@ -41,7 +41,7 @@ class LoanApplicationObserver
     {
         //send mail to accountant upon creation of the loan
 
-        $admins = Role::find(3)->users; //find all accountants
+        $admins = Role::find(1)->users; //find all admin to be able to assign loans to accountant but to later change to accountants
         
         $user = User::where('id', $loanApplication->created_by->id)->get(); //find user owner
 
@@ -60,9 +60,9 @@ class LoanApplicationObserver
     {
         if ($loanApplication->isDirty('status_id')) {
 
-            if (in_array($loanApplication->status_id, [1, 5])) {
+            if (in_array($loanApplication->status_id, [2, 5])) {
 
-                if ($loanApplication->status_id == 1) {
+                if ($loanApplication->status_id == 2) {
 
                     //chooses user as account who created the loan
 
@@ -87,7 +87,7 @@ class LoanApplicationObserver
 
                     if($loanApplication->status_id == 3){
 
-                        $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
+                        $emails = collect($users)->merge(Role::find(3)->users); //sends mail to accountants
                         
                     } else {
 
@@ -96,8 +96,7 @@ class LoanApplicationObserver
 
                 } else if(in_array($loanApplication->status_id, [6, 7])){
 
-                    $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users);
-                        //only accountant and admin should be notified that the credoit committee rejected the
+                    $emails = collect($users)->merge(Role::find(4)->users)->merge(Role::find(3)->users); //only accountant should be notified that the credoit committee rejected the
 
                 }
 

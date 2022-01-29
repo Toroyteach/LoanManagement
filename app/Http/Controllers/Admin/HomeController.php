@@ -96,7 +96,7 @@ class HomeController extends Controller
     public function getPieChartData($userType, $id)
     {
         $loanTypeValues = array();
-        $loanTypeKey = array('emergency', 'education', 'development', 'instantloan');
+        $loanTypeKey = array('Emergency', 'SchoolFees', 'Development', 'InstantLoan');
 
         if($userType == 'Admin'){
             for ($x = 0; $x <= 3; $x++) {

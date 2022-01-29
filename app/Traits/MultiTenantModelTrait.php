@@ -36,11 +36,11 @@ trait MultiTenantModelTrait
 
                     } else if ($user->is_creditCommittee) {
 
-                        $column = 'status_id';
+                        $column = 'cfo_id';
 
                         $field = sprintf('%s.%s', $builder->getQuery()->from, $column);
 
-                        $builder->whereIn($field, [6, 7, 8]);
+                        $builder->where($field, auth()->id());
 
                     } else {
 

@@ -191,7 +191,7 @@ console.log('rand'+Math.pow(10, 8));
     var myChart2 = new Chart(ctx2, {
         type: 'pie',
         data: {
-            labels: ['Emergency', 'SchoolFees', 'Development', 'TopUp'],
+            labels: ['Emergency', 'SchoolFees', 'Development', 'InstantLoan'],
             datasets: [{
                 label: 'Loan type share',
                 data: data2,

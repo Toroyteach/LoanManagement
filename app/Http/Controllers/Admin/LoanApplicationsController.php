@@ -151,7 +151,7 @@ class LoanApplicationsController extends Controller
         $logs          = AuditLogService::generateLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
         $maximumPayable = $remaining + 5000;
-        $elligibleAmount = $this->getUserElligibleAmount();
+        $elligibleAmount = $this->getUserElligibleAmount($loanApplication->id);
 
         return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount', 'maximumPayable'));
     }
@@ -393,8 +393,11 @@ class LoanApplicationsController extends Controller
 
             $loanItem->last_month_amount_paid = $request->amount;
             $loanItem->date_last_amount_paid = now();
+            $loanItem->next_months_pay = 0.00;
             $loanItem->status_id = 10;
             $loanItem->repaid_status = 1;
+            $loanItem->next_months_pay_date = null;
+            $loanItem->loan_amount_plus_interest = $loanItem->loan_amount_plus_interest + $loanItem->loan_amount;
             $loanItem->increment('repaid_amount', $request->amount);
             $loanItem->decrement('balance_amount', $request->amount);
 
@@ -445,20 +448,20 @@ class LoanApplicationsController extends Controller
                     $interest = 0.00;
             }
 
-            $amountPaid = 100;
+            $amountPaid = $request->amount;
             $monthlyEmi = $loanItem->next_months_pay;
         
-            if($amountPaid >= $monthlyEmi){
+            if($amountPaid >= $monthlyEmi){ // has paid more than then expected monthly amount
 
                 $overpayemntOfEmi = $amountPaid - $monthlyEmi;
-                $loanItem->next_months_pay = $loanItem->equated_monthly_instal - $overpayemntOfEmi;
+                $loanItem->next_months_pay = ($loanItem->equated_monthly_instal - $overpayemntOfEmi) + $interest;
                 $cashPayment = $amountPaid - $interest;
 
             } else {
 
                 $underpayemntOfEmi = $monthlyEmi - $amountPaid;
                 $nextAmount = $loanItem->equated_monthly_instal + $underpayemntOfEmi;
-                $loanItem->next_months_pay =  $nextAmount;
+                $loanItem->next_months_pay =  $nextAmount + $interest;
                 $cashPayment = $amountPaid - $interest;
             }
             
@@ -491,13 +494,13 @@ class LoanApplicationsController extends Controller
           return response()->download($pathToFile);
     }
 
-    public function getUserElligibleAmount()
+    public function getUserElligibleAmount($id)
     {
-        $monthlyContribution = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->where('user_id', auth()->user()->id)->first();
+        $monthlyContribution = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->where('user_id', $id)->first();
         $a = $monthlyContribution->overpayment_amount;
         $b = $monthlyContribution->total_contributed;
         $totalMonthlyContribution = ($a + $b) * 3;
-        $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('loan_amount');
+        $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', $id)->sum('loan_amount');
         $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;
         
         return $eligibleAmount.'.00';
@@ -596,45 +599,82 @@ class LoanApplicationsController extends Controller
                     }
 
                     
-                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
+                    //$loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
 
-                    $loanItemUpdate->last_month_amount_paid = $item->amount;
-                    $loanItemUpdate->date_last_amount_paid = now();
-                    $loanItemUpdate->status_id = 10;
-                    $loanItemUpdate->repaid_status = 1;
-                    $loanItemUpdate->increment('repaid_amount', $item->amount);
-                    $loanItemUpdate->decrement('balance_amount', $item->amount);
-                    $loanItemUpdate->save();
+                    $loanItem->last_month_amount_paid = $item->amount;
+                    $loanItem->next_months_pay = 0.00;
+                    $loanItem->loan_amount_plus_interest = $loanItem->loan_amount_plus_interest + $loanItem->loan_amount;
+                    $loanItem->next_months_pay_date = null;
+                    $loanItem->date_last_amount_paid = now();
+                    $loanItem->status_id = 10;
+                    $loanItem->repaid_status = 1;
+                    $loanItem->increment('repaid_amount', $item->amount);
+                    $loanItem->decrement('balance_amount', $item->amount);
+                    $loanItem->save();
                     
            
                 } else { //less than loan amount
         
 
-                    $loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
+                    switch($loanItem->loan_type){
+                        case "emergency":
+        
+                            $rate = config('loantypes.Emergency.interest');
+                            $time = config('loantypes.Emergency.max_duration');
+                            $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+        
+                            break;
+                        case "education":
+                            
+                            $rate = config('loantypes.SchoolFees.interest');
+                            $time = config('loantypes.SchoolFees.max_duration');
+                            $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+        
+                            break;
+                        case "development":
+        
+                            $rate = config('loantypes.Development.interest');
+                            $time = config('loantypes.Development.max_duration');
+                            $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+        
+                            break;
+                        case "instantloan":
+        
+                            $rate = config('loantypes.InstantLoan.interest');
+                            $time = config('loantypes.InstantLoan.max_duration');
+                            $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
+        
+                            break;
+        
+                        default:
+                            $interest = 0.00;
+                    }
+
+                    //$loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
 
                     $amountPaid = $item->amount;
-                    $monthlyEmi = $loanItemUpdate->next_months_pay;
+                    $monthlyEmi = $loanItem->next_months_pay;
                 
                     if($amountPaid >= $monthlyEmi){
         
                         $overpayemntOfEmi = $amountPaid - $monthlyEmi;
-                        $loanItemUpdate->next_months_pay = $loanItemUpdate->equated_monthly_instal - $overpayemntOfEmi;
+                        $loanItem->next_months_pay = ($loanItem->equated_monthly_instal - $overpayemntOfEmi) + $interest;
                         $cashPayment = $amountPaid - $interest;
         
                     } else {
         
                         $underpayemntOfEmi = $monthlyEmi - $amountPaid;
-                        $nextAmount = $loanItemUpdate->equated_monthly_instal + $underpayemntOfEmi;
-                        $loanItemUpdate->next_months_pay =  $nextAmount;
+                        $nextAmount = $loanItem->equated_monthly_instal + $underpayemntOfEmi;
+                        $loanItem->next_months_pay =  $nextAmount + $interest;
                         $cashPayment = $amountPaid - $interest;
                     }
                     
         
-                    $loanItemUpdate->decrement('balance_amount', $cashPayment);
-                    $loanItemUpdate->last_month_amount_paid = $amountPaid ;
-                    $loanItemUpdate->date_last_amount_paid = now();
-                    $loanItemUpdate->increment('repaid_amount', $amountPaid);
-                    $loanItemUpdate->save();
+                    $loanItem->decrement('balance_amount', $cashPayment);
+                    $loanItem->last_month_amount_paid = $amountPaid ;
+                    $loanItem->date_last_amount_paid = now();
+                    $loanItem->increment('repaid_amount', $amountPaid);
+                    $loanItem->save();
             
                 }
 

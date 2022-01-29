@@ -69,8 +69,12 @@ class LoanInterestCalculatorCron extends Command
                     
                 } else {
 
-                    $emi = $loanItem->equated_monthly_instal;
-                    $loanItem->increment('next_months_pay', $emi);
+                    $rate = config('loantypes.'.$loanItem->loan_type.'.interest');
+                    $interestCalculator =  number_format((float)($rate / 100), 2, '.', '');
+                    $interest = $interestCalculator * $loanItem->balance_amount;
+                    $expectedMonthlyPayment = $loanItem->equated_monthly_instal + $interest;
+                    $loanItem->increment('next_months_pay', $expectedMonthlyPayment);
+                    $loanItem->increment('loan_amount_plus_interest', $interest);
 
                 }
 
