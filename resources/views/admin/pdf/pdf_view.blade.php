@@ -84,7 +84,7 @@
         <td >{{ $user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>
         <td >ksh {{$loan->loan_amount}}</td>
         <td >ksh {{ ( $loan->loan_amount_plus_interest - $loan->loan_amount )}}</td>
-        <td >{{ $loan->equated_monthly_instal }} </td>
+        <td >ksh {{ $loan->next_months_pay }} </td>
         <td >{{ empty($loan->next_months_pay_date) ? 'Not Set' : \Carbon\Carbon::parse($loan->next_months_pay_date)->format('m-d-Y H:i:s') }} </td>
       </tr>
       @endforeach

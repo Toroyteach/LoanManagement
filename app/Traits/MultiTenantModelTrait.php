@@ -12,11 +12,11 @@ trait MultiTenantModelTrait
         if (!app()->runningInConsole() && auth()->check()) {
             $user = auth()->user();
 
-            static::creating(function ($model) {
+            // static::creating(function ($model) {
 
-                $model->created_by_id = auth()->id();
+            //     $model->created_by_id = auth()->id();
 
-            });
+            // });
 
             if (!$user->is_admin) {
 

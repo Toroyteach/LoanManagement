@@ -24,10 +24,10 @@
                                         {{ trans('cruds.loanApplication.fields.id') }}
                                     </th>
                                     <th>
-                                        Loan Id
+                                        {{ trans('cruds.loanApplication.fields.loan_amount') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.loan_amount') }}
+                                        Loan Interest
                                     </th>
                                     <th>
                                         {{ trans('cruds.loanApplication.fields.description') }}
@@ -53,10 +53,10 @@
                                             {{ 1+$key++ }}
                                         </td>
                                         <td>
-                                            {{ $loanApplication->loan_entry_number ?? '' }}
+                                            Ksh {{ $loanApplication->loan_amount ?? '0.00' }}
                                         </td>
                                         <td>
-                                            {{ $loanApplication->loan_amount ?? '' }}
+                                            Ksh {{ $loanApplication->loan_amount_plus_interest ?? '0.00' }}
                                         </td>
                                         <td>
                                             {{ $loanApplication->description ?? '' }}

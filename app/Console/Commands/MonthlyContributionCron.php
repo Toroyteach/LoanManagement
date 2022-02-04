@@ -6,11 +6,16 @@ use Illuminate\Console\Command;
 use App\MonthlySavings;
 use App\LoanApplication;
 use App\Notifications\MonthlyContributionNotification;
+use App\Notifications\FailedRequestNotification;
 use Illuminate\Support\Facades\Notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use App\SmsTextsSent;
 use App\User;
+use App\CreateGuarantorLoanRequest;
+use App\CreateLoanRequest;
+use App\LoanFile;
+use App\LoanGuarantor;
 
 class MonthlyContributionCron extends Command
 {
@@ -49,7 +54,9 @@ class MonthlyContributionCron extends Command
         
         $this->getDefaultors();
 
-        //$this->calculateLoanInterest();
+        $this->checkGurantorRequest();
+
+        $this->finalSubmitRequest();
 
         $this->info('MonthlyContribution:Cron Command Run successfully!');
     }
@@ -62,17 +69,11 @@ class MonthlyContributionCron extends Command
 
             if($usersNotify->count() < 1){
                 
-                \Log::info("No users to send notification this month");
+                \Log::info("No users to send notification this Month");
 
             } else {
 
-                //\Log::info("users present to send notification");
-
-                //  dd($usersNotify);
-
-
-                foreach ($usersNotify as $key => $user) 
-                    {
+                foreach ($usersNotify as $key => $user) {
 
                         $message = [
                             'id' => $user->user_id,
@@ -85,13 +86,17 @@ class MonthlyContributionCron extends Command
                         $user->user->notify(new MonthlyContributionNotification($message));
 
                         $memberNumber = $user->user;
-                
-                        $text = "Dear $user->user->name Please ensure you make your monthly Contribution payment";
+                        
+                        if($this->smsEnabled()){
 
-                        $this->sendSms($user->user_id, $text);
+                            $text = "Dear $user->user->name Please ensure you make your monthly Contribution payment";
+    
+                            $this->sendSms($user->user_id, $text);
+
+                
+                        }
                     }
             
-
             }
 
         }
@@ -113,90 +118,142 @@ class MonthlyContributionCron extends Command
         }
     }
 
-    public function calculateLoanInterest()
+    public function checkGurantorRequest()
     {
-        
-        $loanApplications = LoanApplication::select(['loan_amount', 'loan_type', 'accumulated_amount', 'created_at', 'date_last_amount_paid', 'last_month_amount_paid', 'created_by', 'duration_count', 'duration'])->where('repaid_status', '!=', 1)->where('status_id', '=', 8)->with('created_by')->get();
+        $allLoanRequest = CreateLoanRequest::with('gurantorStatus')->get();
+    
+            foreach($allLoanRequest as $key => $gurantorItem){
 
-        foreach($loanApplications as $key => $loanItem){
-
-            $dateCreated = Carbon::parse($loanItem->created_at)->addMonths($loanItem->duration_count);
-
-            //dd($dateCreated);
-            
-            if($dateCreated->isToday()){
-
-                if($loanItem->duration_count <= $loanItem->duration){
-
-                    //check which type of loan it was to get if on reducing or normal
-                    if($loanItem->loan_type != 'instantloan'){ //the rest is on reducing
-
-                        $accumulatedAmount = $this->getOnReducingBalance($loanItem->loan_amount);
-                        $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
-                        $loanItem->increment('accumulated_amount', $accumulatedAmount);
-                        $loanItem->increment('duration_count', 1);
-                        $loanItem->save();
-
-                    } else {
-
-                        $startDate = Carbon::createFromFormat('Y-m-d', $dateCreated); //first day of last month when interest was calculated last
-                        $endDate = Carbon::now(); //today
+                foreach($gurantorItem->gurantorStatus as $key => $gurantor){
                 
-                        $check = Carbon::parse($loanItem->date_last_amount_paid)->between($startDate, $endDate);
+                    $currentStatus = $gurantor->request_status;
     
-                        if($check){
+                    if($currentStatus == 'Pending'){
                         
-                            //made a paymanet to help reduce loan amount
-                            $accumulatedAmount = $this->getOnReducingBalance($loanItem->accumulated_amount, $loanItem->last_month_amount_paid);
-    
-                            $loanItem->accumulated_amount = $accumulatedAmount;
-                            $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
-                            $loanItem->increment('duration_count', 1);
-                            $loanItem->save();
-    
-                        } else {
-    
-                            //nothing paid back in last month
-                            $accumulatedAmount = $this->getOnReducingBalance($loanItem->accumulated_amount);
-                            $loanItem->accumulated_amount = $accumulatedAmount;
-                            $loanItem->balance_amount = $accumulatedAmount - $loanItem->loan_amount;
-                            $loanItem->increment('duration_count', 1);
-                            $loanItem->save();
-    
+                        $checkDate = Carbon::parse($gurantor->created_at);
+                        $now = Carbon::now();
+                        $diff = $checkDate->diffInDays($now); 
+                    
+                        if($diff == 2){
+                            $gurantor->request_status = 'Accepted';
+                            $gurantor->save();
                         }
     
-                        \Log::info("member loan interest was calculated for the member ".$loanItem->created_by->name);
-    
-                        if($loanItem->duration_count == $loanItem->duration){
-    
-                            \Log::info("This member is on his last month of loan pay ".$loanItem->created_by->name);
-    
-                        }
                     }
-
-                } else {
-
-                    //member defaulted the loan
-
                 }
+
             }
-
-        }
-
 
     }
 
-    public function getOnReducingBalance($principleAmount, $amountRePaid = 0)
+    public function finalSubmitRequest()
     {
+        $allLoanRequest = CreateLoanRequest::all();
+
+        foreach($allLoanRequest as $key => $loanItem){
+
+            $totalCount = CreateGuarantorLoanRequest::where('request_id', $loanItem->id)->where('request_status', '=', 'Accepted')->count();
+
+            $loanRequestedFor = CreateGuarantorLoanRequest::where('request_id', $loanItem->id)->count();
         
-        $principal = $principleAmount;
-        $rate = 0.01;
-        //$time = $duration;
-        $amounpaid = $amountRePaid;
 
-        $accumulatedAmount = (($principal * $rate) + $principal) - $amounpaid;
+            if($totalCount == $loanRequestedFor){
 
-        return $accumulatedAmount;
+                $loanDetails = CreateLoanRequest::findOrFail($loanItem->id);
+
+                $entryNumber = mt_rand(100000, 1000000);
+                $nextMonthsPay = $this->getFirstMonthsPayInterest($loanDetails->loan_amount, config('loantypes.'.$loanDetails->loan_type.'.interest'));
+                $loanDuration = config('loantypes.'.$loanDetails->loan_type.'.max_duration');
+
+                //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration);
+                $loanApplication = LoanApplication::create([
+                    'loan_entry_number' => $entryNumber,
+                    'loan_amount' => $loanDetails->loan_amount,
+                    'description' => $loanDetails->description,
+                    'loan_type' => $loanDetails->loan_type,
+                    'duration' => $loanDetails->duration,
+                    'defaulted_date' => Carbon::now()->addMonths($loanDetails->duration + 3),
+                    'repayment_date' => date('Y-m-d', strtotime($loanDuration.' months')),
+                    'equated_monthly_instal' => $loanDetails->emi,
+                    'next_months_pay' => $loanDetails->emi + $nextMonthsPay,
+                    'next_months_pay_date' => Carbon::now()->addMonths(1),
+                    'balance_amount' => $loanDetails->total_plus_interest,
+                    'loan_amount_plus_interest' => $loanDetails->total_plus_interest,
+                    'created_by_id' => $loanDetails->user->id
+                ]);
+
+                $gurantors = CreateGuarantorLoanRequest::where('request_id', $loanItem->id)->get();
+
+                foreach($gurantors as $key => $guarantor){
+                    LoanGuarantor::create([
+                        'user_id' => $guarantor->user_id,
+                        'loan_application_id' => $loanApplication->id,
+                        'value' => $guarantor->request_status,
+                    ]);
+                }
+
+                //get files from request files to the new loan files
+                foreach($loanDetails->files as $file){
+                    LoanFile::create([
+                        'title' => $file->title,
+                        'loan_application_id' => $loanApplication->id
+                    ]);
+                }
+
+
+                    //deleted record from loan request
+                $requestDetails = CreateLoanRequest::where('user_id', $loanApplication->created_by_id)->first();
+                $requestDetails->delete();
+            } 
+
+            $totalCountRejected = CreateGuarantorLoanRequest::where('request_id', $loanItem->id)->where('request_status', '=', 'Rejected')->count();
+
+            if($totalCountRejected >= 3){
+
+                //send notification of rejection
+
+                $member = User::findOrFail($loanDetails->user->id);// to be notified
+        
+                $user = [
+                    'id' => $loanItem->id,
+                    'description' => "Dear $member->firstname. Your Loan Request with Mtangazaji Sacco was Rejected. You do not qualify minimum Gurantors that should Accept to Gurantee your Loan Request.",
+                    'name' => $member->name
+                ];
+        
+                //dd($user->user_id);
+        
+                $member->notify(new FailedRequestNotification($user));
+        
+                //Http::fake();
+        
+                if($this->smsEnabled()){
+                
+                    $message = "Dear $member->firstname. Your Loan Request with Mtangazaji Sacco was Rejected. You do not qualify minimum Gurantors that should Accept to Gurantee your Loan Request.";
+        
+                    $this->sendSms($member->id, $message);
+        
+                }
+
+
+                $loanDetails = CreateLoanRequest::findOrFail($loanItem->id);
+
+                $loanDetails->delete();
+
+            }
+        }
+    }
+
+    public function getFirstMonthsPayInterest($principal, $rate)
+    {
+        $result = $principal * ($rate / 100); 
+        \Log::info(number_format((float)$result, 2, '.', ''));
+
+       return  number_format((float)$result, 2, '.', '');
+    }
+
+    public function smsEnabled()
+    {
+        return env('SMS_ENABLED', 0);
     }
 
     public function sendSms($id, $message)

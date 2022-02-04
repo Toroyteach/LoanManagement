@@ -71,6 +71,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     //Make loan Payment request
     Route::post('/loan-application-repayment','LoanApplicationsController@makeRepaymentAmount')->name('loan-applications.repay');
 
+    //Make Partial Loan Rejection
+    Route::post('/loan-application-rejection','LoanApplicationsController@partialLoanRequestRejection')->name('loan-applications.reject.partialy');
+
+    //Update Loan Amount After Loan Rejection
+    Route::post('/loan-application-amount-update','LoanApplicationsController@memberNewLoanAmountChoice')->name('loan-applications.rejected.update');
+
     Route::get('status/active/loan-applications', 'LoanApplicationsController@activeLoans')->name('active.loans');
     Route::get('status/cleared/loan-applications', 'LoanApplicationsController@clearedLoans')->name('cleared.loans');
     Route::get('status/rejected/loan-applications', 'LoanApplicationsController@rejectedLoans')->name('rejected.loans');

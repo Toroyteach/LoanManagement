@@ -36,8 +36,18 @@
                             {{ trans('cruds.loanApplication.fields.loan_amount') }}
                         </th>
                         <td>
-                            ksh {{ $loanApplication->loan_amount }}
+                            ksh {{ $loanApplication->loan_amount  ?? '0.00' }}
                         </td>
+                    </tr>
+                    <tr>
+                        @if(!Auth::user()->getIsMemberAttribute())
+                        <th>
+                            Maximum Loan Amount
+                        </th>
+                        <td>
+                            ksh {{ $loanApplication->max_loan_amount ?? '0.00'}}
+                        </td>
+                        @endif
                     </tr>
                     <tr>
                         <th>
@@ -311,6 +321,12 @@
                     </form>
                 @endif
 
+                @if((Gate::allows('loan_application_edit') and ($user->is_admin or $user->is_accountant)) && $loanApplication->status_id == 2)
+
+                     <button class="btn btn-lg btn-warning" onclick="makePartialRejection()"> Reject Loan Amount</button>
+
+                @endif
+
                 @can('loan_application_delete')
                     <form action="{{ route('admin.loan-applications.destroy', $loanApplication->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                         <input type="hidden" name="_method" value="DELETE">
@@ -341,6 +357,7 @@
 
 @endsection
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
 
@@ -394,7 +411,7 @@
 
                             } else if(results.response === false) {
 
-                                swal.fire("Error!", results.failure, "error");
+                                swal.fire("Error!", results.message, "error");
 
                             }
                         }
@@ -411,5 +428,144 @@
 
 
     }
+
+    function makePartialRejection() {
+
+            Swal.fire({
+                title: "Loan Rejection limit",
+                icon: 'warning',
+                text: "You are about to Set Maximum limit to this loan Request. Please Review and Submit",
+                html:
+                    '<input id="swal-input1" class="swal2-input" placeholder="Enter Reason">' +
+                    '<label for="swal-input2"> Select Amount </label> <br>'+
+                    '<input id="swal-input2" class="swal-input1" type="number" min="1000" max="{{ $elligibleAmount }}" value="0" step="500">',
+                focusConfirm: true,
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input1').value,
+                        document.getElementById('swal-input2').value
+                    ]
+                },
+                showCancelButton: !0,
+                confirmButtonText: "Yes, Submit",
+                cancelButtonText: "No, cancel!",
+                reverseButtons: !0
+            }).then(function (e) {
+
+                const value = document.getElementById("swal-input1").value; 
+                const value2 = document.getElementById("swal-input2").value; 
+
+                if (e.isConfirmed) {
+
+                    //console.log(value);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ route('admin.loan-applications.reject.partialy') }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            loan_id: "{{ $loanApplication->id }}",
+                            amount: value2,
+                            reason: value
+                            },
+                        dataType: 'JSON',
+                        success: function (results) {
+                            if (results.response === true) {
+
+                                swal.fire("Done!", results.message, "success");
+                                // refresh page after 2 seconds
+                                setTimeout(function(){
+                                    location.reload();
+                                },3000);
+
+                            } else if(results.response === false) {
+
+                                swal.fire("Error!", results.message, "error");
+
+                            }
+                        }
+                    });
+
+                } else {
+                    
+                    e.dismiss;
+                }
+
+            }, function (dismiss) {
+                return false;
+            })
+
+    }
+
+    $(document).ready(function(){
+
+        let status = "{{ $loanApplication->status_id }}"
+        let maxAmount = "{{ $loanApplication->max_loan_amount }}"
+        let user = "{{ $user->is_member}}"
+
+        if ((status == 12) && (user)) {
+
+            swal.fire({
+            title: "Update Loan Application",
+            icon: 'warning',
+            text: "You are required to update your loan application",
+            input: 'range',
+            inputAttributes: {
+                min: 1000,
+                max: maxAmount,
+                step: 500,
+            },
+            inputValue: maxAmount,
+            inputLabel: "Amount",
+            showCancelButton: !0,
+            confirmButtonText: "Yes, Submit",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: !0
+            }).then(function (e) {
+
+                const value = document.getElementById("swal2-input").value; 
+
+                if (e.isConfirmed) {
+
+                    //console.log(value);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ route('admin.loan-applications.rejected.update') }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            loan_id: "{{ $loanApplication->id }}",
+                            amount: value
+                            },
+                        dataType: 'JSON',
+                        success: function (results) {
+                            if (results.response === true) {
+
+                                swal.fire("Done!", results.message, "success");
+                                // refresh page after 2 seconds
+                                setTimeout(function(){
+                                    location.reload();
+                                },3000);
+
+                            } else if(results.response === false) {
+
+                                swal.fire("Error!", results.message, "error");
+
+                            }
+                        }
+                    });
+
+                } else {
+                    
+                    e.dismiss;
+                }
+
+            }, function (dismiss) {
+                return false;
+            })
+
+        }
+
+    });
 
 </script>

@@ -238,7 +238,8 @@ class Request extends Component
                 'loan_type' => $this->loan_type,
                 'duration' => $this->duration,
                 'user_id' => auth()->user()->id,
-                'emi' => $this->equatedMonthlyInstallments
+                'emi' => $this->equatedMonthlyInstallments,
+                'total_plus_interest' => $this->totalplusinterest
             ]);
 
             //activate buttons and fill in form with new details
@@ -265,6 +266,7 @@ class Request extends Component
                 $request->duration    = $validatedData['duration'];
                 $request->loan_type   = $validatedData['loan_type'];
                 $request->emi = $this->equatedMonthlyInstallments;
+                $request->total_plus_interest = $this->totalplusinterest;
 
 
                 if($request->isDirty('description') || $request->isDirty('loan_type') || $request->isDirty('loan_amount') || $request->isDirty('emi')){
@@ -898,13 +900,12 @@ class Request extends Component
 
      public function getMonthlyEmi($principal, $Rate, $time)
      {
-        $rate = $principal / $time;
-        return number_format((float)$rate, 2, '.', '');
+        return $principal * ($Rate / 100);
      }
 
      public function getFirstMonthsPayInterest($principal, $rate)
      {
-        return number_format((float)($principal * $rate), 2, '.', '');
+        return $principal * ($rate / 100);
      }
 
 }

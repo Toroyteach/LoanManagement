@@ -12,7 +12,7 @@ class CreateGuarantorLoanRequest extends Model
     public $table = 'create_guarantor_loan_requests';
 
     protected $fillable = [
-        'user_id', 'request_id',
+        'user_id', 'request_id', 'request_status',
     ]; 
 
     protected $dates = [

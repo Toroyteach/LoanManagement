@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\User;
 use Illuminate\Support\Facades\Http;
 use App\SmsTextsSent;
+use App\Notifications\LoanRequestRepaymentNotification;
 
 class LoanInterestCalculatorCron extends Command
 {
@@ -70,7 +71,7 @@ class LoanInterestCalculatorCron extends Command
                 } else {
 
                     $rate = config('loantypes.'.$loanItem->loan_type.'.interest');
-                    $interestCalculator =  number_format((float)($rate / 100), 2, '.', '');
+                    $interestCalculator =  $rate / 100;
                     $interest = $interestCalculator * $loanItem->balance_amount;
                     $expectedMonthlyPayment = $loanItem->equated_monthly_instal + $interest;
                     $loanItem->increment('next_months_pay', $expectedMonthlyPayment);
@@ -82,6 +83,18 @@ class LoanInterestCalculatorCron extends Command
                 $loanItem->next_months_pay_date = $date->addMonths(1);
 
                 $loanItem->save();
+
+                $member = User::findOrFail($loanItem->created_by->id);// to be notified
+        
+                $user = [
+                    'id' => $loanItem->id,
+                    'description' => "Dear ".$loanItem->created_by->name.". You are hearby reminded that your next loan monthly payment with Mtangazaji Sacco is now over due and your monthly amount has been carried forward to the next month.",
+                    'name' => $member->name
+                ];
+        
+                //dd($user->user_id);
+        
+                $member->notify(new LoanRequestRepaymentNotification($user));
 
                 //tell of new notice overdue of paymnet of the loan item
                 if($this->smsEnabled()){
@@ -99,6 +112,18 @@ class LoanInterestCalculatorCron extends Command
             if($diff <= 2){
 
                 //notify of the upcoming notice notification
+                $member = User::findOrFail($loanItem->created_by->id);// to be notified
+        
+                $user = [
+                    'id' => $loanItem->id,
+                    'description' => "Dear ".$loanItem->created_by->name.". You are hearby reminded that your next loan monthly payment with Mtangazaji Sacco is almost due. Please make plans to pay to avoind any inconveniences",
+                    'name' => $member->name
+                ];
+        
+                //dd($user->user_id);
+        
+                $member->notify(new LoanRequestRepaymentNotification($user));
+
                 if($this->smsEnabled()){
 
                     $message = "Dear ".$loanItem->created_by->name.". You are hearby reminded that your next loan monthly payment with Mtangazaji Sacco is almost due. Please make plans to pay to avoind any inconveniences";
@@ -170,7 +195,7 @@ class LoanInterestCalculatorCron extends Command
                     'type' => "Loan Notification"
                 ]);
 
-                \Log::info("Pyament notification was sent to ".$memberNumber->name);
+                \Log::info("Payament notification was sent to ".$memberNumber->name);
 
             }
 

@@ -27,6 +27,8 @@ use App\MonthlyFile;
 use Maatwebsite\Excel\Facades\Excel;
 use DataTables;
 use DB;
+use App\Notifications\LoanUpdateNotification;
+use Illuminate\Support\Facades\Notification;
 
 class LoanApplicationsController extends Controller
 {
@@ -151,7 +153,7 @@ class LoanApplicationsController extends Controller
         $logs          = AuditLogService::generateLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
         $maximumPayable = $remaining + 5000;
-        $elligibleAmount = $this->getUserElligibleAmount($loanApplication->id);
+        $elligibleAmount = $this->getUserElligibleAmount($loanApplication->created_by->id);
 
         return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount', 'maximumPayable'));
     }
@@ -735,4 +737,254 @@ class LoanApplicationsController extends Controller
 
         }
     }
+
+    public function partialLoanRequestRejection(Request $request)
+    {
+
+        if(empty($request->amount) && empty($request->reason)){
+
+            return response()->json(array('response' => false, 'message' => 'Values cannot be empty '), 200);
+        }
+
+        $loanItem = LoanApplication::find($request->loan_id);
+
+        //$newAmount = $request->amount - $loanItem->balance_amount;
+
+        $loanItem->max_loan_amount = $request->amount;
+        $loanItem->status_id = 12;
+
+        if($loanItem->isDirty()){
+            
+            $loanItem->save();
+
+            $member = User::findOrFail($loanItem->created_by->id);// to be notified
+        
+            $user = [
+                'id' => $loanItem->created_by->id,
+                'description' => "Dear $member->firstname. Your Loan Request with Mtangazaji Sacco was Rejected. $request->reason. log on to the website www.mtangazajisacco.co.ke.",
+                'name' => $member->name,
+                'loan_id' => $loanItem->id
+            ];
+    
+            $member->notify(new LoanUpdateNotification($user));
+    
+            if($this->smsEnabled()){
+            
+                $message = "Dear $member->firstname. Your Loan Request with Mtangazaji Sacco was Rejected. $request->reason.. log on to the website www.mtangazajisacco.co.ke.";
+    
+                $this->sendSms($member->id, $message);
+    
+            }
+
+            return response()->json(array('response' => true, 'message' => 'Success The loan maximum amount was set and Sent back to the Member'), 200);
+
+        }
+
+        return response()->json(array('response' => false, 'message' => 'Oops! Maximum Loan Amount was not updated '), 200);
+
+    }
+
+    public $equatedMonthlyInstal = 0;
+    public $balanceAmount = 0;
+    public $loanPlusInterest = 0;
+    public $interestMonthly = 0;
+
+    public function memberNewLoanAmountChoice(Request $request)
+    {
+
+        if(empty($request->amount)){
+
+            return response()->json(array('response' => false, 'message' => 'Values cannot be empty '), 200);
+        }
+        
+        $loanItem = LoanApplication::find($request->loan_id);
+
+        $this->updateLoanDetailsAfterPartialRejection($request->loan_id, $request->amount);
+
+        $nextMonthsPay = $this->equatedMonthlyInstal + $this->interestMonthly;
+
+        $loanItem->loan_amount = $request->amount;
+        $loanItem->equated_monthly_instal = $this->equatedMonthlyInstal;
+        $loanItem->next_months_pay = $nextMonthsPay;
+        $loanItem->balance_amount = $this->loanPlusInterest;
+        $loanItem->loan_amount_plus_interest = $this->loanPlusInterest;
+        $loanItem->status_id = 2;
+
+        if($loanItem->isDirty()){
+            
+            $loanItem->save();
+
+            $member = User::findOrFail($loanItem->created_by->id);// to be notified
+
+            $memberNotify = Role::find(3)->users;
+        
+            $user = [
+                'id' => $loanItem->created_by->id,
+                'description' => "Dear Accountant. The member has reviewed and updated the loan amount",
+                'name' => $member->name,
+                'loan_id' => $loanItem->id
+            ];
+    
+            //$memberNotify->notify(new LoanUpdateNotification($user));
+            Notification::send($memberNotify, new LoanUpdateNotification($user));
+        
+            //Http::fake();
+    
+            if($this->smsEnabled()){
+            
+                $message = "Dear Accountant. The member $member->firstname has reviewed and updated the loan amount";
+    
+                $this->sendSms($member->id, $message);
+    
+            }
+
+            return response()->json(array('response' => true, 'message' => 'Success The loan amount was set and Sent back to the Accountant'), 200);
+
+        }
+
+        return response()->json(array('response' => false, 'message' => 'Oops! Maximum Loan Amount was not updated '), 200);
+    }
+
+    public function updateLoanDetailsAfterPartialRejection($id, $amount)
+    {
+
+        $loanItem = LoanApplication::find($id);
+
+        $this->loanPlusInterest = $this->totalWithInterest($loanItem->loan_type, $amount);
+
+    }
+
+    public function totalWithInterest($type, $amount)
+    {
+
+        
+        $loan_types_config = config('loantypes.'.$type);
+        //dd(config('loantypes.'.$type));
+        $amountRequest = $amount;
+        
+        if($amountRequest <= 1000){
+            
+            return 0.00;
+        }
+
+       if($type == 'Emergency' || $type == 'SchoolFees' || $type == 'Development'){
+           
+           $total = $this->onReducingLoanBalance($loan_types_config['max_duration'], $loan_types_config['interest'], $amount);
+
+       } else {
+
+           $totalAdded = $amountRequest * 0.1 * 1;
+           //$this->interestamount = $totalAdded;
+           $total = $totalAdded + $amountRequest;
+
+       }
+
+       return $total;
+
+    }
+
+    public function onReducingLoanBalance($time, $rate, $amount)
+    {
+       
+       $principal = $amount;
+       $totalInterestPaid = 0;
+       $emi = $this->getMonthlyEmi($principal, $rate, $time);
+       $this->equatedMonthlyInstal = $emi;
+       $interestCalculator =  $rate / 100;
+       $principalValue = 0;
+
+       for($x = 0; $x <= $time; $x++){
+
+           if($x == 0){
+
+               $principalValue = $amount;
+
+               continue;
+
+           } else {
+
+               $interest = $interestCalculator * $principalValue;
+               $expectedMonthlyPayment = $emi + $interest;
+               $principalValue = $principalValue - $emi;
+               $totalInterestPaid += $interest;
+
+           }
+
+
+       }
+
+       
+       $rounded = $totalInterestPaid;
+
+       //$this->interestamount = $rounded;
+       $result = $rounded + $principal;
+       return  number_format((float)$result, 2, '.', '');
+
+    }
+
+    public function getMonthlyEmi($principal, $Rate, $time)
+    {
+       $rate = $principal / $time;
+
+       $this->interestMonthly = $principal * ($Rate / 100);
+       return $rate;
+    }
+
+    public function smsEnabled()
+    {
+        return env('SMS_ENABLED', 0);
+    }
+
+    public function sendSms($id, $message)
+    {
+
+        $usernameSMS = env('SMS_USERNAME', 'null');
+        $passwordSMS = env('SMS_PASSWORD', 'null');
+        $senderIdSMS = env('SMS_SENDERID', 'null');
+
+        $memberNumber = User::select(['number', 'id', 'name'])->findOrFail($id);
+
+        $response = Http::asForm()->post('http://smskenya.brainsoft.co.ke/sendsms.jsp', [
+            'user' => $usernameSMS,
+            'password' => $passwordSMS,
+            'mobiles' => $memberNumber->number,
+            'sms' =>  $message,
+            'unicode' => 0,
+            'senderid' => $senderIdSMS,
+        ]);
+
+        if($response->ok()){
+
+            $xml = simplexml_load_string($response->getBody(),'SimpleXMLElement',LIBXML_NOCDATA);
+
+            // json
+            $json = json_encode($xml);
+
+            $array = json_decode($json, true);
+
+            $collection = collect($array);
+
+            if($collection['sms']['mobile-no'] == $memberNumber->number){
+
+                SmsTextsSent::create([
+                    'smsclientid' => $collection['sms']['smsclientid'],
+                    'description' => " Auth code sent to ".$memberNumber->name,
+                    'user_id' => $memberNumber->id,
+                    'messageid' => $collection['sms']['messageid'],
+                    'type' => " Auth code"
+                ]);
+
+                \Log::info("SMS (".$message.") code sent to ".$memberNumber->name);
+
+            }
+
+        } else {
+
+            \Log::info(" Failed to send Code to ".$memberNumber->name);
+            \Log::error(now());
+
+        }
+
+    }
+
 }

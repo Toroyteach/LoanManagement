@@ -28,7 +28,8 @@ class CreateGuarantorRequestObserver
         $user = [
             'id' => $createGuarantorLoanRequest->id,
             'description' => $requestorName.' has requested you to become there guarantor. Click here to take action',
-            'name' => $member->name
+            'name' => $member->name,
+            'loanid' => $createGuarantorLoanRequest->request->id
         ];
 
         //dd($user->user_id);

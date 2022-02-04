@@ -169,6 +169,7 @@
                                                     @if(empty($notice->read_at))
                                                     <div class="col-md-5">
                                                         <input type="hidden" value="{{ $notice->data['member_id'] ?? '' }}" id="loanrequestid">
+                                                        <input type="hidden" value="{{ $notice->data['loan_request_id'] ?? '' }}" id="loanitemrequestid">
                                                         <div>
                                                             <button class="btn btn-sm btn-warning " onclick="submitResponse('Rejected')">Reject</button>
                                                         </div>
@@ -196,7 +197,100 @@
 
                                     </div>
 
-                                  @endif
+                                  
+                              @elseif($notice->data['notification_type'] == 'FailedLoanRequest')
+
+                                  <!-- Monthly payment Analysis -->
+
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
+                                            <div class="container">
+                                                <strong class="">Rejected Loan Request</strong>
+                                                <div>
+                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="float-right">
+                                                <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
+                                        </div>
+
+                                    </div>
+
+
+                              @elseif($notice->data['notification_type'] == 'RepaymentLoanRepayment')
+
+                                  <!-- Monthly payment Analysis -->
+
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
+                                            <div class="container">
+                                                <strong class="">Loan Repayament Notification</strong>
+                                                <div>
+                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="float-right">
+                                                <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
+                                        </div>
+
+                                    </div>
+
+
+                              @elseif($notice->data['notification_type'] == 'UpdateLoanRequestAmount')
+
+                                  <!-- Monthly payment Analysis -->
+
+                                    <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
+                                        <div class="alert {{ empty($notice->read_at) ? 'alert-success' : 'alert-warning' }}" role="alert">
+                                            
+                                            <div class="container">
+                                                <strong class="">Update Loan Request Amount</strong>
+                                                <div>
+                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="float-right">
+                                                <small class="text-primary">{{ $notice->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            
+                                            @if(empty($notice->read_at))
+                                                <div class="container">
+                                                    <a href="#" class="btn btn-info btn-sm mark-as-read" data-id="{{ $notice->id }}">
+                                                        Mark as read
+                                                    </a>
+                                                </div>
+                                                @endif
+                                        </div>
+
+                                    </div>
+
+                                 @endif
+                            
+                                
+                                
 
 
         @if($loop->last)
@@ -216,7 +310,7 @@
 
     $(function() {
         $('.mark-as-read').click(function() {
-            let request = sendMarkRequest($(this).data('id'));
+            let request = sendMarkRequestSingle($(this).data('id'));
             request.done(() => {
                 $(this).parents('div.alert').remove();
                             Swal.fire({
@@ -269,6 +363,7 @@
 
         let choiceMade = choice;
         let loanid = document.getElementById('loanrequestid').value
+        let loanitemrequestid = document.getElementById('loanitemrequestid').value
         let noticeid = "{{ $notice->id ?? '' }}";
         let _token = $('meta[name="csrf-token"]').attr('content');
 
@@ -291,6 +386,7 @@
                         _token: "{{ csrf_token() }}",
                         loan_id: loanid,
                         choice: choiceMade,
+                        loanitemid: loanitemrequestid,
                         requestid: noticeid
                         },
                     dataType: 'JSON',
@@ -321,7 +417,18 @@
 
     }
 
-    function sendMarkRequest(id = null) {
+    function sendMarkRequest() {
+        console.log("this")
+        return $.ajax("{{ route('admin.markNotification') }}", {
+            method: 'POST',
+            data: {
+                "_token": "{{ csrf_token() }}"
+            },
+
+        });
+    }
+
+    function sendMarkRequestSingle(id) {
         console.log("this")
         return $.ajax("{{ route('admin.markNotification') }}", {
             method: 'POST',

@@ -66,7 +66,15 @@ class LoanApplicationObserver
 
                     //chooses user as account who created the loan
 
-                    $user = $loanApplication->accountant;
+                    if($loanApplication->getOriginal('status_id') == 12){
+
+
+                    } else {
+
+                        $user = $loanApplication->accountant;
+                        Notification::send($user, new SentForAnalysisNotification($loanApplication));
+                    }
+
 
                 } else {
 
@@ -74,9 +82,9 @@ class LoanApplicationObserver
 
                     $user = $loanApplication->creditCommittee;
 
+                    Notification::send($user, new SentForAnalysisNotification($loanApplication));
                 }
 
-                Notification::send($user, new SentForAnalysisNotification($loanApplication));
 
             } else if (in_array($loanApplication->status_id, [3, 4, 6, 7])) {
 

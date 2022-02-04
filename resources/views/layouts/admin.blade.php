@@ -175,6 +175,42 @@
                                                       </div>
                                                     </div>
                                                 </a> 
+                                              @elseif($notice->data['notification_type'] == 'FailedLoanRequest')
+                                              <!-- monthly contribution -->
+                                              <a href="{{ route('admin.viewnotification') }}" class="list-group-item list-group-item-action active">
+                                                      <div class="notification-info">
+                                                        <div class="notification-list-user-img"><i class="fa fa-calendar fa-3x" aria-hidden="true"></i></div>
+                                                        <div class="notification-list-user-block">
+                                                          <span class="notification-list-user-name">Rejected Loan Request</span>
+                                                            {{ $notice->data['message_desc'] }}
+                                                          <div class="notification-date">{{ $notice->created_at->diffForHumans() }}</div>
+                                                      </div>
+                                                    </div>
+                                                </a> 
+                                              @elseif($notice->data['notification_type'] == 'RepaymentLoanRepayment')
+                                              <!-- monthly contribution -->
+                                              <a href="{{ route('admin.viewnotification') }}" class="list-group-item list-group-item-action active">
+                                                      <div class="notification-info">
+                                                        <div class="notification-list-user-img"><i class="fa fa-calendar fa-3x" aria-hidden="true"></i></div>
+                                                        <div class="notification-list-user-block">
+                                                          <span class="notification-list-user-name">Loan Repayment</span>
+                                                            {{ $notice->data['message_desc'] }}
+                                                          <div class="notification-date">{{ $notice->created_at->diffForHumans() }}</div>
+                                                      </div>
+                                                    </div>
+                                                </a> 
+                                              @elseif($notice->data['notification_type'] == 'UpdateLoanRequestAmount')
+                                              <!-- monthly contribution -->
+                                              <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}" class="list-group-item list-group-item-action active">
+                                                      <div class="notification-info">
+                                                        <div class="notification-list-user-img"><i class="fa fa-calendar fa-3x" aria-hidden="true"></i></div>
+                                                        <div class="notification-list-user-block">
+                                                          <span class="notification-list-user-name">Update Loan Request</span>
+                                                            {{ $notice->data['message_desc'] }}
+                                                          <div class="notification-date">{{ $notice->created_at->diffForHumans() }}</div>
+                                                      </div>
+                                                    </div>
+                                                </a> 
                                               @endif
 
                                         @endforeach

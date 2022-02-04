@@ -6,13 +6,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\User;
 
-class LoanGuarantorsNotification extends Notification
+class LoanUpdateNotification extends Notification
 {
     use Queueable;
-
-    public $user;
 
     /**
      * Create a new notification instance.
@@ -44,11 +41,8 @@ class LoanGuarantorsNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        //$memberName = $this->user['name'];
-
         return (new MailMessage)->line('Dear.'.$this->user['name'])
             ->line($this->user['description'])
-            ->line('Please Note if you dont respond in 24hrs it will be assumed you have accepted')
             ->line('Thank you for using our application!');
     }
 
@@ -64,8 +58,8 @@ class LoanGuarantorsNotification extends Notification
             'member_id' => $this->user['id'],
             'message_desc' => $this->user['description'],
             'message_name' => $this->user['name'],
-            'loan_request_id' => $this->user['loanid'],
-            'notification_type' => 'GuarantorRequest',
+            'loan_id' => $this->user['loan_id'],
+            'notification_type' => 'UpdateLoanRequestAmount',
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 use App\LoanApplication;
+use App\LoanGuarantor;
+use App\LoanFile;
 use App\MonthlySavings;
 use App\SaccoAccount;
 use App\UserAccount;
@@ -16,8 +18,10 @@ use App\TwoStepAuthTable;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use App\CreateGuarantorLoanRequest;
+use App\CreateLoanRequest;
 use Mail;
 use App\SmsTextsSent;
+
 
 class HomeController extends Controller
 {
@@ -149,28 +153,6 @@ class HomeController extends Controller
             return response()->json(['success'=>'request submitted successfully', 'status' => true]);
     }
 
-    public function requestGurantor(Request $request)
-    {
-        
-        $gurantorRequest = CreateGuarantorLoanRequest::where('user_id', auth()->user()->id)->where('id', $request->loan_id)->firstOrFail();
-
-        $gurantorRequest->request_status = $request->choice;
-
-        if($gurantorRequest->isDirty('request_status')){
-
-            auth()->user()->unreadNotifications->when($request->input('id'), function ($query) use ($request) {
-                return $query->where('id', $request->input('id'));
-            })->markAsRead();
-
-            $gurantorRequest->save();
-
-            return response()->json(['success'=>'request submitted successfully', 'status' => true]);
-
-        }
-
-        return response()->json(['success'=>'request has failed', 'status' => false]);
-    }
-
     public function getTopMembersLoans()
     {
 
@@ -196,5 +178,121 @@ class HomeController extends Controller
         }
 
         return $dataResults;
+    }
+
+    public function requestGurantor(Request $request)
+    {
+        
+        $gurantorRequest = CreateGuarantorLoanRequest::where('user_id', auth()->user()->id)->where('id', $request->loan_id)->firstOrFail();
+
+        $failed = false;
+
+        $gurantorRequest->request_status = $request->choice;
+
+        if($gurantorRequest->isDirty('request_status')){
+
+            auth()->user()->unreadNotifications->when($request->input('id'), function ($query) use ($request) {
+                
+                return $query->where('id', $request->input('id'));
+
+            })->markAsRead();
+
+             $gurantorRequest->save();
+
+        }
+
+        $loanRequestedFor = CreateGuarantorLoanRequest::where('request_id', $request->loanitemid)->get();
+
+        $totalGurantors = $loanRequestedFor->count();
+
+        $acceptedGurantors = 0;
+
+        foreach($loanRequestedFor as $loanItem){
+
+            $status = $loanItem->request_status;
+
+            if($status == 'Accepted'){
+
+                $acceptedGurantors++;
+
+            }
+
+        }
+
+
+        if($acceptedGurantors == $totalGurantors){
+            //approve the loan automatically
+
+            $resultStatus = $this->submitFinalForm($request->loanitemid);
+
+        }
+
+        if($failed){
+
+            return response()->json(['success'=>'request has failed', 'status' => false]);
+        }
+
+        return response()->json(['success'=>'request submitted successfully', 'status' => true]);
+
+    }
+
+    public function submitFinalForm($requestId)
+    {
+
+        //after a rthird gurantor has been accepted the loan should be approved from there.
+
+        $loanDetails = CreateLoanRequest::findOrFail($requestId);
+
+        $entryNumber = mt_rand(100000, 1000000);
+        //$defaluted = Carbon::
+        $nextMonthsPay = $this->getFirstMonthsPayInterest($loanDetails->loan_amount, config('loantypes.'.$loanDetails->loan_type.'.interest'));
+        $loanDuration = config('loantypes.'.$loanDetails->loan_type.'.max_duration');
+        //dd('ready to submit form', $entryNumber, $this->amount, $this->description, $this->loan_type, $this->duration);
+        $loanApplication = LoanApplication::create([
+            'loan_entry_number' => $entryNumber,
+            'loan_amount' => $loanDetails->loan_amount,
+            'description' => $loanDetails->description,
+            'loan_type' => $loanDetails->loan_type,
+            'duration' => $loanDetails->duration,
+            'defaulted_date' => Carbon::now()->addMonths($loanDetails->duration + 3),
+            'repayment_date' => date('Y-m-d', strtotime($loanDuration.' months')),
+            'equated_monthly_instal' => $loanDetails->emi,
+            'next_months_pay' => $loanDetails->emi + $nextMonthsPay,
+            'next_months_pay_date' => Carbon::now()->addMonths(1),
+            'balance_amount' => $loanDetails->total_plus_interest,
+            'loan_amount_plus_interest' => $loanDetails->total_plus_interest,
+            'created_by_id' => $loanDetails->user->id
+        ]);
+
+        $gurantors = CreateGuarantorLoanRequest::where('request_id', $requestId)->get();
+
+        foreach($gurantors as $key => $guarantor){
+            LoanGuarantor::create([
+                'user_id' => $guarantor->user_id,
+                'loan_application_id' => $loanApplication->id,
+                'value' => $guarantor->request_status,
+            ]);
+        }
+
+        //get files from request files to the new loan files
+        foreach($loanDetails->files as $file){
+            LoanFile::create([
+                'title' => $file->title,
+                'loan_application_id' => $loanApplication->id
+            ]);
+        }
+
+
+            //deleted record from loan request
+        $requestDetails = CreateLoanRequest::findOrFail($requestId);
+        $requestDetails->delete();
+
+    }
+
+    public function getFirstMonthsPayInterest($principal, $rate)
+    {
+
+       $result = $principal * ($rate / 100);
+       return  number_format((float)$result, 2, '.', '');
     }
 }

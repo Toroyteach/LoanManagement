@@ -59,6 +59,10 @@ class StatusesTableSeeder extends Seeder
                 'id'   => 11,
                 'name' => 'Defaulted',
             ],
+            [
+                'id'   => 12,
+                'name' => 'PartialRejection',
+            ],
         ];
 
         Status::insert($statuses);
