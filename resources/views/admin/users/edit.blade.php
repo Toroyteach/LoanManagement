@@ -261,10 +261,12 @@
 
         e.preventDefault(e);
 
+    let fullScreenLoader = document.getElementById("fullLoader");
+
     swal.fire({
             title: "Update Member",
             icon: 'question',
-            text: "Your are about to Update a member. Please check details, then confirm!",
+            text: "Your are about to Update member details. Please check details, then confirm!",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",
@@ -273,6 +275,7 @@
 
             if (e.value === true) {
 
+                fullScreenLoader.style.display = "block";
                 $('#memberEdit').submit()  
 
             } else {

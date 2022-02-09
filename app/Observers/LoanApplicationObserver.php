@@ -43,7 +43,7 @@ class LoanApplicationObserver
 
         $admins = Role::find(1)->users; //find all admin to be able to assign loans to accountant but to later change to accountants
         
-        $user = User::where('id', $loanApplication->created_by->id)->get(); //find user owner
+        $user = User::where('id', $loanApplication->created_by_id)->get(); //find user owner
 
         $email = collect($admins)->merge($user);
 

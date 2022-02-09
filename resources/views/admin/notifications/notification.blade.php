@@ -287,7 +287,7 @@
 
                                     </div>
 
-                                 @endif
+                              @endif
                             
                                 
                                 
@@ -309,6 +309,8 @@
 <script>
 
     $(function() {
+
+
         $('.mark-as-read').click(function() {
             let request = sendMarkRequestSingle($(this).data('id'));
             request.done(() => {
@@ -366,6 +368,7 @@
         let loanitemrequestid = document.getElementById('loanitemrequestid').value
         let noticeid = "{{ $notice->id ?? '' }}";
         let _token = $('meta[name="csrf-token"]').attr('content');
+        let fullScreenLoader = document.getElementById("fullLoader");
 
         swal.fire({
             title: "Gurantor Request",
@@ -378,6 +381,8 @@
         }).then(function (e) {
 
             if (e.value === true) {
+
+                fullScreenLoader.style.display = "block";
 
                 $.ajax({
                     type: 'POST',
@@ -393,6 +398,8 @@
                     success: function (results) {
                         if (results.status === true) {
 
+                            fullScreenLoader.style.display = "none";
+
                             swal.fire("Done!", results.message, "success");
                             // refresh page after 2 seconds
                             setTimeout(function(){
@@ -400,6 +407,8 @@
                             },3000);
 
                         } else if(results.status === false) {
+
+                            fullScreenLoader.style.display = "none";
 
                             swal.fire("Error!", results.failure, "error");
 
@@ -418,7 +427,6 @@
     }
 
     function sendMarkRequest() {
-        console.log("this")
         return $.ajax("{{ route('admin.markNotification') }}", {
             method: 'POST',
             data: {
@@ -429,7 +437,6 @@
     }
 
     function sendMarkRequestSingle(id) {
-        console.log("this")
         return $.ajax("{{ route('admin.markNotification') }}", {
             method: 'POST',
             data: {
@@ -441,7 +448,6 @@
     }
 
     function sendGurantorRequest(choice = null, loanid, id) {
-        console.log(choice+" "+loanid+" "+id)
         return $.ajax("{{ route('admin.requestGurantor') }}", {
             method: 'POST',
             data: {
@@ -449,11 +455,13 @@
                 "choice" : choice,
                 "laonid" : loanid,
                 id
-            }, 
+            },
 
             success:function(data) {
 
                 if(data.status){
+
+                    fullScreenLoader.style.display = "none";
 
                             Swal.fire({
                                   position: 'top-end',
@@ -468,6 +476,8 @@
                             }, 2000);
 
                 } else {
+
+                    fullScreenLoader.style.display = "none";
 
                             Swal.fire({
                                   position: 'top-end',

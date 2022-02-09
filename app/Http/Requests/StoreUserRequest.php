@@ -32,8 +32,7 @@ class StoreUserRequest extends FormRequest
                 'required', 'integer', 'unique:users', 'digits:12', 'regex:/(254)[0-9]{9}/',
             ],
             'email'    => [
-                'required',
-                'unique:users',
+                'required','unique:users',
             ],
             'address'    => [
                 'required',
@@ -51,22 +50,19 @@ class StoreUserRequest extends FormRequest
                 'required', 'date', 'after_or_equal:dateofbirth'
             ],
             'idno'    => [
-                'required',
-                'unique:users', 'digits:6',
+                'required','unique:users', 'digits:6',
             ],
             'password' => [
                 'required',
             ],
             'avatar'  => [
-                'required',
-                'image:jpeg,png,jpg,gif,svg|max:2048',
+                'required','image:jpeg,png,jpg,gif,svg|max:2048',
             ],
             'roles.*'  => [
                 'integer',
             ],
             'roles'    => [
-                'required',
-                'array',
+                'required','array',
             ],
             'kin' => [
                 'required', 'array', 'min:1', 'max:10'
@@ -101,10 +97,33 @@ class StoreUserRequest extends FormRequest
             'joinedsacco.required'                       => 'Date joined sacco is required',
             'avatar.required'                            => 'Profile image is required',
             'roles.required'                             => 'Roles is required',
-            'kin.required'                               => 'Please selecte your next of kin',
+            'kin.required'                               => 'Please select your next of kin',
             'kin.*.name.required' => 'Next of kin name is required',
             'kin.*.number.required' => 'Next of kin number is required',
             'kin.*.type.required' => 'Next of kin Relationship type is required'
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            'idno' => 'Member Number',
+            'dateofbirth' => 'Date of Birth',
+            'nationalid' => 'National Id',
+            'number' => 'Phone Number',
+            'email' => 'Email',
+            'password' => 'Password',
+            'address' => 'Address',
+            'amount' => 'Registration Amount',
+            'monthly_amount' => 'Monthly Contribution Amount',
+            'joinedsacco' => 'Date Joined Sacco',
+            'roles' => 'Member Role',
+            'avatar' => 'Member Image',
         ];
     }
 }

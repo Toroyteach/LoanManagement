@@ -69,7 +69,7 @@ class MonthlyContributionCron extends Command
 
             if($usersNotify->count() < 1){
                 
-                \Log::info("No users to send notification this Month");
+                \Log::info("No users to send notification this Today");
 
             } else {
 
@@ -220,11 +220,8 @@ class MonthlyContributionCron extends Command
                     'name' => $member->name
                 ];
         
-                //dd($user->user_id);
         
                 $member->notify(new FailedRequestNotification($user));
-        
-                //Http::fake();
         
                 if($this->smsEnabled()){
                 
@@ -245,8 +242,7 @@ class MonthlyContributionCron extends Command
 
     public function getFirstMonthsPayInterest($principal, $rate)
     {
-        $result = $principal * ($rate / 100); 
-        \Log::info(number_format((float)$result, 2, '.', ''));
+        $result = $principal * ($rate / 100);
 
        return  number_format((float)$result, 2, '.', '');
     }

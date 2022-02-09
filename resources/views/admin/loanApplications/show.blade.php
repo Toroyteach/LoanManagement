@@ -57,14 +57,16 @@
                             ksh {{ $loanApplication->loan_amount_plus_interest }}
                         </td>
                     </tr>
-                    <tr>
-                        <th>
-                           Member Elligible Amount
-                        </th>
-                        <td>
-                            ksh {{ $elligibleAmount }}
-                        </td>
-                    </tr>
+                        <tr>
+                        @if(!Auth::user()->getIsMemberAttribute())
+                            <th>
+                                Member Elligible Amount
+                            </th>
+                            <td>
+                                ksh {{ $elligibleAmount }}
+                            </td>
+                        @endif
+                        </tr>
                     <tr>
                         <th>
                             {{ trans('cruds.loanApplication.fields.description') }}
@@ -365,6 +367,7 @@
     function makeLoanRepaymenRequest() {
 
         let maxAmount = "{{ $maximumPayable }}"
+        let fullScreenLoader = document.getElementById("fullLoader");
 
 
             swal.fire({
@@ -390,6 +393,7 @@
                 if (e.isConfirmed) {
 
                     //console.log(value);
+                    fullScreenLoader.style.display = "block";
 
                     $.ajax({
                         type: 'POST',
@@ -404,6 +408,7 @@
                             if (results.response === true) {
 
                                 swal.fire("Done!", results.message, "success");
+                                fullScreenLoader.style.display = "none";
                                 // refresh page after 2 seconds
                                 setTimeout(function(){
                                     location.reload();
@@ -412,6 +417,7 @@
                             } else if(results.response === false) {
 
                                 swal.fire("Error!", results.message, "error");
+                                fullScreenLoader.style.display = "none";
 
                             }
                         }
@@ -430,6 +436,8 @@
     }
 
     function makePartialRejection() {
+
+        let fullScreenLoader = document.getElementById("fullLoader");
 
             Swal.fire({
                 title: "Loan Rejection limit",
@@ -458,6 +466,7 @@
                 if (e.isConfirmed) {
 
                     //console.log(value);
+                    fullScreenLoader.style.display = "block";
 
                     $.ajax({
                         type: 'POST',
@@ -473,6 +482,7 @@
                             if (results.response === true) {
 
                                 swal.fire("Done!", results.message, "success");
+                                fullScreenLoader.style.display = "none";
                                 // refresh page after 2 seconds
                                 setTimeout(function(){
                                     location.reload();
@@ -481,6 +491,7 @@
                             } else if(results.response === false) {
 
                                 swal.fire("Error!", results.message, "error");
+                                fullScreenLoader.style.display = "none";
 
                             }
                         }
@@ -502,6 +513,7 @@
         let status = "{{ $loanApplication->status_id }}"
         let maxAmount = "{{ $loanApplication->max_loan_amount }}"
         let user = "{{ $user->is_member}}"
+        let fullScreenLoader = document.getElementById("fullLoader");
 
         if ((status == 12) && (user)) {
 
@@ -515,11 +527,11 @@
                 max: maxAmount,
                 step: 500,
             },
+            allowOutsideClick: false,
             inputValue: maxAmount,
             inputLabel: "Amount",
-            showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
-            cancelButtonText: "No, cancel!",
+            allowOutsideClick: false,
             reverseButtons: !0
             }).then(function (e) {
 
@@ -527,7 +539,7 @@
 
                 if (e.isConfirmed) {
 
-                    //console.log(value);
+                    fullScreenLoader.style.display = "block";
 
                     $.ajax({
                         type: 'POST',
@@ -541,6 +553,7 @@
                         success: function (results) {
                             if (results.response === true) {
 
+                                fullScreenLoader.style.display = "none";
                                 swal.fire("Done!", results.message, "success");
                                 // refresh page after 2 seconds
                                 setTimeout(function(){
@@ -549,6 +562,7 @@
 
                             } else if(results.response === false) {
 
+                                fullScreenLoader.style.display = "none";
                                 swal.fire("Error!", results.message, "error");
 
                             }

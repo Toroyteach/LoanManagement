@@ -17,7 +17,11 @@ class MonthlyFilesImport implements ToModel, WithHeadingRow
     {
         return new MonthlyFile([
             'member_number'     => $row['memberno'],
-            'amount'            => $row['amount'], 
+            'amount'            => $row['newamount'], 
         ]);
+
+        // return [
+        //     'ID', 'MemberNo', 'MemberName', 'MonthlyAmount', 'NewAmount'
+        // ];
     }
 }

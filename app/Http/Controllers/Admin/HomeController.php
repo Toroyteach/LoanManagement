@@ -5,6 +5,7 @@ use App\LoanApplication;
 use App\LoanGuarantor;
 use App\LoanFile;
 use App\MonthlySavings;
+use App\UsersAccount;
 use App\SaccoAccount;
 use App\UserAccount;
 use App\SaccoFile;
@@ -30,31 +31,37 @@ class HomeController extends Controller
         return redirect()->route('admin.loan-applications.index');
     }
 
-
     public function dashboard()
     {
         //get and send loan details
         if(\Auth::user()->getIsMemberAttribute()){
 
-            $approved_loan = LoanApplication::select(['loan_amount', 'status_id'])->where('created_by_id', \Auth::user()->id)->whereIn('status_id', [8, 10])->sum('loan_amount');// approved loan
-            $loan_pending = LoanApplication::select(['loan_amount'])->where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('loan_amount'); //loan book
-            $amount_paid = LoanApplication::select(['repaid_amount'])->where('created_by_id', \Auth::user()->id)->sum('repaid_amount'); //amount paid back for user
+            $approved_loan = LoanApplication::select(['loan_amount', 'status_id'])->where('created_by_id', \Auth::user()->id)->whereIn('status_id', [8, 10])->sum('loan_amount_plus_interest');//(approved loan with paid back loan as well)
+            $loan_pending = LoanApplication::select(['loan_amount'])->where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('balance_amount'); //(approved loan that hasent been paid back)
+            //$amount_paid_back = LoanApplication::select(['repaid_amount'])->where('created_by_id', \Auth::user()->id)->sum('repaid_amount'); //should calculate total overpayment and total monthly contribution
+            $totalOverpayment = UsersAccount::select(['total_amount'])->where('user_id', \Auth::user()->id)->first();
+            $savings = MonthlySavings::select(['total_contributed', 'monthly_amount'])->where('user_id', \Auth::user()->id)->first(); //monthly savings
+            //dd($totalOverpayment, $savings);
+            $amount_paid = $totalOverpayment['total_amount'] + $savings['total_contributed']; // accumulates the users account(overpayment) and 
             $user = 'user';
                     //logic to return data for the chart js of loan and loan types for user
             $line = json_encode($this->getLineGraphData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('user', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $savings = MonthlySavings::select(['total_contributed'])->where('user_id', \Auth::user()->id)->first(); //monthly savings
 
         } else {
 
-            $approved_loan = LoanApplication::select(['loan_amount', 'status_id'])->whereIn('status_id', [8, 10])->sum('loan_amount');
-            $loan_pending = LoanApplication::select(['loan_amount'])->where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('loan_amount');//loan which havent been paid back //loan book
-            $amount_paid = LoanApplication::sum('repaid_amount');// amount paied back for all
+            $approved_loan = LoanApplication::select(['loan_amount_plus_interest', 'status_id'])->whereIn('status_id', [10, 8])->sum('loan_amount_plus_interest');//(approved loan with paid back loan as well)
+            $loan_pending = LoanApplication::select(['balance_amount'])->where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('balance_amount');//(approved loan that hasent been paid back) //loan book
+            //$amount_paid_back = LoanApplication::sum('repaid_amount');//// should calculate total overpayment and total monthly contribution for all memebers
+            $totalMonthlyContribution = MonthlySavings::select(['total_contributed'])->sum('total_contributed');
+            //$savings1 = SaccoAccount::sum('deposit_bal');// all overpayamnets plus all monthly deposits plus all loan repayment minus all pending loans
+            $totalUserSavings = UsersAccount::select(['total_amount'])->sum('total_amount');
+            $savings = $totalMonthlyContribution + $totalUserSavings - $loan_pending;
+            $amount_paid = $totalMonthlyContribution + $totalUserSavings;
             $user = 'Admin';
                     //logic to return data for the chart js of loan and loan types for admin
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
-            $savings = SaccoAccount::sum('deposit_bal'); //total amount in sacco
 
         }
 
@@ -191,7 +198,9 @@ class HomeController extends Controller
 
         if($gurantorRequest->isDirty('request_status')){
 
-            auth()->user()->unreadNotifications->when($request->input('id'), function ($query) use ($request) {
+            auth()->user()
+            ->unreadNotifications
+            ->when($request->input('id'), function ($query) use ($request) {
                 
                 return $query->where('id', $request->input('id'));
 
@@ -222,7 +231,6 @@ class HomeController extends Controller
 
         if($acceptedGurantors == $totalGurantors){
             //approve the loan automatically
-
             $resultStatus = $this->submitFinalForm($request->loanitemid);
 
         }
@@ -238,7 +246,6 @@ class HomeController extends Controller
 
     public function submitFinalForm($requestId)
     {
-
         //after a rthird gurantor has been accepted the loan should be approved from there.
 
         $loanDetails = CreateLoanRequest::findOrFail($requestId);
@@ -281,7 +288,6 @@ class HomeController extends Controller
                 'loan_application_id' => $loanApplication->id
             ]);
         }
-
 
             //deleted record from loan request
         $requestDetails = CreateLoanRequest::findOrFail($requestId);

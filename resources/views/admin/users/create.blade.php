@@ -141,7 +141,7 @@
                     <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', '') }}" placeholder="Enter 6 digits" name="idno" id="idno">
                     @if($errors->has('idno'))
                         <div class="invalid-feedback">
-                            {{ $errors->first('idno') }}
+                            The Member Number must be 6 digits
                         </div>
                     @endif
                 </div>
@@ -262,6 +262,8 @@
 
         e.preventDefault(e);
 
+    let fullScreenLoader = document.getElementById("fullLoader");
+
     swal.fire({
             title: "Create Member",
             icon: 'question',
@@ -274,6 +276,7 @@
 
             if (e.value === true) {
 
+                fullScreenLoader.style.display = "block";
                 $('#memberCreate').submit()  
 
             } else {

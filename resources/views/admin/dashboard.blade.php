@@ -11,19 +11,19 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
-                    @if( $user == 'admin' )
-                        <h5 class="card-title mb-0">Total Deposits</h5>
+                    @if( $user == 'Admin' )
+                        <h5 class="card-title mb-0">Total Revenue</h5>
                     @else
-                        <h5 class="card-title mb-0">Monthly contribution</h5>
+                        <h5 class="card-title mb-0">Monthly Contribution</h5>
                     @endif
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
-                                @if( $user == 'admin' )
+                                @if( $user == 'Admin' )
                                     <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings ?? '0.00' }}</h2>
                                 @else
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings['total_contributed'] ?? '0.00' }}</h2>
+                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings['monthly_amount'] ?? '0.00' }}</h2>
                                 @endif
                             </h2>
                         </div>
@@ -42,10 +42,10 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
-                        @if( $user == 'admin' )
+                        @if( $user == 'Admin' )
                             <h5 class="card-title mb-0">Loan Book</h5>
                         @else
-                            <h5 class="card-title mb-0">Pending Loan</h5>
+                            <h5 class="card-title mb-0">Outstanding Loans</h5>
                         @endif
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
@@ -69,7 +69,7 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
-                        <h5 class="card-title mb-0">Total Paid</h5>
+                        <h5 class="card-title mb-0">Share Value</h5>
                     </div>
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
@@ -92,10 +92,10 @@
                 <div class="card-statistic-3 p-4">
                     <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
                     <div class="mb-4">
-                        @if( $user == 'admin' )
-                            <h5 class="card-title mb-0">Total Approved Loan</h5>
+                        @if( $user == 'Admin' )
+                            <h5 class="card-title mb-0">Total Cleared Loan</h5>
                         @else
-                            <h5 class="card-title mb-0">Approved Loan Balance</h5>
+                            <h5 class="card-title mb-0">Cleared Loans</h5>
                         @endif
                     </div>
                     <div class="row align-items-center mb-2 d-flex">

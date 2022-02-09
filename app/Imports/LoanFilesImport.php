@@ -16,9 +16,13 @@ class LoanFilesImport implements ToModel, WithHeadingRow
     public function model(array $row)
     {
         return new LoanFileUpload([
-            'entry_number'     => $row['loanno'],
+            'entry_number'     => $row['loanentryno'],
             'member_number'    => $row['memberno'], 
-            'amount'           => $row['amount'],
+            'amount'           => $row['newamount'],
         ]);
+
+        // return [
+        //     'ID', 'MemberNo', 'MemberName', 'LoanEntryNo', 'LoanTypes', 'LoanBalance', 'NewAmount'
+        // ];
     }
 }

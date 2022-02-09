@@ -101,4 +101,27 @@ class UpdateUserRequest extends FormRequest
             'kin.*.type.required' => 'Next of kin Relationship type is required'
         ];
     }
+
+        /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            'idno' => 'Member Number',
+            'dateofbirth' => 'Date of Birth',
+            'nationalid' => 'National Id',
+            'number' => 'Phone Number',
+            'email' => 'Email',
+            'password' => 'Password',
+            'address' => 'Address',
+            'amount' => 'Registration Amount',
+            'monthly_amount' => 'Monthly Contribution Amount',
+            'joinedsacco' => 'Date Joined Sacco',
+            'roles' => 'Member Role',
+            'avatar' => 'Member Image',
+        ];
+    }
 }

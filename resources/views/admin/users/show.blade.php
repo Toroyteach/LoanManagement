@@ -432,6 +432,8 @@
 
 
     function submitMonthly() {
+        
+        let fullScreenLoader = document.getElementById("fullLoader");
 
         swal.fire({
             title: "Monthly Credit",
@@ -456,6 +458,7 @@
             if (e.isConfirmed) {
 
                 //console.log(value);
+                fullScreenLoader.style.display = "block";
 
                 $.ajax({
                     type: 'POST',
@@ -470,6 +473,7 @@
                         if (results.response === true) {
 
                             swal.fire("Done!", results.message, "success");
+                            fullScreenLoader.style.display = "none";
                             // refresh page after 2 seconds
                             setTimeout(function(){
                                 location.reload();
@@ -478,6 +482,7 @@
                         } else if(results.response === false) {
 
                             swal.fire("Error!", results.failure, "error");
+                            fullScreenLoader.style.display = "none";
 
                         }
                     }

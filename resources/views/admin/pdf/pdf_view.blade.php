@@ -81,7 +81,7 @@
         <td >{{ \Carbon\Carbon::parse($loan->created_at)->format('m-d-Y H:i:s') }}</td>
         <td >{{$loan->loan_type}}</td>
         <td >{{$loan->description}}</td>
-        <td >{{ $user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>
+        <td >{{ !$user->is_user && $loan->status_id < 8 ? 'Processing' : $loan->status->name }}</td>
         <td >ksh {{$loan->loan_amount}}</td>
         <td >ksh {{ ( $loan->loan_amount_plus_interest - $loan->loan_amount )}}</td>
         <td >ksh {{ $loan->next_months_pay }} </td>

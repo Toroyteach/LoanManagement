@@ -272,8 +272,9 @@
                                     <div class="container">
                                         <div class="">
                                             <label for="detail">Upload request document</label><br>
+                                            <label for="detail">Files allowed include png, jpg, jpeg, docx, txt, pdf ONLY!</label><br>
                                             <input type="file" wire:model="fileTest" class="form-input" id="fileTest" placeholder=" " multiple><br>
-                                            @error('fileTest')<span class="text-danger">{{ $message }}</span> @enderror
+                                            @error('fileTest')<span class="text-danger">Files allowed include png, jpg, jpeg, docx, txt, pdf ONLY!</span> @enderror
                                         </div>
                                     </div>
 
@@ -357,7 +358,7 @@
 
                             </div>
 
-                            <button class="btn btn-success btn-md pull-right" wire:click="submitForm" type="button" {{ (($step3)) ? '' : 'disabled' }}>Finish!</button>
+                            <!-- <button class="btn btn-success btn-md pull-right" wire:click="" type="button" {{ (($step3)) ? '' : 'disabled' }}>Finish!</button> -->
                             <button class="btn btn-warning btn-md pull-left" type="button" wire:click="previousRequestStep">Back</button>
                         </div>
                     </div>

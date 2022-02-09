@@ -63,28 +63,19 @@ class LoanInterestCalculatorCron extends Command
 
             if($date->isToday()){
 
-                if($loanItem->balance_amount < $loanItem->equated_monthly_instal){
-
-                    $emi = $loanItem->balance_amount;
-                    $loanItem->increment('next_months_pay', $emi);
-                    
-                } else {
-
-                    $rate = config('loantypes.'.$loanItem->loan_type.'.interest');
-                    $interestCalculator =  $rate / 100;
-                    $interest = $interestCalculator * $loanItem->balance_amount;
-                    $expectedMonthlyPayment = $loanItem->equated_monthly_instal + $interest;
-                    $loanItem->increment('next_months_pay', $expectedMonthlyPayment);
-                    $loanItem->increment('loan_amount_plus_interest', $interest);
-
-                }
+                $rate = config('loantypes.'.$loanItem->loan_type.'.interest');
+                $interestCalculator = number_format((float)($rate / 100), 2, '.', '');
+                $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * $loanItem->balance_amount);
+                $loanItem->balance_amount = $loanItem->balance_amount - $loanItem->equated_monthly_instal;
+                $loanItem->next_months_pay = $expectedMonthlyPayment;
+                $loanItem->increment('loan_amount_plus_interest', $expectedMonthlyPayment);
 
 
                 $loanItem->next_months_pay_date = $date->addMonths(1);
 
                 $loanItem->save();
 
-                $member = User::findOrFail($loanItem->created_by->id);// to be notified
+                $member = User::findOrFail($loanItem->created_by_id);// to be notified
         
                 $user = [
                     'id' => $loanItem->id,

@@ -42,6 +42,7 @@
 </head>
 
 <body class="c-app">
+<div class="loading" style="display:none" id="fullLoader">Loading&#8230;</div>
     @include('partials.menu')
     @include('sweetalert::alert')
     <div class="c-wrapper">

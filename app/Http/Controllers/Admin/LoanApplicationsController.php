@@ -29,6 +29,10 @@ use DataTables;
 use DB;
 use App\Notifications\LoanUpdateNotification;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Http;
+use App\SmsTextsSent;
+use App\Exports\LoansExport;
+use App\Exports\MonthlyExport;
 
 class LoanApplicationsController extends Controller
 {
@@ -487,8 +491,8 @@ class LoanApplicationsController extends Controller
         }
     }
 
-    public function createPdf($id)
-    {      
+    public function createPdf($id) //downloads the memeber loan files
+    {
           $loan = LoanFile::findOrFail($id);
 
           $pathToFile = storage_path('files/uploads/loanfiles/' . $loan->title);
@@ -502,7 +506,7 @@ class LoanApplicationsController extends Controller
         $a = $monthlyContribution->overpayment_amount;
         $b = $monthlyContribution->total_contributed;
         $totalMonthlyContribution = ($a + $b) * 3;
-        $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', $id)->sum('loan_amount');
+        $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', $id)->sum('balance_amount');
         $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;
         
         return $eligibleAmount.'.00';
@@ -515,12 +519,31 @@ class LoanApplicationsController extends Controller
         return view('admin.bulk.index');
     }
 
+    public function downloadMonthlyAndLoanTemplates(Request $request)
+    {
+
+        //check the selected file then download
+        if($request->type == 'loan'){
+
+            //dd('download this Loan', $request->type);
+            return Excel::download(new LoansExport, 'loan_applications_template.xlsx');
+
+        } else if($request->type == 'monthly') {
+
+            //dd('download this Monthly', $request->type);
+            return Excel::download(new MonthlyExport, 'monthly_savings_template.xlsx');
+        }
+    }
+
     public function bulkFile(Request $request)
     {
 
         request()->validate([
             'file'  => 'required|mimes:xls,xlsx',
           ]);
+
+          MonthlyFile::truncate(); //deletes files that were previously uploaded to insert new ones
+          LoanFileUpload::truncate(); //deletes files that were previously uploaded to insert new ones
      
            if ($files = $request->file('file')) {
                 
@@ -589,9 +612,9 @@ class LoanApplicationsController extends Controller
                 $loanItem = LoanApplication::where('loan_entry_number', $item->entry_number)->first();
 
 
-                if($loanItem->loan_amount <= $item->amount){ //greater than or equal loan amount
+                if($loanItem->balance_amount <= $item->amount){ //greater than or equal loan amount
         
-                    $newAmount = $item->amount - $loanItem->loan_amount;
+                    $newAmount = $item->amount - $loanItem->balance_amount;
 
         
                     if($newAmount != 0){
@@ -599,13 +622,11 @@ class LoanApplicationsController extends Controller
                         UsersAccount::where('user_id', $loanItem->created_by_id)->increment('total_amount', $newAmount);
 
                     }
-
                     
                     //$loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
 
                     $loanItem->last_month_amount_paid = $item->amount;
                     $loanItem->next_months_pay = 0.00;
-                    $loanItem->loan_amount_plus_interest = $loanItem->loan_amount_plus_interest + $loanItem->loan_amount;
                     $loanItem->next_months_pay_date = null;
                     $loanItem->date_last_amount_paid = now();
                     $loanItem->status_id = 10;
@@ -619,21 +640,21 @@ class LoanApplicationsController extends Controller
         
 
                     switch($loanItem->loan_type){
-                        case "emergency":
+                        case "Emergency":
         
                             $rate = config('loantypes.Emergency.interest');
                             $time = config('loantypes.Emergency.max_duration');
                             $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
         
                             break;
-                        case "education":
+                        case "SchoolFees":
                             
                             $rate = config('loantypes.SchoolFees.interest');
                             $time = config('loantypes.SchoolFees.max_duration');
                             $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
         
                             break;
-                        case "development":
+                        case "Development":
         
                             $rate = config('loantypes.Development.interest');
                             $time = config('loantypes.Development.max_duration');
@@ -688,6 +709,8 @@ class LoanApplicationsController extends Controller
                 "success" => true,
             ]);
 
+            //sleep(5);
+
         } else {
 
             $data = MonthlyFile::all();
@@ -713,7 +736,16 @@ class LoanApplicationsController extends Controller
             return Response()->json([
                 "success" => true,
             ]);
+
+            //sleep(5);
         }
+    }
+
+    public function deletePendingFile()
+    {
+        dd('deleted');
+        \Log::info("The files were updated and changed later");
+
     }
 
     public function deleteBulkFileDetails(Request $request)

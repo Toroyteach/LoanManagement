@@ -284,7 +284,7 @@ class UsersController extends Controller
         return view('admin.users.usershow', compact('user', 'currentLoanAmount', 'totalmonthlysavings', 'loanApplications', 'kins'));
     }
 
-    public function createPdf($id)
+    public function createPdf($id) //prepares pdf files for donwloading monthly contribution and loan statements
     {
 
         $user = \Auth::user();

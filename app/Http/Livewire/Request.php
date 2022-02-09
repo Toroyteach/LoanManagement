@@ -123,9 +123,24 @@ class Request extends Component
     public function updatedQuery()
     {
 
+        //dd('show this to the user instead');
+        
         if(strlen($this->query) >= 3){
+            
+            unset($noUsers);
+
+            $noUsers = array();
+
+            foreach($this->gurantorsChoice as $key => $user){
+    
+                array_push( $noUsers, $user['id']);
+    
+            }
+    
+
             $this->accounts = User::select(['name', 'id'])->where('name', 'like', '%' . $this->query. '%')
                 ->where('id', '!=', auth()->user()->id)
+                ->WhereNotIn('id', $noUsers)
                 ->take(5)
                 ->get()
                 ->toArray();
@@ -745,7 +760,7 @@ class Request extends Component
          $b = $monthlyContribution->total_contributed;
          $totalMonthlyContribution = ($a + $b) * 3;
          //dd($totalMonthlyContribution);
-         $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('loan_amount');
+         $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', auth()->user()->id)->sum('balance_amount');
          $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;
          
          return $eligibleAmount;
@@ -801,11 +816,9 @@ class Request extends Component
 
             } else {
 
-                $interest = $interestCalculator * $principalValue;
-                $expectedMonthlyPayment = $emi + $interest;
+                $nextMonthsPay = number_format((float)($emi + (($rate / 100) * $principalValue)), 2, '.', '');
+                $totalInterestPaid +=  number_format((float)$nextMonthsPay, 2, '.', '');
                 $principalValue = $principalValue - $emi;
-                $totalInterestPaid += $interest;
-                //\Log::info("Emi = ".$emi." Interets = ".$totalInterestPaid." Expected Monthly = ".$expectedMonthlyPayment." principal value = ".$principalValue." time =".$x);
 
             }
 
@@ -815,9 +828,9 @@ class Request extends Component
         
         $rounded = number_format((float)$totalInterestPaid, 2, '.', '');
 
-        $this->interestamount = $rounded;
+        $this->interestamount = $rounded - $principal;
 
-        return $rounded + $principal;
+        return $rounded;
 
      }
 
@@ -900,7 +913,7 @@ class Request extends Component
 
      public function getMonthlyEmi($principal, $Rate, $time)
      {
-        return $principal * ($Rate / 100);
+        return number_format((float)($principal / $time), 2, '.', '');
      }
 
      public function getFirstMonthsPayInterest($principal, $rate)
