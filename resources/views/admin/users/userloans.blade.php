@@ -44,7 +44,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($loanApplications as $key => $loanApplication)
+                                @foreach($loanApplications as $key => $loanApplication)
                                     <tr data-entry-id="{{ $loanApplication->id }}">
                                         <td>
 
@@ -83,11 +83,7 @@
 
 
                                     </tr>
-                                @empty
-                                    <tr>
-                                        No Records to show
-                                    </tr>
-                                @endforelse
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

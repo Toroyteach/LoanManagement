@@ -77,7 +77,11 @@
                                     {{ $loanApplication->creditCommittee->name ?? '' }}
                                 </td>
                             @endif
-
+                            <td>
+                                    <a class="btn btn-xs btn-primary" href="{{ route('admin.loan-applications.show', $loanApplication->id) }}">
+                                {{ trans('global.view') }}
+                                    </a>
+                                </td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -281,6 +281,47 @@
                     </table>
                 @endcan
             @endif
+<br><br>
+            @if(!$user->is_member && count($userLogs))
+                @can('audit_log_show')
+                    <h3>User Logs</h3>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Changes</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($userLogs as $log)
+                                <tr>
+                                    <td>
+                                        {{ $log['user'] }}
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            @foreach($log['changes'] as $change)
+                                                <li>
+                                                    {!! $change !!}
+                                                </li>
+                                            @endforeach
+                                            @if($log['comment'])
+                                                <li>
+                                                    <b>Comment</b>: {{ $log['comment'] }}
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {{ $log['time'] }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endcan
+            @endif
 
             <div class="form-group">
                             @if(($user->is_accountant or $user->is_admin) && in_array($loanApplication->status_id, [1, 2, 3]))

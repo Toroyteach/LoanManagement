@@ -31,7 +31,7 @@ class LoansExport implements FromCollection, WithCustomStartCell, WithHeadings
     public function headings(): array
     {
         return [
-            'ID', 'memberno', 'MemberName', 'loanentryno', 'LoanTypes', 'LoanBalance', 'newamount'
+            'ID', 'memberno', 'MemberName', 'loanentryno', 'LoanType', 'LoanBalance', 'newamount'
         ];
     }
 }

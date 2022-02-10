@@ -155,11 +155,12 @@ class LoanApplicationsController extends Controller
         $defaultStatus = Status::find(1);
         $user          = auth()->user();
         $logs          = AuditLogService::generateLogs($loanApplication);
+        $userLogs      = AuditLogService::generateUserLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount - $loanApplication->repaid_amount;
         $maximumPayable = $remaining + 5000;
         $elligibleAmount = $this->getUserElligibleAmount($loanApplication->created_by->id);
 
-        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount', 'maximumPayable'));
+        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'userLogs', 'remaining', 'elligibleAmount', 'maximumPayable'));
     }
 
     public function destroy(LoanApplication $loanApplication)
@@ -619,7 +620,8 @@ class LoanApplicationsController extends Controller
         
                     if($newAmount != 0){
 
-                        UsersAccount::where('user_id', $loanItem->created_by_id)->increment('total_amount', $newAmount);
+                        $userData = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                        $userData->increment('total_amount', $newAmount);
 
                     }
                     

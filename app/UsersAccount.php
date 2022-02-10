@@ -5,11 +5,12 @@ namespace App;
 use App\Traits\MultiTenantModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\Auditable;
 
 class UsersAccount extends Model
 {
     //
-    use SoftDeletes;
+    use SoftDeletes, Auditable;
 
     public $table = 'users_accounts';
 
@@ -29,5 +30,10 @@ class UsersAccount extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
 
+    }
+
+    public function logs()
+    {
+        return $this->morphMany(AuditLog::class, 'subject');
     }
 }
