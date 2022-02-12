@@ -21,9 +21,9 @@
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
                                 @if( $user == 'Admin' )
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings ?? '0.00' }}</h2>
+                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh.{{ number_format(($savings ?? '0.00'), 2) }}</h2>
                                 @else
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh{{ $savings['monthly_amount'] ?? '0.00' }}</h2>
+                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh.{{ number_format(($savings['monthly_amount'] ?? '0.00'), 2) }}</h2>
                                 @endif
                             </h2>
                         </div>
@@ -51,7 +51,7 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0" id="amount">
-                                ksh{{ $loan_pending ?? '0.00' }}
+                                ksh.{{ number_format(($loan_pending ?? '0.00' ), 2) }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">
@@ -74,7 +74,7 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0" id="amount">
-                                ksh{{ $amount_paid ?? '0.00' }}
+                                ksh.{{ number_format(($amount_paid ?? '0.00'), 2) }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">
@@ -101,7 +101,7 @@
                     <div class="row align-items-center mb-2 d-flex">
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0" id="amount">
-                                ksh{{ $approved_loan ?? '0.00' }}
+                                ksh.{{ number_format(($approved_loan ?? '0.00'), 2) }}
                             </h2>
                         </div>
                         <!-- <div class="col-4 text-right">

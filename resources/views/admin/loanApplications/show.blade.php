@@ -33,7 +33,7 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.loanApplication.fields.loan_amount') }}
+                            Principal
                         </th>
                         <td>
                             ksh {{ $loanApplication->loan_amount  ?? '0.00' }}
@@ -42,7 +42,7 @@
                     <tr>
                         @if(!Auth::user()->getIsMemberAttribute())
                         <th>
-                            Maximum Loan Amount
+                            Maximum Loan Amount if Partially Rejected
                         </th>
                         <td>
                             ksh {{ $loanApplication->max_loan_amount ?? '0.00'}}
@@ -51,10 +51,18 @@
                     </tr>
                     <tr>
                         <th>
-                            Loan Interest
+                            Loan Amount
                         </th>
                         <td>
                             ksh {{ $loanApplication->loan_amount_plus_interest }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Loan Interest
+                        </th>
+                        <td>
+                            ksh {{ ($loanApplication->loan_amount_plus_interest - $loanApplication->loan_amount)  }}
                         </td>
                     </tr>
                         <tr>
@@ -88,14 +96,14 @@
                             @if(Auth::user()->getIsMemberAttribute())
                                 @if($loanApplication->status_id === 8)
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                        Outsanding Amount
                                     </th>
                                     <td>
                                         Ksh {{ $remaining }}
                                     </td>
                                 @else
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                        Outsanding Amount
                                     </th>
                                     <td>
                                         <span class="badge badge-warning">null</span>
@@ -104,14 +112,14 @@
                             @else
                                 @if($loanApplication->status_id === 8)
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                        Outsanding Amount
                                     </th>
                                     <td>
                                         Ksh {{ $remaining }}
                                     </td>
                                 @else
                                     <th>
-                                        {{ trans('cruds.loanApplication.fields.amountremaining') }}
+                                        Outsanding Amount
                                     </th>
                                     <td>
                                         <span class="badge badge-warning">{{ $loanApplication->status->name }} loan</span>
@@ -130,7 +138,7 @@
                     </tr>
                     <tr>
                         <th>
-                            Next Months Instalment
+                            NextInstalment
                         </th>
                         <td>
                             ksh {{ $loanApplication->next_months_pay }}
@@ -138,7 +146,7 @@
                     </tr>
                     <tr>
                         <th>
-                            Next Months Due Payment
+                            Next Due Date
                         </th>
                         <td>
                         {{ $loanApplication->next_months_pay_date }}
@@ -146,7 +154,7 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.loanApplication.fields.expectedpaydate') }}
+                            Payment Deadline
                         </th>
                         <td>
                             @if($loanApplication->status_id === 8)

@@ -36,8 +36,8 @@ class HomeController extends Controller
         //get and send loan details
         if(\Auth::user()->getIsMemberAttribute()){
 
-            $approved_loan = LoanApplication::select(['loan_amount', 'status_id'])->where('created_by_id', \Auth::user()->id)->whereIn('status_id', [8, 10])->sum('loan_amount_plus_interest');//(approved loan with paid back loan as well)
-            $loan_pending = LoanApplication::select(['loan_amount'])->where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('balance_amount'); //(approved loan that hasent been paid back)
+            $approved_loan = LoanApplication::select(['loan_amount_plus_interest', 'status_id'])->where('created_by_id', \Auth::user()->id)->where('status_id', 10)->sum('loan_amount_plus_interest');//(approved loan with paid back loan as well)
+            $loan_pending = LoanApplication::select(['loan_amount', 'balance_amount'])->where('created_by_id', \Auth::user()->id)->where('repaid_status', 0)->where('status_id', '=' , 8)->sum('balance_amount'); //(approved loan that hasent been paid back)
             //$amount_paid_back = LoanApplication::select(['repaid_amount'])->where('created_by_id', \Auth::user()->id)->sum('repaid_amount'); //should calculate total overpayment and total monthly contribution
             $totalOverpayment = UsersAccount::select(['total_amount'])->where('user_id', \Auth::user()->id)->first();
             $savings = MonthlySavings::select(['total_contributed', 'monthly_amount'])->where('user_id', \Auth::user()->id)->first(); //monthly savings
@@ -50,7 +50,7 @@ class HomeController extends Controller
 
         } else {
 
-            $approved_loan = LoanApplication::select(['loan_amount_plus_interest', 'status_id'])->whereIn('status_id', [10, 8])->sum('loan_amount_plus_interest');//(approved loan with paid back loan as well)
+            $approved_loan = LoanApplication::select(['loan_amount_plus_interest', 'status_id'])->where('status_id', 10)->sum('loan_amount_plus_interest');//(approved loan with paid back loan as well)
             $loan_pending = LoanApplication::select(['balance_amount'])->where('repaid_status', '=', 0)->where('status_id', '=' , 8)->sum('balance_amount');//(approved loan that hasent been paid back) //loan book
             //$amount_paid_back = LoanApplication::sum('repaid_amount');//// should calculate total overpayment and total monthly contribution for all memebers
             $totalMonthlyContribution = MonthlySavings::select(['total_contributed'])->sum('total_contributed');
@@ -62,6 +62,8 @@ class HomeController extends Controller
                     //logic to return data for the chart js of loan and loan types for admin
             $line = json_encode($this->getLineGraphData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
             $pie = json_encode($this->getPieChartData('Admin', \Auth::user()->id), JSON_UNESCAPED_SLASHES );
+
+            //dd(number_format($approved_loan, 2, ',', ' '));
 
         }
 
@@ -76,7 +78,7 @@ class HomeController extends Controller
 
             array_push($members , $value['name']);
             array_push($membersActiveLoans , $value[0]['current']);
-            array_push($membersAquiredLoans , $value['sum(loan_amount)']);
+            array_push($membersAquiredLoans , $value['sum(loan_amount_plus_interest)']);
 
         }
 
@@ -111,11 +113,11 @@ class HomeController extends Controller
 
         if($userType == 'Admin'){
             for ($x = 0; $x <= 3; $x++) {
-                $loanTypeValues[$x] = LoanApplication::select(['loan_amount', 'status_id', 'loan_type'])->where('loan_type', $loanTypeKey[$x])->whereIn('status_id', [8, 10])->sum('loan_amount');
+                $loanTypeValues[$x] = LoanApplication::select(['loan_amount_plus_interest', 'status_id', 'loan_type'])->where('loan_type', $loanTypeKey[$x])->whereIn('status_id', [8, 10])->sum('loan_amount_plus_interest');
             }
         } else {
             for ($x = 0; $x <= 3; $x++) {
-                $loanTypeValues[$x] = LoanApplication::select(['loan_amount', 'status_id', 'loan_type'])->where('loan_type', $loanTypeKey[$x])->where('created_by_id', $id)->whereIn('status_id', [8, 10])->sum('loan_amount');
+                $loanTypeValues[$x] = LoanApplication::select(['loan_amount_plus_interest', 'status_id', 'loan_type'])->where('loan_type', $loanTypeKey[$x])->where('created_by_id', $id)->whereIn('status_id', [8, 10])->sum('loan_amount_plus_interest');
             }
         }
 
@@ -128,11 +130,11 @@ class HomeController extends Controller
 
         if($userType == 'Admin'){
             for ($x = 0; $x < 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::select(['loan_amount', 'status_id', 'created_at'])->whereMonth('created_at', $x+1)->whereIn('status_id', [8, 10])->sum('loan_amount');
+                $monthlyValues[$x] = LoanApplication::select(['loan_amount_plus_interest', 'status_id', 'created_at'])->whereMonth('created_at', $x+1)->whereIn('status_id', [8, 10])->sum('loan_amount_plus_interest');
             }
         } else {
             for ($x = 0; $x < 12; $x++) {
-                $monthlyValues[$x] = LoanApplication::select(['loan_amount', 'status_id', 'created_at', 'created_by_id'])->whereMonth('created_at', $x+1)->where('created_by_id', $id)->whereIn('status_id', [8, 10])->sum('loan_amount');
+                $monthlyValues[$x] = LoanApplication::select(['loan_amount_plus_interest', 'status_id', 'created_at', 'created_by_id'])->whereMonth('created_at', $x+1)->where('created_by_id', $id)->whereIn('status_id', [8, 10])->sum('loan_amount_plus_interest');
             }
         }
         
@@ -164,12 +166,12 @@ class HomeController extends Controller
     {
 
         $usersLoan = User::join('loan_applications', 'loan_applications.created_by_id', '=', 'users.id')
-        ->selectRaw('users.id, users.name, sum(loan_amount), loan_applications.status_id')
+        ->selectRaw('users.id, users.name, sum(loan_amount_plus_interest), loan_applications.status_id')
         ->groupBy('users.id', 'users.name', 'loan_applications.status_id')
         ->whereIn('loan_applications.status_id', [8, 10])
-        ->orderByDesc('sum(loan_amount)')
+        ->orderByDesc('sum(loan_amount_plus_interest)')
         ->limit(10)
-        ->get(['users.id', 'users.name', 'loan_applications.loan_amount']);
+        ->get(['users.id', 'users.name', 'loan_applications.loan_amount_plus_interest']);
 
         $dataResults = $usersLoan->toArray();
 
@@ -178,7 +180,7 @@ class HomeController extends Controller
             $memberCurrentLoan = LoanApplication::where('created_by_id', $user['id'])
             ->where('repaid_status', 0)
             ->where('status_id', ([ 8, 11]))
-            ->sum('loan_amount');
+            ->sum('loan_amount_plus_interest');
 
             array_push($dataResults[$key], ['current' => '-'.$memberCurrentLoan]);
 
