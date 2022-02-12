@@ -394,7 +394,7 @@ class LoanApplicationsController extends Controller
             $newAmount = $request->amount - $loanItem->balance_amount;
 
             if($newAmount != 0){
-                $memberAccount = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                $memberAccount = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail(); //CORRECT THIS
                 $memberAccount->increment('total_amount', $newAmount);
             }
 
@@ -420,40 +420,6 @@ class LoanApplicationsController extends Controller
             return response()->json(array('response' => false, 'message' => 'Oops! Repayment amount was not updated '), 200);
 
         } else { //less than loan amount
-
-            // switch($loanItem->loan_type){
-            //     case "emergency":
-
-            //         $rate = config('loantypes.Emergency.interest');
-            //         $time = config('loantypes.Emergency.max_duration');
-            //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-
-            //         break;
-            //     case "education":
-                    
-            //         $rate = config('loantypes.SchoolFees.interest');
-            //         $time = config('loantypes.SchoolFees.max_duration');
-            //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-
-            //         break;
-            //     case "development":
-
-            //         $rate = config('loantypes.Development.interest');
-            //         $time = config('loantypes.Development.max_duration');
-            //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-
-            //         break;
-            //     case "instantloan":
-
-            //         $rate = config('loantypes.InstantLoan.interest');
-            //         $time = config('loantypes.InstantLoan.max_duration');
-            //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-
-            //         break;
-
-            //     default:
-            //         $interest = 0.00;
-            // }
 
             $amountPaid = $request->amount;
             $monthlyEmi = $loanItem->next_months_pay;
@@ -620,7 +586,7 @@ class LoanApplicationsController extends Controller
         
                     if($newAmount != 0){
 
-                        $userData = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                        $userData = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail(); //CORRECT THIS TOz
                         $userData->increment('total_amount', $newAmount);
 
                     }
@@ -639,43 +605,6 @@ class LoanApplicationsController extends Controller
                     
            
                 } else { //less than loan amount
-        
-
-                    // switch($loanItem->loan_type){
-                    //     case "Emergency":
-        
-                    //         $rate = config('loantypes.Emergency.interest');
-                    //         $time = config('loantypes.Emergency.max_duration');
-                    //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-        
-                    //         break;
-                    //     case "SchoolFees":
-                            
-                    //         $rate = config('loantypes.SchoolFees.interest');
-                    //         $time = config('loantypes.SchoolFees.max_duration');
-                    //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-        
-                    //         break;
-                    //     case "Development":
-        
-                    //         $rate = config('loantypes.Development.interest');
-                    //         $time = config('loantypes.Development.max_duration');
-                    //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-        
-                    //         break;
-                    //     case "instantloan":
-        
-                    //         $rate = config('loantypes.InstantLoan.interest');
-                    //         $time = config('loantypes.InstantLoan.max_duration');
-                    //         $interest = ($loanItem->balance_amount * ( 1 + ( $rate / 100))) - $loanItem->balance_amount;
-        
-                    //         break;
-        
-                    //     default:
-                    //         $interest = 0.00;
-                    // }
-
-                    //$loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
 
                     $amountPaid = $item->amount;
                     $monthlyEmi = $loanItem->next_months_pay;
@@ -683,7 +612,7 @@ class LoanApplicationsController extends Controller
                     if($amountPaid >= $monthlyEmi){
         
                         $overpayemntOfEmi = $amountPaid - $monthlyEmi;
-                        $loanItem->next_months_pay = $loanItem->next_months_pay - $amountPaid;
+                        $loanItem->next_months_pay = $loanItem->next_months_pay - $overpayemntOfEmi;
                         $cashPayment = $amountPaid;
         
                     } else {
