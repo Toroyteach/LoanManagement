@@ -95,14 +95,6 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.user.fields.accountbal') }}
-                        </th>
-                        <td>
-                            ksh {{ $user->userAccount['total_amount'] ?? '' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>
                             {{ trans('cruds.user.fields.totalmonthlysavings') }}
                         </th>
                         <td>

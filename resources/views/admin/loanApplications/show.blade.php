@@ -149,7 +149,7 @@
                             Next Due Date
                         </th>
                         <td>
-                        {{ $loanApplication->next_months_pay_date }}
+                        {{ $loanApplication->next_months_pay_date ?? 'Null' }}
                         </td>
                     </tr>
                     <tr>
@@ -167,6 +167,8 @@
                                 @if(!$user->is_member)
                                     @if(in_array($loanApplication->status_id, [7, 4, 9])) 
                                         <span class="badge badge-danger">Loan Rejected</span>
+                                    @elseif($loanApplication->repaid_status)
+                                        <span class="badge badge-success">Loan Paid</span>
                                     @else
                                         <span class="badge badge-warning">Loan not yet Approved</span>
                                     @endif
@@ -204,7 +206,7 @@
                                 <span class="badge badge-danger">Not Paid</span>
                                 @endif
                             @else
-                                null
+                                Null
                             @endif
                         </td>
                     </tr>
@@ -262,47 +264,6 @@
                         </thead>
                         <tbody>
                             @foreach($logs as $log)
-                                <tr>
-                                    <td>
-                                        {{ $log['user'] }}
-                                    </td>
-                                    <td>
-                                        <ul>
-                                            @foreach($log['changes'] as $change)
-                                                <li>
-                                                    {!! $change !!}
-                                                </li>
-                                            @endforeach
-                                            @if($log['comment'])
-                                                <li>
-                                                    <b>Comment</b>: {{ $log['comment'] }}
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        {{ $log['time'] }}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endcan
-            @endif
-<br><br>
-            @if(!$user->is_member && count($userLogs))
-                @can('audit_log_show')
-                    <h3>User Logs</h3>
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Changes</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($userLogs as $log)
                                 <tr>
                                     <td>
                                         {{ $log['user'] }}

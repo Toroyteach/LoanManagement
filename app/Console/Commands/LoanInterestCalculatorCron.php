@@ -65,14 +65,21 @@ class LoanInterestCalculatorCron extends Command
 
                 $rate = config('loantypes.'.$loanItem->loan_type.'.interest');
                 $interestCalculator = number_format((float)($rate / 100), 2, '.', '');
-                $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * $loanItem->balance_amount) + $loanItem->next_months_pay;
-                $loanItem->balance_amount = $loanItem->balance_amount - $loanItem->equated_monthly_instal;
+
+                if($loanItem->next_months_pay < 0){
+
+                    $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * ($loanItem->balance_amount + $loanItem->next_months_pay));
+                    $loanItem->balance_amount = $loanItem->balance_amount - ($loanItem->equated_monthly_instal + $loanItem->next_months_pay);
+
+                } else {
+
+                    $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * $loanItem->balance_amount) + $loanItem->next_months_pay;
+                    $loanItem->balance_amount = $loanItem->balance_amount - $loanItem->equated_monthly_instal;
+                }
+                
+
                 $loanItem->next_months_pay = $expectedMonthlyPayment;
-                //$loanItem->increment('loan_amount_plus_interest', $expectedMonthlyPayment);
-
-
                 $loanItem->next_months_pay_date = $date->addMonths(1);
-
                 $loanItem->save();
 
                 $member = User::findOrFail($loanItem->created_by_id);// to be notified

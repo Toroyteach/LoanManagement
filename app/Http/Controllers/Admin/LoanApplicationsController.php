@@ -155,12 +155,12 @@ class LoanApplicationsController extends Controller
         $defaultStatus = Status::find(1);
         $user          = auth()->user();
         $logs          = AuditLogService::generateLogs($loanApplication);
-        $userLogs      = AuditLogService::generateUserLogs($loanApplication);
+        //$userLogs      = AuditLogService::generateUserLogs($loanApplication);
         $remaining     = $loanApplication->loan_amount_plus_interest - $loanApplication->repaid_amount;
         $maximumPayable = $remaining + 5000;
         $elligibleAmount = $this->getUserElligibleAmount($loanApplication->created_by->id);
 
-        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'userLogs', 'remaining', 'elligibleAmount', 'maximumPayable'));
+        return view('admin.loanApplications.show', compact('loanApplication', 'defaultStatus', 'user', 'logs', 'remaining', 'elligibleAmount', 'maximumPayable'));
     }
 
     public function destroy(LoanApplication $loanApplication)
@@ -389,13 +389,13 @@ class LoanApplicationsController extends Controller
 
         $loanItem = LoanApplication::find($request->loan_id);
 
-        if($loanItem->loan_amount <= $request->amount){ //greater than or equal loan amount
+        if($loanItem->balance_amount <= $request->amount){ //greater than or equal loan amount
 
             $newAmount = $request->amount - $loanItem->balance_amount;
 
             if($newAmount != 0){
-                $memberAccount = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail(); //CORRECT THIS
-                $memberAccount->increment('total_amount', $newAmount);
+                $memberAccount = MonthlySavings::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                $memberAccount->increment('overpayment_amount', $newAmount);
             }
 
             $loanItem->last_month_amount_paid = $request->amount;
@@ -404,7 +404,6 @@ class LoanApplicationsController extends Controller
             $loanItem->status_id = 10;
             $loanItem->repaid_status = 1;
             $loanItem->next_months_pay_date = null;
-            $loanItem->loan_amount_plus_interest = $loanItem->loan_amount_plus_interest + $loanItem->loan_amount;
             $loanItem->increment('repaid_amount', $request->amount);
             $loanItem->decrement('balance_amount', $request->amount);
 
@@ -426,7 +425,6 @@ class LoanApplicationsController extends Controller
         
             if($amountPaid >= $monthlyEmi){ // has paid more than then expected monthly amount
 
-                //$overpayemntOfEmi = $amountPaid - $monthlyEmi;
                 $loanItem->next_months_pay = $loanItem->next_months_pay - $amountPaid;
                 $cashPayment = $amountPaid;
 
@@ -458,7 +456,7 @@ class LoanApplicationsController extends Controller
         }
     }
 
-    public function createPdf($id) //downloads the memeber loan files
+    public function createPdf($id) //downloads the memeber loan files he used to apply the loan
     {
           $loan = LoanFile::findOrFail($id);
 
@@ -586,12 +584,10 @@ class LoanApplicationsController extends Controller
         
                     if($newAmount != 0){
 
-                        $userData = UsersAccount::where('user_id', $loanItem->created_by_id)->firstOrFail(); //CORRECT THIS TOz
-                        $userData->increment('total_amount', $newAmount);
+                        $userData = MonthlySavings::where('user_id', $loanItem->created_by_id)->firstOrFail();
+                        $userData->increment('overpayment_amount', $newAmount);
 
                     }
-                    
-                    //$loanItemUpdate = LoanApplication::where('loan_entry_number', $item->entry_number)->get();
 
                     $loanItem->last_month_amount_paid = $item->amount;
                     $loanItem->next_months_pay = 0.00;
@@ -605,20 +601,20 @@ class LoanApplicationsController extends Controller
                     
            
                 } else { //less than loan amount
+        
 
                     $amountPaid = $item->amount;
                     $monthlyEmi = $loanItem->next_months_pay;
                 
                     if($amountPaid >= $monthlyEmi){
         
-                        $overpayemntOfEmi = $amountPaid - $monthlyEmi;
-                        $loanItem->next_months_pay = $loanItem->next_months_pay - $overpayemntOfEmi;
+                        $loanItem->next_months_pay = $loanItem->next_months_pay - $amountPaid;
                         $cashPayment = $amountPaid;
         
                     } else {
-        
+
                         $underpayemntOfEmi = $monthlyEmi - $amountPaid;
-                        $nextAmount = $loanItem->next_months_pay + $underpayemntOfEmi;
+                        $nextAmount = $loanItem->next_months_pay - $amountPaid;
                         $loanItem->next_months_pay =  $nextAmount;
                         $cashPayment = $amountPaid;
                     }

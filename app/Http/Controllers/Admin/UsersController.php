@@ -227,7 +227,7 @@ class UsersController extends Controller
         abort_if(Gate::denies('user_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $user->load('roles');
-        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->first();
+        $currentLoanAmount = LoanApplication::where('created_by_id', $user->id)->where('repaid_status', 0)->where('status_id', 8)->first();
         $userAccount = UsersAccount::where('user_id', $user->id)->first();
         $loanApplications = LoanApplication::with('status', 'accountant', 'creditCommittee')->where('created_by_id', $user->id)->get();
         $kins = NextKin::where('user_id', $user->id)->get();
@@ -287,7 +287,26 @@ class UsersController extends Controller
     public function createPdf($id) //prepares pdf files for donwloading monthly contribution and loan statements
     {
 
-        $user = \Auth::user();
+        //$loanApplication = LoanApplication::where('loan_entry_number', 393964)->with('logs')->first();
+        $userLogs = AuditLogService::generateLoanStatementLogs();
+
+        //dd($userLogs);
+
+        $user = User::find(\Auth::user()->id);
+
+        $pdfDetails = [
+            'saccoName' => env('APP_NAME'),
+            'saccoAddress' => 'P.O BOX 303456-00100',
+            'saccoEmail' => 'Mtangazajisacco@gmail.com',
+            'saccoTel' => '0726616120',
+            'memberName' => $user->name,
+            'memberPhone' => $user->number,
+            'memberIdno' => $user->nationalid,
+            'memberEmail' => $user->email,
+            'memberNo' => $user->idno,
+            'saccoUrl' => env('APP_URL'),
+            'printedOn' => Carbon::now()->toFormattedDateString()
+        ];
 
         if($id == 'monthly'){
 
@@ -299,8 +318,15 @@ class UsersController extends Controller
             // download PDF file with download method
             if(!empty($monthlystatement)){
     
-                //view()->share('employee',$data);
-                $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
+                $userLogs = AuditLogService::generateMonthlyStatementLogs();
+
+                if(count($userLogs) < 1){
+                    
+                    return back()->with('error', 'No values to prepare Statement of Account');
+                    
+                }
+
+                $pdf = PDF::loadView('admin.pdf.monthlypdf', compact('userLogs', 'pdfDetails'));//,compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
     
                 return $pdf->stream($id.'_statement.pdf');
             }
@@ -312,13 +338,12 @@ class UsersController extends Controller
             $type = 'loan';
 
             $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
-            $monthlystatement = null;
       
             // download PDF file with download method
             if(count($loanstatements) >= 1 ){
     
-                //view()->share('employee',$data);
-                $pdf = PDF::loadView('admin.pdf.pdf_view',compact('type', 'user', 'loanstatements', 'monthlystatement'))->setPaper('a4', 'landscape');
+                $userLogs = AuditLogService::generateLoanStatementLogs();
+                $pdf = PDF::loadView('admin.pdf.loanpdf',compact('userLogs', 'pdfDetails'));
     
                 return $pdf->stream($id.'_statement.pdf');
             }

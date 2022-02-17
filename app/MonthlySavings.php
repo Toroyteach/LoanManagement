@@ -9,7 +9,7 @@ use App\Traits\Auditable;
 class MonthlySavings extends Model
 {
     //
-    use SoftDeletes;
+    use SoftDeletes, Auditable;
 
     public $table = 'monthly_savings';
 
@@ -26,6 +26,10 @@ class MonthlySavings extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
 
+    public function logs()
+    {
+        return $this->morphMany(AuditLog::class, 'subject');
     }
 }
