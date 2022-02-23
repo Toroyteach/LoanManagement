@@ -43,9 +43,6 @@
                                 Approved By
                             </th>
                         @endif
-                        <th>
-                            &nbsp;
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,7 +52,7 @@
 
                             </td>
                             <td>
-                            {{ $key++ }}
+                                {{ $key++ }}
                             </td>
                             <td>
                                 {{ $loanApplication->loan_entry_number ?? '' }}

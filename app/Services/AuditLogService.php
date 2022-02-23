@@ -122,7 +122,7 @@ class AuditLogService
     {
 
         $changesTop   = [];
-        $memberLoans  = LoanApplication::where('created_by_id', \Auth::user()->id)->with('logs')->get();
+        $memberLoans  = LoanApplication::where('created_by_id', \Auth::user()->id)->with('statements')->get();
         $statuses     = Status::pluck('name', 'id');
         $users        = User::pluck('name', 'id');
 
@@ -136,21 +136,38 @@ class AuditLogService
                     'loan_end_date' => ($log->status_id ?? 10) ? $log->repayment_date : 'NUll',
                     'loan_amount'    => strval($log->loan_amount),
                     'loan_balance' => null,
-                    'loan_debit_total' => 0,
-                    'loan_credit_total' => 0,
+                    'loan_debit_total' => null,
+                    'loan_credit_total' => null,
                     'loan_type' => $log->loan_type
                 ];
 
-                $totalBalance = $log->loan_amount_plus_interest;
-        
-                foreach ($log->logs as $loanLog) {  
-                    $current = json_decode($loanLog->properties, true);
-                    unset($current['status'], $current['id'], $current['user']);
-                    
-                    if (isset($previous)) {
-                        
-                        $differences   = array_diff_assoc($current, $previous);
+                $totalBalance = $log->loan_amount;
+                $totalDebit = 0;
+                $totalCredit = 0;
 
+                foreach($log->statements as $key => $loanLog) {  
+                    $current = json_decode($loanLog->properties, true);
+                    
+                    if($key == 0){
+
+                        $time = now();
+                        $value['postingDate'] = Carbon::parse($loanLog->created_at)->toFormattedDateString();
+                        $value['description'] = substr(date("F", strtotime('m')), 0, 3).' - Loan';
+                        $value['debitAmount'] = strval(number_format((float)($totalBalance), 2, '.', ''));
+                        $value['creditAmount'] = '0.00';
+                        $value['balance'] = strval(number_format((float)($totalBalance), 2, '.', ''));
+
+                        $LoanValue['changes'][] = $value;
+                        $totalDebit = $totalBalance;
+                        $LoanValue['loan_debit_total'] = $totalDebit;
+                        $LoanValue['loan_balance'] = $totalBalance;
+
+                    }
+
+                    if (isset($previous)) {
+
+                        $differences   = array_diff_assoc($current, $previous);
+                        
                         foreach ($differences as $key => $difference) {
                             //fill in the values in the above with new data to show
                             $previousValue = $previous[$key] ?? null;
@@ -160,24 +177,51 @@ class AuditLogService
                                 continue;
                             }
 
-                            if ($key == 'repaid_amount') {
 
-                                $inputValue = ($currentValue - $previousValue);
-                                $totalBalance -= $inputValue;
+                            if ($key == 'next_months_pay' && $loanLog->description == 'Console') {
+
+                                //debit amount
+                                $inputValue = $currentValue;
+                                $totalBalance += $inputValue;
+                                var_dump('<br>'.$totalDebit);
+                                $totalDebit += $inputValue;
 
                                 $time = now();
                                 $value['postingDate'] = Carbon::parse($log->updated_at)->toFormattedDateString();
-                                $value['debitAmount'] = $inputValue;
-                                $value['description'] = substr(date("F", strtotime('m')), 0, 3).' - Interest';
-                                $value['creditAmount'] = strval($inputValue);
-                                $value['balance'] = strval($totalBalance);
+                                $value['description'] = substr(date("F", strtotime('m')), 0, 3).' - Interest Due';
+                                $value['debitAmount'] = strval(number_format((float)($inputValue), 2, '.', ''));
+                                $value['creditAmount'] = '0.00';
+                                $value['balance'] = strval(number_format((float)($totalBalance), 2, '.', ''));
 
 
                             }
 
+                            if ($key == 'repaid_amount') {
+
+                                //credit amount
+                                $inputValue = $currentValue - $previousValue;
+                                $totalBalance -= $inputValue;
+                                $totalCredit += $inputValue;
+
+                                $time = now();
+                                $value['postingDate'] = Carbon::parse($log->updated_at)->toFormattedDateString();
+                                $value['description'] = substr(date("F", strtotime('m')), 0, 3).' - Repayment';
+                                $value['debitAmount'] = '0.00';
+                                $value['creditAmount'] = strval(number_format((float)($inputValue), 2, '.', ''));
+                                $value['balance'] = strval(number_format((float)($totalBalance), 2, '.', ''));
+
+
+                            }
+
+
                         }
-        
+                        
+                        var_dump('<br>'.$totalDebit);
+                        
                         $LoanValue['changes'][] = $value;
+                        $LoanValue['loan_debit_total'] = number_format((float)($totalDebit), 2, '.', '');
+                        $LoanValue['loan_credit_total'] = number_format((float)($totalCredit), 2, '.', '');
+                        
 
                         if($totalBalance <= 0){
 
@@ -185,39 +229,15 @@ class AuditLogService
         
                         } else {
         
-                            $LoanValue['loan_balance'] = $totalBalance;
+                            $LoanValue['loan_balance'] = number_format((float)($totalBalance), 2, '.', '');
                             
                         }
-                        
                     }
         
                     $previous = $current;
                 }
 
             $changesTop[] = $LoanValue;
-
-        }
-
-        unset($changesTop[0]['changes'][0]);
-        unset($changesTop[0]['changes'][1]);
-        unset($changesTop[0]['changes'][2]);
-        unset($changesTop[0]['changes'][3]);
-        unset($changesTop[0]['changes'][4]);
-        unset($changesTop[0]['changes'][5]);
-
-        foreach($changesTop as $key => $change){
-
-            
-            foreach($change['changes'] as $key2 => $newChange){
-
-                if($key2 %2 == 0){
-
-                    continue;
-
-                }
-
-                unset($changesTop[$key]['changes'][$key2]);
-            }
 
         }
 
@@ -264,8 +284,6 @@ class AuditLogService
                         
                         $inputValue = ($currentValue - $previousValue);
                         $totalBalance +=  $inputValue;
-
-                        //print_r($key.'<br>');
 
                         $time = now();
                         $value['postingDate'] = Carbon::parse($log->updated_at)->toFormattedDateString();

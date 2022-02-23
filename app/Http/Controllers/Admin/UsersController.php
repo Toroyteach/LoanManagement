@@ -337,7 +337,7 @@ class UsersController extends Controller
 
             $type = 'loan';
 
-            $loanstatements = LoanApplication::where('created_by_id', $user->id)->with('status')->get();
+            $loanstatements = LoanApplication::where('created_by_id', $user->id)->whereIn('status_id', [8, 10])->with('status')->get();
       
             // download PDF file with download method
             if(count($loanstatements) >= 1 ){

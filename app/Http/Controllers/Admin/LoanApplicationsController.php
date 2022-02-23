@@ -474,7 +474,7 @@ class LoanApplicationsController extends Controller
         $outStandingLoan = LoanApplication::where('repaid_status', 0)->where('created_by_id', $id)->sum('balance_amount');
         $eligibleAmount = $totalMonthlyContribution - $outStandingLoan;
         
-        return $eligibleAmount.'.00';
+        return number_format((float)($eligibleAmount), 2, '.', '');;
 
     }
 

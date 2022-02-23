@@ -29,7 +29,7 @@ div.cls_003{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight
     <div style="position:absolute;left:87.48px;top:102.46px" class="cls_003"><span class="cls_003">A0201526700</span></div> -->
     <div style="position:absolute;left:17.78px;top:115.92px" class="cls_002"><span class="cls_002">Member No.:</span></div>
     <div style="position:absolute;left:87.48px;top:115.92px" class="cls_003"><span class="cls_003">{{ $pdfDetails['memberPhone'] }}</span></div>
-    <div style="position:absolute;left:17.78px;top:128.95px" class="cls_002"><span class="cls_002">Member Name:</span><span class="cls_003"> {{ $pdfDetails['memberName'] }}</span></div>
+    <div style="position:absolute;left:17.78px;top:128.95px" class="cls_002"><span class="cls_002">Member Name:</span><span class=""> {{ $pdfDetails['memberName'] }}</span></div>
     <div style="position:absolute;left:17.78px;top:142.42px" class="cls_002"><span class="cls_002">ID Number:</span></div>
     <div style="position:absolute;left:87.48px;top:142.42px" class="cls_003"><span class="cls_003">{{ $pdfDetails['memberIdno'] }}</span></div>
     <div style="position:absolute;left:359.28px;top:142.42px" class="cls_002"><span class="cls_002">E-Mail:</span></div>

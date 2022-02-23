@@ -21,9 +21,17 @@
                         <div class="col-8">
                             <h2 class="d-flex align-items-center mb-0">
                                 @if( $user == 'Admin' )
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh.{{ number_format(($savings ?? '0.00'), 2) }}</h2>
+                                    @if($savings <= 0)
+                                        <h2 class="d-flex align-items-center mb-0" id="amount">ksh. 0.00 </h2>
+                                    @else
+                                        <h2 class="d-flex align-items-center mb-0" id="amount">ksh.{{ number_format(($savings ?? '0.00'), 2) }}</h2>
+                                    @endif
                                 @else
-                                    <h2 class="d-flex align-items-center mb-0" id="amount">ksh.{{ number_format(($savings['monthly_amount'] ?? '0.00'), 2) }}</h2>
+                                    @if($savings['monthly_amount'] <= 0)
+                                        <h2 class="d-flex align-items-center mb-0" id="amount">ksh. 0.00 </h2>
+                                    @else
+                                        <h2 class="d-flex align-items-center mb-0" id="amount">ksh.{{ number_format(($savings['monthly_amount'] ?? '0.00'), 2) }}</h2>
+                                    @endif
                                 @endif
                             </h2>
                         </div>

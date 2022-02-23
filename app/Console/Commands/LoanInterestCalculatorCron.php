@@ -65,17 +65,9 @@ class LoanInterestCalculatorCron extends Command
 
                 $rate = config('loantypes.'.$loanItem->loan_type.'.interest');
                 $interestCalculator = number_format((float)($rate / 100), 2, '.', '');
-
-                if($loanItem->next_months_pay < 0){
-
-                    $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * ($loanItem->balance_amount + $loanItem->next_months_pay));
-                    $loanItem->balance_amount = $loanItem->balance_amount - ($loanItem->equated_monthly_instal + $loanItem->next_months_pay);
-
-                } else {
-
-                    $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * $loanItem->balance_amount) + $loanItem->next_months_pay;
-                    $loanItem->balance_amount = $loanItem->balance_amount - $loanItem->equated_monthly_instal;
-                }
+                
+                $expectedMonthlyPayment = $loanItem->equated_monthly_instal + ($interestCalculator * $loanItem->balance_amount) + $loanItem->next_months_pay;
+                $loanItem->balance_amount = $loanItem->balance_amount - ($loanItem->equated_monthly_instal + $loanItem->next_months_pay);
                 
 
                 $loanItem->next_months_pay = $expectedMonthlyPayment;

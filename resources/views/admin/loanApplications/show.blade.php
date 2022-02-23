@@ -71,7 +71,11 @@
                                 Member Elligible Amount
                             </th>
                             <td>
+                            @if($elligibleAmount <= 0)
+                                ksh 0.00
+                            @else
                                 ksh {{ $elligibleAmount }}
+                            @endif
                             </td>
                         @endif
                         </tr>
@@ -141,7 +145,11 @@
                             NextInstalment
                         </th>
                         <td>
-                            ksh {{ $loanApplication->next_months_pay }}
+                            @if($loanApplication->next_months_pay <= 0)
+                                ksh 0.00
+                            @else
+                                ksh {{ $loanApplication->next_months_pay }}
+                            @endif
                         </td>
                     </tr>
                     <tr>

@@ -4,6 +4,7 @@ namespace App;
 
 use App\Observers\LoanApplicationObserver;
 use App\Traits\Auditable;
+use App\Traits\Statementable;
 use App\Traits\MultiTenantModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use \DateTimeInterface;
 
 class LoanApplication extends Model
 {
-    use SoftDeletes, MultiTenantModelTrait, Auditable;
+    use SoftDeletes, MultiTenantModelTrait, Auditable, Statementable;
 
     public $table = 'loan_applications';
 
@@ -89,6 +90,11 @@ class LoanApplication extends Model
     public function logs()
     {
         return $this->morphMany(AuditLog::class, 'subject');
+    }
+
+    public function statements()
+    {
+        return $this->morphMany(StatementLog::class, 'subject');
     }
 
     public function files()
