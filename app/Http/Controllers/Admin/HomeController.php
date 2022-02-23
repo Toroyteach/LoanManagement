@@ -55,7 +55,6 @@ class HomeController extends Controller
             $totalMonthlyContributionB = MonthlySavings::select(['total_contributed', 'overpayment_amount'])->sum('total_contributed');
 
             $savings = ($totalMonthlyContributionA + $totalMonthlyContributionB) - $loan_pending;
-            \Log::info(" Db updated User". $savings);
             $amount_paid = $totalMonthlyContributionA + $totalMonthlyContributionB;
 
             $user = 'Admin';
