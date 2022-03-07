@@ -165,7 +165,7 @@ class HomeController extends Controller
         $usersLoan = User::join('loan_applications', 'loan_applications.created_by_id', '=', 'users.id')
         ->selectRaw('users.id, users.name, sum(loan_amount_plus_interest), loan_applications.status_id')
         ->groupBy('users.id', 'users.name', 'loan_applications.status_id')
-        ->where('loan_applications.status_id', 8)
+        ->whereIn('loan_applications.status_id', [8, 10])
         ->orderByDesc('sum(loan_amount_plus_interest)')
         ->limit(10)
         ->get(['users.id', 'users.name', 'loan_applications.loan_amount_plus_interest']);
@@ -197,15 +197,10 @@ class HomeController extends Controller
 
         if($gurantorRequest->isDirty('request_status')){
 
-            auth()->user()
-            ->unreadNotifications
-            ->when($request->input('id'), function ($query) use ($request) {
-                
-                return $query->where('id', $request->input('id'));
+            $notice = auth()->user()->unreadNotifications()->where('id', $request->requestid)->first();
+            $notice->markAsRead();
 
-            })->markAsRead();
-
-             $gurantorRequest->save();
+            $gurantorRequest->save();
 
         }
 
@@ -267,7 +262,8 @@ class HomeController extends Controller
             'next_months_pay_date' => Carbon::now()->addMonths(1),
             'balance_amount' => $loanDetails->total_plus_interest,
             'loan_amount_plus_interest' => $loanDetails->total_plus_interest,
-            'created_by_id' => $loanDetails->user->id
+            'created_by_id' => $loanDetails->user->id,
+            'accumulated_amount' => $loanDetails->loan_amount - $loanDetails->emi
         ]);
 
         $gurantors = CreateGuarantorLoanRequest::where('request_id', $requestId)->get();

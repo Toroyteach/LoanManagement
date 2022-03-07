@@ -179,7 +179,8 @@ class MonthlyContributionCron extends Command
                     'next_months_pay_date' => Carbon::now()->addMonths(1),
                     'balance_amount' => $loanDetails->total_plus_interest,
                     'loan_amount_plus_interest' => $loanDetails->total_plus_interest,
-                    'created_by_id' => $loanDetails->user->id
+                    'created_by_id' => $loanDetails->user->id,
+                    'accumulated_amount' => $loanDetails->loan_amount - $loanDetails->emi
                 ]);
 
                 $gurantors = CreateGuarantorLoanRequest::where('request_id', $loanItem->id)->get();

@@ -136,7 +136,7 @@
 
                             <div class="row ic1">
                                 <div class=" col-md-6 col-sm-6 col-xs-12 input-container inputAmount" id="amount">
-                                    <input type="number" wire:model="amount" name="amount" class="input" placeholder=" " id="amount" required>
+                                    <input type="number" wire:model="amount" wire:change="updateDuration" name="amount" class="input" placeholder=" " id="amount" required>
                                     <div class="cut"></div>
                                     <label for="amount" class="placeholder">Amount</label>
                                     @error('amount') <span class="text-danger">{{ $message }}</span> @enderror

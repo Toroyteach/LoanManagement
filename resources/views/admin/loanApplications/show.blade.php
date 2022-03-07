@@ -142,7 +142,7 @@
                     </tr>
                     <tr>
                         <th>
-                            NextInstalment
+                            Next Instalment
                         </th>
                         <td>
                             @if($loanApplication->next_months_pay <= 0)
@@ -238,6 +238,14 @@
                             @endforelse
                         </td>
                     </tr>
+                    <tr>
+                            <th>
+                                Applicant Name
+                            </th>
+                            <td>
+                                {{ $loanApplication->created_by->name  }}
+                            </td>
+                    </tr>
                     @if(!$user->is_member)
                         <tr>
                             <th>
@@ -323,7 +331,7 @@
 
                             @elseif(($user->is_creditcommittee && $loanApplication->status_id == 3) || ($user->is_creditcommittee && $loanApplication->status_id == 5))
                                         <!-- status 3 and 5 are more less the same  -->
-                                <a class="btn btn-xs btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
+                                <a class="btn btn-md btn-success" href="{{ route('admin.loan-applications.showAnalyze', $loanApplication->id) }}">
                                     Submit analysis
                                     <!-- here the credit committee sets the loan to status 6(approved) or 7(rejected) from 5(processing)-->
                                     <!-- then it is sent back to the accountant -->
@@ -337,13 +345,13 @@
                             <input type="hidden" name="loan_amount" id="loan_amount" value="{{ $loanApplication->loan_amount }}" required>
                             <input type="hidden" name="status_id" id="status_id" value="8" required>
 
-                            <button class="btn btn-lg btn-success" type="submit"> Finalize Application</button>
+                            <button class="btn btn-md btn-success" type="submit"> Finalize Application</button>
                     </form>
                 @endif
 
                 @if((Gate::allows('loan_application_edit') and ($user->is_admin or $user->is_accountant)) && $loanApplication->status_id == 2)
 
-                     <button class="btn btn-lg btn-warning" onclick="makePartialRejection()"> Reject Loan Amount</button>
+                     <button class="btn btn-md btn-warning" onclick="makePartialRejection()"> Reject Loan Amount</button>
 
                 @endif
 
@@ -354,11 +362,6 @@
                         <input type="submit" class="btn btn-md btn-danger" value="{{ trans('global.delete') }}">
                     </form>
                 @endcan
-            </div>
-            <div class="form-group">
-                <a class="btn btn-md btn-info" href="{{ route('admin.loan-applications.index') }}">
-                    {{ trans('global.back_to_list') }}
-                </a>
             </div>
             @if($loanApplication->status_id == 8)
                 @can('loan_application_repay')
@@ -392,21 +395,22 @@
             title: "Loan Repayment Request",
             icon: 'warning',
             text: "Are you sure you want to make repayment for this loan application? Please confirm then move forward",
-            input: 'range',
-            inputAttributes: {
-                min: 1000,
-                max: maxAmount,
-                step: 500,
+            html:
+                    '<label for="swal-input2"> Select Amount </label> <br>'+
+                    '<input id="swal-input2" class="swal-input1" type="number" min="500" max="{{ $elligibleAmount }}" value="500">',
+            focusConfirm: true,
+            preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input2').value
+                    ]
             },
-            inputValue: "{{ $loanApplication->loan_amount ?? '' }}",
-            inputLabel: "Amount",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",
             reverseButtons: !0
             }).then(function (e) {
 
-                const value = document.getElementById("swal2-input").value; 
+                const value = document.getElementById("swal-input2").value; 
 
                 if (e.isConfirmed) {
 
@@ -539,21 +543,23 @@
             title: "Update Loan Application",
             icon: 'warning',
             text: "You are required to update your loan application",
-            input: 'range',
-            inputAttributes: {
-                min: 1000,
-                max: maxAmount,
-                step: 500,
+            html:
+                    '<label for="swal-input2"> Select Amount </label> <br>'+
+                    '<input id="swal-input2" class="swal-input1" type="number" min="1000" max="{{ $loanApplication->max_loan_amount }}" value="0" step="500">',
+            focusConfirm: true,
+            preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input2').value
+                    ]
             },
             allowOutsideClick: false,
-            inputValue: maxAmount,
             inputLabel: "Amount",
             confirmButtonText: "Yes, Submit",
             allowOutsideClick: false,
             reverseButtons: !0
             }).then(function (e) {
 
-                const value = document.getElementById("swal2-input").value; 
+                const value = document.getElementById("swal-input2").value; 
 
                 if (e.isConfirmed) {
 
@@ -582,6 +588,10 @@
 
                                 fullScreenLoader.style.display = "none";
                                 swal.fire("Error!", results.message, "error");
+
+                                setTimeout(function(){
+                                    location.reload();
+                                },2000);
 
                             }
                         }

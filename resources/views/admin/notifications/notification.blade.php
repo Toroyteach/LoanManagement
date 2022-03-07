@@ -15,7 +15,7 @@
                                             <strong class="">New Loan Application</strong>
                                             @endif
                                             <div>
-                                                <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}"><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                             </div>
                                         </div>
                                         
@@ -29,12 +29,12 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                        @endif
                                         </div>
 
                                     </div>
 
-                              @elseif($notice->data['notification_type'] == 'StatusAnalysis')
+        @elseif($notice->data['notification_type'] == 'StatusAnalysis')
                                   <!-- status analysis internal -->
 
                                     <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
@@ -43,7 +43,7 @@
                                             <div class="container">
                                                 <strong class="">New Loan Application Status</strong>
                                                 <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                    <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}"><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                                 </div>
                                             </div>
                                             
@@ -58,12 +58,12 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
 
-                              @elseif($notice->data['notification_type'] == 'LoanAnalysis')
+        @elseif($notice->data['notification_type'] == 'LoanAnalysis')
                                   <!-- loanAnalysis notice -->
 
                                     <div class="container_fluid bg-secondary" style="padding:1em; max-width: 80%;">
@@ -72,7 +72,7 @@
                                             <div class="container">
                                                 <strong class="">New Loan Analysis Report</strong>
                                                 <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                    <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}"><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                                 </div>
                                             </div>
                                             
@@ -86,13 +86,13 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
                                 
 
-                              @elseif($notice->data['notification_type'] == 'CompleteLoanApplication')
+        @elseif($notice->data['notification_type'] == 'CompleteLoanApplication')
                                   <!-- StatusAnalyis user (approved or rejected) -->
 
 
@@ -102,7 +102,7 @@
                                             <div class="container">
                                                 <strong class="">Loan Application Status </strong>
                                                 <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                    <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}"><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                                 </div>
                                             </div>
                                             
@@ -116,13 +116,13 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
                     
 
-                              @elseif($notice->data['notification_type'] == 'MonthlyContribution')
+        @elseif($notice->data['notification_type'] == 'MonthlyContribution')
 
                                   <!-- Monthly payment Analysis -->
 
@@ -132,7 +132,7 @@
                                             <div class="container">
                                                 <strong class="">Monthly Contribution</strong>
                                                 <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                    <a href=""><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                                 </div>
                                             </div>
                                             
@@ -146,12 +146,12 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
 
-                                    @elseif($notice->data['notification_type'] == 'GuarantorRequest')
+        @elseif($notice->data['notification_type'] == 'GuarantorRequest')
 
                                   <!-- Monthly payment Analysis -->
 
@@ -170,6 +170,7 @@
                                                     <div class="col-md-5">
                                                         <input type="hidden" value="{{ $notice->data['member_id'] ?? '' }}" id="loanrequestid">
                                                         <input type="hidden" value="{{ $notice->data['loan_request_id'] ?? '' }}" id="loanitemrequestid">
+                                                        <input type="hidden" value="{{ $notice->id ?? '' }}" id="noticerequestid">
                                                         <div>
                                                             <button class="btn btn-sm btn-warning " onclick="submitResponse('Rejected')">Reject</button>
                                                         </div>
@@ -198,7 +199,7 @@
                                     </div>
 
                                   
-                              @elseif($notice->data['notification_type'] == 'FailedLoanRequest')
+        @elseif($notice->data['notification_type'] == 'FailedLoanRequest')
 
                                   <!-- Monthly payment Analysis -->
 
@@ -208,7 +209,7 @@
                                             <div class="container">
                                                 <strong class="">Rejected Loan Request</strong>
                                                 <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                    <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}"><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                                 </div>
                                             </div>
                                             
@@ -222,13 +223,13 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
 
 
-                              @elseif($notice->data['notification_type'] == 'RepaymentLoanRepayment')
+        @elseif($notice->data['notification_type'] == 'RepaymentLoanRepayment')
 
                                   <!-- Monthly payment Analysis -->
 
@@ -252,13 +253,13 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
 
 
-                              @elseif($notice->data['notification_type'] == 'UpdateLoanRequestAmount')
+        @elseif($notice->data['notification_type'] == 'UpdateLoanRequestAmount')
 
                                   <!-- Monthly payment Analysis -->
 
@@ -268,7 +269,7 @@
                                             <div class="container">
                                                 <strong class="">Update Loan Request Amount</strong>
                                                 <div>
-                                                    <p class="">{{ $notice->data['message_desc'] }}</p>
+                                                    <a href="{{ route('admin.loan-applications.show', $notice->data['loan_id']) }}"><p class="">{{ $notice->data['message_desc'] }}</p></a>
                                                 </div>
                                             </div>
                                             
@@ -282,7 +283,7 @@
                                                         Mark as read
                                                     </a>
                                                 </div>
-                                                @endif
+                                            @endif
                                         </div>
 
                                     </div>
@@ -366,7 +367,7 @@
         let choiceMade = choice;
         let loanid = document.getElementById('loanrequestid').value
         let loanitemrequestid = document.getElementById('loanitemrequestid').value
-        let noticeid = "{{ $notice->id ?? '' }}";
+        let noticeid = document.getElementById('noticerequestid').value //"{{ $notice->id ?? '' }}"; //change this one to the current selected id of the notification
         let _token = $('meta[name="csrf-token"]').attr('content');
         let fullScreenLoader = document.getElementById("fullLoader");
 

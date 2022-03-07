@@ -141,6 +141,7 @@ class Request extends Component
             $this->accounts = User::select(['name', 'id'])->where('name', 'like', '%' . $this->query. '%')
                 ->where('id', '!=', auth()->user()->id)
                 ->WhereNotIn('id', $noUsers)
+                ->where('status', '=', 1)
                 ->take(5)
                 ->get()
                 ->toArray();
@@ -237,6 +238,7 @@ class Request extends Component
     public function firstStepSubmit()
     {
 
+        
         $validatedData = $this->validate([
             'amount' => 'required|numeric|min:1000|max:'.$this->elligibleamount,
             'description' => 'required',
@@ -244,6 +246,9 @@ class Request extends Component
             'duration' => 'required|numeric',
         ]);
 
+        $totalInterestCalculated = $this->totalplusinterest;
+        $totalEmiCalculated = $this->equatedMonthlyInstallments;
+        
             //check if user had already created an application
         if($this->checkRequestStatus()){
 
@@ -274,17 +279,19 @@ class Request extends Component
             //update possible new values
             if ($this->loan_request_id) {
 
+
                 $request = CreateLoanRequest::find($this->loan_request_id);
 
                 $request->loan_amount = $validatedData['amount'];
                 $request->description = $validatedData['description'];
                 $request->duration    = $validatedData['duration'];
                 $request->loan_type   = $validatedData['loan_type'];
-                $request->emi = $this->equatedMonthlyInstallments;
-                $request->total_plus_interest = $this->totalplusinterest;
+                $request->emi = $totalEmiCalculated;
+                $request->total_plus_interest = $totalInterestCalculated;
 
 
                 if($request->isDirty('description') || $request->isDirty('loan_type') || $request->isDirty('loan_amount') || $request->isDirty('emi')){
+
 
                     $request->save();
 
@@ -708,8 +715,11 @@ class Request extends Component
 
     public function updateDuration()
     {   
-        //dd($this->loan_type);
         //get the changed loan type and calculate interest etc and update duration
+
+        if($this->loan_type == null){
+            return;
+        }
 
         switch ($this->loan_type) {
             case "Emergency":
@@ -769,7 +779,6 @@ class Request extends Component
 
      public function totalWithInterest($type)
      {
-
          
          $loan_types_config = config('loantypes.'.$type);
          //dd(config('loantypes.'.$type));

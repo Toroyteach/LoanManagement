@@ -141,7 +141,7 @@
                                     @endif    
                                 @endif
 
-                                @can('loan_application_show')<br>
+                                @can('loan_application_show')
                                     <a class="btn btn-xs btn-primary" href="{{ route('admin.loan-applications.show', $loanApplication->id) }}">
                                         {{ trans('global.view') }}
                                     </a>

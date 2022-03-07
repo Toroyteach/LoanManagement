@@ -156,7 +156,7 @@ class LoanApplicationsController extends Controller
         $user          = auth()->user();
         $logs          = AuditLogService::generateLogs($loanApplication);
         //$userLogs      = AuditLogService::generateUserLogs($loanApplication);
-        $remaining     = $loanApplication->loan_amount_plus_interest - $loanApplication->repaid_amount;
+        $remaining     = $loanApplication->balance_amount;
         $maximumPayable = $remaining + 5000;
         $elligibleAmount = $this->getUserElligibleAmount($loanApplication->created_by->id);
 
@@ -755,8 +755,14 @@ class LoanApplicationsController extends Controller
 
             return response()->json(array('response' => false, 'message' => 'Values cannot be empty '), 200);
         }
+
         
         $loanItem = LoanApplication::find($request->loan_id);
+
+        if($request->amount > $loanItem->max_loan_amount){
+
+            return response()->json(array('response' => false, 'message' => 'Please select a lower value'), 200);
+        }
 
         $this->updateLoanDetailsAfterPartialRejection($request->loan_id, $request->amount);
 

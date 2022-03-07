@@ -15,7 +15,7 @@ div.cls_006{font-family:Arial,serif;font-size:10.0px;color:rgb(0,0,0);font-weigh
 </style>
 </head>
 <body>
-<div style="position:absolute; left:50%; margin-left:-297px; top:0px; width:595px; height:100%; border-style:outset; overflow:hidden;">
+<div style="position:absolute; left:50%; margin-left:-297px; top:0px; width:595px; height:100%; border-style:outset; overflow:hidden;page-break-after: initial;">
 
     <div style="position:absolute;left:65px;top:5px;">
         <img src="{{ storage_path('app/logo/mtangazaji.png') }}" width="40" height="40">
@@ -52,13 +52,17 @@ div.cls_006{font-family:Arial,serif;font-size:10.0px;color:rgb(0,0,0);font-weigh
             <div style="position:relative;left:285px;top:112px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_start_date'] }}</span></div>
             <div style="position:relative;left:376px;top:104px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_duration'] }} Months</span></div>
             <div style="position:relative;left:493px;top:95px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_end_date'] }}</span></div>
-
-            <div style="position:relative;left:56px;top:114px" class="cls_002"><span class="cls_002">Loan Type</span></div>
-            <div style="position:relative;left:149px;top:106px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_type'] }}</span></div>
+            
+            <div style="position:relative;left:56px;top:114px" class="cls_002"><span class="cls_002">Loan Amount Plus Interest</span></div>
+            <div style="position:relative;left:155px;top:106px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_amount_plus_interest'] }}</span></div>
+            
+            <div style="position:relative;left:56px;top:124px" class="cls_002"><span class="cls_002">Loan Type</span></div>
+            <div style="position:relative;left:149px;top:116px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_type'] }}</span></div>
 
 
             <div style="position:relative;left:56px;top:140px" class="cls_002"><span class="cls_002">Posting Date</span></div>
             <div style="position:relative;left:170px;top:130px" class="cls_002"><span class="cls_002">Description</span></div>
+            <div style="position:relative;left:250px;top:130px" class="cls_002"><span class="cls_002">Expected M-P</span></div>
             <div style="position:relative;left:339px;top:120px" class="cls_002"><span class="cls_002">Debit Amount</span></div>
             <div style="position:relative;left:417px;top:110px" class="cls_002"><span class="cls_002">Credit Amount</span></div>
             <div style="position:relative;left:520px;top:100px" class="cls_002"><span class="cls_002">Balance</span></div>
@@ -68,6 +72,7 @@ div.cls_006{font-family:Arial,serif;font-size:10.0px;color:rgb(0,0,0);font-weigh
             @foreach($loanItem['changes'] as $accountItem)
                 <div style="position:relative;left:56px;top:140px" class="cls_003"><span class="cls_003">{{ $accountItem['postingDate'] }}</span></div>
                 <div style="position:relative;left:170px;top:130px" class="cls_003"><span class="cls_003">{{ $accountItem['description'] }}</span></div>
+                <div style="position:relative;left:250px;top:120px" class="cls_003"><span class="cls_003">{{ $accountItem['expectedMonthly'] }}</span></div>
                 <div style="position:relative;left:349px;top:120px" class="cls_003"><span class="cls_003">{{ $accountItem['debitAmount'] }}</span></div>
                 <div style="position:relative;left:436px;top:110px" class="cls_003"><span class="cls_003">{{ $accountItem['creditAmount'] }}</span></div>
                 <div style="position:relative;left:518px;top:100px" class="cls_003"><span class="cls_003">{{ $accountItem['balance'] }}</span></div>
@@ -83,12 +88,12 @@ div.cls_006{font-family:Arial,serif;font-size:10.0px;color:rgb(0,0,0);font-weigh
         @endforeach
     </div>
 
-    <div style="position:absolute;left:13px;top:1000px" class="cls_002"><span class="cls_002">Printed By:</span></div>
+    <!-- <div style="position:absolute;left:13px;top:1000px" class="cls_002"><span class="cls_002">Printed By:</span></div>
     <div style="position:absolute;left:64px;top:1000px" class="cls_003"><span class="cls_003">{{ $pdfDetails['saccoName'] }}</span></div>
     <div style="position:absolute;left:225px;top:1000px" class="cls_002"><span class="cls_002">Date:</span></div>
     <div style="position:absolute;left:283px;top:1000px" class="cls_003"><span class="cls_003">{{ $pdfDetails['printedOn'] }}</span></div>
     <div style="position:absolute;left:478px;top:1000px" class="cls_002"><span class="cls_002">Page No.</span></div>
-    <div style="position:absolute;left:526px;top:1000px" class="cls_003"><span class="cls_003">1</span></div>
+    <div style="position:absolute;left:526px;top:1000px" class="cls_003"><span class="cls_003">1</span></div> -->
 
 </div>
 

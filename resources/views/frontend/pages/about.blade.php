@@ -22,7 +22,7 @@
 
     <div class="row">
       <div class="col-lg-6">
-        <img src="{{ asset ( 'frontend/assets/img/slide/mtangaza2.jpg')}}" class="img-fluid" alt="">
+        <img src="{{ asset ( 'fronttheme/assets/img/slide/12-e.png')}}" class="img-fluid" alt="">
       </div>
       <div class="col-lg-6 pt-4 pt-lg-0 content">
         <h3>About Mtangazaji Sacco.</h3>
@@ -48,7 +48,7 @@
       <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch">
         <div class="count-box">
           <i class="icofont-simple-smile"></i>
-          <span data-toggle="counter-up">232</span>
+          <span data-toggle="counter-up">112</span>
           <p><strong>Happy Members</strong></p>
         </div>
       </div>
@@ -56,7 +56,7 @@
       <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch">
         <div class="count-box">
           <i class="icofont-document-folder"></i>
-          <span data-toggle="counter-up">521</span>
+          <span data-toggle="counter-up">25</span>
           <p><strong>Years Experience</strong></p>
         </div>
       </div>
@@ -64,7 +64,7 @@
       <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch">
         <div class="count-box">
           <i class="icofont-live-support"></i>
-          <span data-toggle="counter-up">1,463</span>
+          <span data-toggle="counter-up">1997</span>
           <p><strong>Year we Started</strong></p>
         </div>
       </div>

@@ -22,15 +22,11 @@ trait Statementable
 
                     $changedModels = $model->getChanges();
     
-                    //\Log::info(" Db updated User". json_encode($changedModels));
-    
                     self::statement('User updated', $changedModels, $model->id);
                 }
                 
 
             } else {
-
-                //\Log::info(" Db updated Console");
 
                 $changedModels = $model->getChanges();
 

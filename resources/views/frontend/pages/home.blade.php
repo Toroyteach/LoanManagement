@@ -12,7 +12,7 @@
         <div class="carousel-inner" role="listbox">
 
           <!-- Slide 1 -->
-          <div class="carousel-item active" style="background: url({{asset('fronttheme/assets/img/slide/slide-1.jpg')}})">
+          <div class="carousel-item active" style="background: url({{asset('fronttheme/assets/img/slide/10-e.jpg')}})">
             <div class="carousel-container">
               <div class="carousel-content">
                 <h2 class="animate__animated animate__fadeInDown">Welcome to <span>Mtangazaji Sacco</span></h2>
@@ -22,24 +22,38 @@
           </div>
 
           <!-- Slide 2 -->
-          <div class="carousel-item" style="background: url({{asset('fronttheme/assets/img/slide/slide-2.jpg')}})">
+          <div class="carousel-item" style="background: url({{asset('fronttheme/assets/img/slide/1b-e.jpg')}})">
             <div class="carousel-container">
               <div class="carousel-content">
-                <h2 class="animate__animated fanimate__adeInDown">our <span>Mission</span></h2>
+                <h2 class="animate__animated fanimate__adeInDown">Sacco <span>Officials</span></h2>
                 <p class="animate__animated animate__fadeInUp">To promote the financial well-being and economic interests of members through provision of affordable credit and promotion of a savings culture.</p>
               </div>
             </div>
           </div>
-
+          
+              <!-- Slide 4 -->
+      <div class="carousel-item" style="background: url({{asset('fronttheme/assets/img/slide/slide-3.jpg')}});">
+        <div class="carousel-container">
+          <div class="carousel-content">
+            <h2 class="animate__animated animate__fadeInDown">School Fees <span>Loans</span></h2>
+            <p class="animate__animated animate__fadeInUp">To provide continuous financial education programs on prudent use of credit with a view to reduce poverty, promote human dignity and enhance the spirit of co-operation.</p>
+            <a class="btn btn-success animate__animated animate__fadeInUp" href="{{ route('products') }}">Read More</a>
+          </div>
+        </div>
+      </div>
           <!-- Slide 3 -->
-          <div class="carousel-item" style="background: url({{asset('fronttheme/assets/img/slide/slide-3.jpg')}})">
+          <div class="carousel-item" style="background: url({{asset('fronttheme/assets/img/slide/development-e.jpg')}}); background-position: center; background-size: cover;">
             <div class="carousel-container">
               <div class="carousel-content">
-                <h2 class="animate__animated animate__fadeInDown">our <span>Vision</span></h2>
-                <p class="animate__animated animate__fadeInUp">To provide continuous financial education programs on prudent use of credit with a view to reduce poverty, promote human dignity and enhance the spirit of co-operation.</p>
+                <h2 class="animate__animated animate__fadeInDown ">Development <span>Loans</span></h2>
+                <p class="animate__animated animate__fadeInUp ">To provide continuous financial education programs on prudent use of credit with a view to reduce poverty, promote human dignity and enhance the spirit of co-operation.</p>
+                <a class="btn btn-success animate__animated animate__fadeInUp" href="{{ route('products') }}">Read More</a>
               </div>
             </div>
           </div>
+
+        </div>
+
 
         </div>
 
@@ -123,7 +137,7 @@
 
           </div>
           <div class="col-lg-6">
-            <img src="{{ asset ( 'frontend/assets/img/slide/mtangaza2.jpg')}} " class="img-fluid" alt="">
+            <img src="{{ asset ( 'fronttheme/assets/img/slide/4.jpg')}} " class="img-fluid" alt="">
           </div>
         </div>
 
