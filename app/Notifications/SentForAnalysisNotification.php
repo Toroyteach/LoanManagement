@@ -30,7 +30,7 @@ class SentForAnalysisNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -45,5 +45,14 @@ class SentForAnalysisNotification extends Notification
                     ->line('A request for loan application analysis has been sent to you.')
                     ->action('See Application', route('admin.loan-applications.show', $this->loanApplication))
                     ->line('Thank you for using our application!');
+    }
+
+    public function toArray($notifiable)
+    {
+        return [
+            'loan_id' => $this->loanApplication->id,
+            'message_desc' => 'You have a loan application request to analyse',
+            'notification_type' => 'LoanAnalysis',
+        ];
     }
 }

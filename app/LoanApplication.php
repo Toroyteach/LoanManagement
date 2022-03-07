@@ -4,6 +4,7 @@ namespace App;
 
 use App\Observers\LoanApplicationObserver;
 use App\Traits\Auditable;
+use App\Traits\Statementable;
 use App\Traits\MultiTenantModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use \DateTimeInterface;
 
 class LoanApplication extends Model
 {
-    use SoftDeletes, MultiTenantModelTrait, Auditable;
+    use SoftDeletes, MultiTenantModelTrait, Auditable, Statementable;
 
     public $table = 'loan_applications';
 
@@ -22,8 +23,23 @@ class LoanApplication extends Model
     ];
 
     protected $fillable = [
+        'loan_entry_number',
         'loan_amount',
+        'loan_amount_plus_interest',
         'description',
+        'repaid_amount',
+        'accumulated_amount',
+        'last_month_amount_paid',
+        'next_months_pay',
+        'next_months_pay_date',
+        'date_last_amount_paid',
+        'balance_amount',
+        'equated_monthly_instal',
+        'duration',
+        'duration_count',
+        'repayment_date',
+        'defaulted_date',
+        'loan_type',
         'analyst_id',
         'firebaseid',
         'cfo_id',
@@ -32,6 +48,9 @@ class LoanApplication extends Model
         'deleted_at',
         'created_by_id',
         'status_id',
+        'file',
+        'repaid_status',
+        'max_loan_amount'
     ];
 
     protected static function booted()
@@ -49,12 +68,12 @@ class LoanApplication extends Model
         return $this->belongsTo(Status::class, 'status_id');
     }
 
-    public function analyst()
+    public function accountant()
     {
         return $this->belongsTo(User::class, 'analyst_id');
     }
 
-    public function cfo()
+    public function creditCommittee()
     {
         return $this->belongsTo(User::class, 'cfo_id');
     }
@@ -72,5 +91,15 @@ class LoanApplication extends Model
     public function logs()
     {
         return $this->morphMany(AuditLog::class, 'subject');
+    }
+
+    public function statements()
+    {
+        return $this->morphMany(StatementLog::class, 'subject');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(LoanFile::class);
     }
 }

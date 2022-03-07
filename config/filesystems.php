@@ -55,6 +55,27 @@ return [
             'visibility' => 'public',
         ],
 
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('img/uploads'),
+            'url' => '/img/uploads',
+            'visibility' => 'public',
+        ],
+
+        'bulkfiles' => [
+            'driver' => 'local',
+            'root' => public_path('bulkfile/uploads'),
+            'url' => '/bulkfile/uploads',
+            'visibility' => 'public',
+        ],
+
+        'files' => [
+            'driver' => 'local',
+            'root' => storage_path('files/uploads/'),
+            'url' => '/files/uploads',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

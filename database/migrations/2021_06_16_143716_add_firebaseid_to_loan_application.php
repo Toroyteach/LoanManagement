@@ -15,7 +15,7 @@ class AddFirebaseidToLoanApplication extends Migration
     {
         Schema::table('loan_applications', function (Blueprint $table) {
             //
-            $table->string('firebaseid')->nullable();
+            $table->string('firebaseid')->nullable()->unique();
         });
     }
 

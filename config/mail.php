@@ -43,6 +43,10 @@ return [
             'password' => env('MAIL_PASSWORD'),
         ],
 
+        'mailgun' => [
+            'transport' => 'mailgun',
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

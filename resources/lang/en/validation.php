@@ -104,8 +104,9 @@ return [
     'uploaded'                       => 'The :attribute failed to upload.',
     'url'                            => 'The :attribute format is invalid.',
     'custom'                         => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'idno'  => [
+            'required' => 'We need to know your email address!',
+            'digits:6' => 'only 6 digits',
         ],
     ],
     'reserved_word'                  => 'The :attribute contains reserved word',

@@ -40,7 +40,7 @@
 
                             </td>
                             <td>
-                                {{ $permission->id ?? '' }}
+                            {{ $key++ }}
                             </td>
                             <td>
                                 {{ $permission->title ?? '' }}

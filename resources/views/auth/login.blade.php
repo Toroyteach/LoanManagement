@@ -24,7 +24,7 @@
                             </span>
                         </div>
 
-                        <input id="idno" name="idno" type="number" class="form-control{{ $errors->has('idno') ? ' is-invalid' : '' }}"  autocomplete="idno" autofocus placeholder="Id No" value="...">
+                        <input id="idno" name="idno" type="number" class="form-control{{ $errors->has('idno') ? ' is-invalid' : '' }}"  autocomplete="idno" autofocus placeholder="Member No" value="...">
 
                         @if($errors->has('idno'))
                             <div class="invalid-feedback">
@@ -40,7 +40,7 @@
                             </span>
                         </div>
 
-                        <input id="email" name="email" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" required autocomplete="email" autofocus placeholder="{{ trans('global.login_email') }}" value="{{ old('email', null) }}">
+                        <input id="email" name="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" required autocomplete="email" autofocus placeholder="{{ trans('global.login_email') }}" value="{{ old('email', null) }}">
 
                         @if($errors->has('email'))
                             <div class="invalid-feedback">
@@ -84,9 +84,9 @@
                                     {{ trans('global.forgot_password') }}
                                 </a><br>
                             @endif
-                            <a class="btn btn-link px-0" href="{{ route('register') }}">
+                            <!-- <a class="btn btn-link px-0" href="">
                                 {{ trans('global.register') }}
-                            </a>
+                            </a> -->
                         </div>
                     </div>
                 </form>

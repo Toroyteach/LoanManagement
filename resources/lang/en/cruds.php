@@ -2,11 +2,13 @@
 
 return [
     'userManagement'  => [
-        'title'          => 'User management',
-        'title_singular' => 'User management',
+        'title'          => 'User Management',
+        'title_singular' => 'User Management',
+        'profile'        => 'View Profile',
     ],
     'permission'      => [
         'title'          => 'Permissions',
+        'user_view'      => 'View Profile',
         'title_singular' => 'Permission',
         'fields'         => [
             'id'                => 'ID',
@@ -44,9 +46,28 @@ return [
         'title_singular' => 'User',
         'fields'         => [
             'id'                       => 'ID',
+            'action'                   => 'Action',
+            'idno'                     => 'Member No',
+            'number'                   => 'Phone Number',
+            'nationalid'               => 'National Id',
+            'dob'                      => 'Date of Birth',
+            'accountbal'               => 'Total Loan Amount',
+            'address'                  => 'Address',
+            'currentloan'              => 'Current Loan Amount',
+            'currentloantype'          => 'Current Loan Type',
+            'dojoined'                 => 'Date of Joining Sacco',
+            'nationalid_helper'                => '',
             'id_helper'                => '',
-            'name'                     => 'Name',
+            'firstname'                => 'Firstname',
+            'firstname_helper'         => '',
+            'middlename'                => 'Middlename',
+            'middlename_helper'         => '',
+            'lastname'                 => 'Lastname',
+            'lastname_helper'          => '',
+            'name'                     => 'Firstname',
             'name_helper'              => '',
+            'lastname'                 => 'Lastname',
+            'lastname_helper'          => '',
             'email'                    => 'Email',
             'email_helper'             => '',
             'email_verified_at'        => 'Email verified at',
@@ -63,6 +84,9 @@ return [
             'updated_at_helper'        => '',
             'deleted_at'               => 'Deleted at',
             'deleted_at_helper'        => '',
+            'memberno'                => 'Member Number',
+            'totalmonthlysavings'     => 'Deposit Contribution',
+            'monthlyamount'     => 'Monthly Contribution Amount',
         ],
     ],
     'auditLog'        => [
@@ -91,6 +115,7 @@ return [
     ],
     'status'          => [
         'title'          => 'Statuses',
+        'dashboard'      => 'Dashboard',
         'title_singular' => 'Status',
         'fields'         => [
             'id'                => 'ID',
@@ -109,7 +134,13 @@ return [
         'title'          => 'Loan Applications',
         'title_singular' => 'Loan Application',
         'fields'         => [
-            'id'                 => 'ID',
+            'id'                 => 'Entry No',
+            'paymentstatus'      => 'Payment Status',
+            'amountremaining'    => 'Amount Remaining',
+            'duration'           => 'Duration',
+            'expectedpaydate'    => 'Deadline Payment',
+            'loantype'           => 'Loan Type',
+            'datecreated'        => 'Date Created',
             'id_helper'          => '',
             'loan_amount'        => 'Loan Amount',
             'loan_amount_helper' => '',

@@ -4,11 +4,12 @@
     <div style="margin-bottom: 10px;" class="row">
         <div class="col-lg-12">
             <a class="btn btn-success" href="{{ route('admin.users.create') }}">
-                {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
+                {{ trans('global.add') }} Member
             </a>
         </div>
     </div>
 @endcan
+
 <div class="card">
     <div class="card-header">
         {{ trans('cruds.user.title_singular') }} {{ trans('global.list') }}
@@ -26,19 +27,25 @@
                             {{ trans('cruds.user.fields.id') }}
                         </th>
                         <th>
-                            {{ trans('cruds.user.fields.name') }}
+                            Username
                         </th>
                         <th>
                             {{ trans('cruds.user.fields.email') }}
                         </th>
                         <th>
-                            {{ trans('cruds.user.fields.email_verified_at') }}
+                            {{ trans('cruds.user.fields.number') }}
+                        </th>
+                        <th>
+                            {{ trans('cruds.user.fields.nationalid') }}
+                        </th>
+                        <th>
+                            {{ trans('cruds.user.fields.idno') }}
                         </th>
                         <th>
                             {{ trans('cruds.user.fields.roles') }}
                         </th>
                         <th>
-                            &nbsp;
+                            {{ trans('cruds.user.fields.action') }}
                         </th>
                     </tr>
                 </thead>
@@ -49,7 +56,7 @@
 
                             </td>
                             <td>
-                                {{ $user->id ?? '' }}
+                            {{ $key++ }}
                             </td>
                             <td>
                                 {{ $user->name ?? '' }}
@@ -58,7 +65,13 @@
                                 {{ $user->email ?? '' }}
                             </td>
                             <td>
-                                {{ $user->email_verified_at ?? '' }}
+                                {{ $user->number ?? '' }}
+                            </td>
+                            <td>
+                                {{ $user->nationalid ?? '' }}
+                            </td>
+                            <td>
+                                {{ $user->idno ?? '' }}
                             </td>
                             <td>
                                 @foreach($user->roles as $key => $item)
@@ -70,6 +83,18 @@
                                     <a class="btn btn-xs btn-primary" href="{{ route('admin.users.show', $user->id) }}">
                                         {{ trans('global.view') }}
                                     </a>
+                                @endcan
+
+                                @can('user_disable')
+                                    @if($user->status)
+                                        <a class="btn btn-xs btn-info" href="{{ route('admin.users.disable', $user->id) }}">
+                                            {{ trans('global.disable') }}
+                                        </a>
+                                    @else
+                                        <a class="btn btn-xs btn-warning" href="{{ route('admin.users.disable', $user->id) }}">
+                                            {{ trans('global.enable') }}
+                                        </a>
+                                    @endif
                                 @endcan
 
                                 @can('user_edit')

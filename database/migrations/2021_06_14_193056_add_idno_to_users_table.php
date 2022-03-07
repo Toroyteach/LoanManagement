@@ -15,7 +15,7 @@ class AddIdnoToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->integer('idno');
+            $table->integer('idno')->unique();
         });
     }
 

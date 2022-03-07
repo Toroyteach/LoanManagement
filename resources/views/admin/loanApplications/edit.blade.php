@@ -34,7 +34,11 @@
                 <label for="status_id">{{ trans('cruds.loanApplication.fields.status') }}</label>
                 <select class="form-control select2 {{ $errors->has('status') ? 'is-invalid' : '' }}" name="status_id" id="status_id">
                     @foreach($statuses as $id => $status)
-                        <option value="{{ $id }}" {{ old('status_id') == $id ? 'selected' : '' }}>{{ $status }}</option>
+                        @if($status != 'Paid')
+                            <option value="{{ $id }}" {{ old('status_id') == $id ? 'selected' : '' }}>{{ $status }}</option>
+                        @else
+
+                        @endif
                     @endforeach
                 </select>
                 @if($errors->has('status'))

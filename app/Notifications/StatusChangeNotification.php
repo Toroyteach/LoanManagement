@@ -30,7 +30,7 @@ class StatusChangeNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -46,5 +46,15 @@ class StatusChangeNotification extends Notification
                     ->line('Status: ' . $this->loanApplication->status->name)
                     ->action('See Your Application', route('admin.loan-applications.show', $this->loanApplication))
                     ->line('Thank you for using our application!');
+    }
+
+    public function toArray($notifiable)
+    {
+        return [
+            'loan_id' => $this->loanApplication->id,
+            'message_desc' => 'Loan Application status is '.$this->loanApplication->status->name,
+            'loan_status' => $this->loanApplication->status->name,
+            'notification_type' => 'CompleteLoanApplication',
+        ];
     }
 }

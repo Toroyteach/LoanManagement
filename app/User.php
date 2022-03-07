@@ -35,15 +35,25 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'firstname',
+        'lastname',
+        'middlename',
         'email',
+        'address',
+        'nationalid',
         'number',
         'email_verified_at',
         'password',
+        'status',
         'idno',
+        'avatar',
         'remember_token',
         'created_at',
         'updated_at',
         'deleted_at',
+        'dateofbirth',
+        'joinedsacco',
+        'firebaseid',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -56,19 +66,24 @@ class User extends Authenticatable
         return $this->roles->contains(1);
     }
 
-    public function getIsUserAttribute()
+    public function getIsMemberAttribute()
     {
         return $this->roles->contains(2);
     }
 
-    public function getIsAnalystAttribute()
+    public function getIsAccountantAttribute()
     {
         return $this->roles->contains(3);
     }
 
-    public function getIsCfoAttribute()
+    public function getIsCreditCommitteeAttribute()
     {
         return $this->roles->contains(4);
+    }
+
+    public function getIsExecutiveAttribute()
+    {
+        return $this->roles->contains(5);
     }
 
     public function __construct(array $attributes = [])
@@ -80,7 +95,9 @@ class User extends Authenticatable
             if (!$user->roles()->get()->contains($registrationRole)) {
                 $user->roles()->attach($registrationRole);
             }
+            
         });
+
     }
 
     public function getEmailVerifiedAtAttribute($value)
@@ -107,6 +124,33 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    public function userAccount()
+    {
+        return $this->hasOne(UsersAccount::class, 'user_id');
+
+    }
+
+    public function loan()
+    {
+        return $this->hasMany(LoanApplication::class, 'created_by_id');
+
+    }
+
+    public function monthlySavings()
+    {
+        return $this->hasOne(MonthlySavings::class, 'user_id');
+    }
+
+    public function twoStep()
+    {
+        return $this->hasOne(TwoStepAuthTable::class, 'userId');
+    }
+
+    public function nextKin()
+    {
+        return $this->hasMany(NextKin::class, 'user_id');
     }
 }

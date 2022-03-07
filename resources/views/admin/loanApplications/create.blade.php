@@ -28,6 +28,33 @@
                     </div>
                 @endif
                 <span class="help-block">{{ trans('cruds.loanApplication.fields.description_helper') }}</span>
+            </div> 
+            <div class="form-group">
+                <!-- loan type -->
+                <div class="form-group">
+                <label class="required" for="loan_amount">Loan Type</label>
+                    <select class="custom-select" name="loan_type" required>
+                        <option value="" selected>Select Loan Type</option>
+                        <option value="Emergency">Emergency</option>
+                        <option value="SchoolFees">School Fess</option>
+                        <option value="Development">Development</option>
+                        <option value="InstantLoan">Instant Loan</option>
+                    </select>
+                    <div class="invalid-feedback">Select Loan Type</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <!-- loan duration -->
+                <label class="required" for="duration">Loan Duration in months</label>
+                <input class="form-control {{ $errors->has('duration') ? 'is-invalid' : '' }}" type="number" name="duration" id="duration" value="{{ old('duration', '') }}" step="1" required>
+                @if($errors->has('duration'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('duration') }}
+                    </div>
+                @endif
+            </div>
+            <div class="form-group">
+                <!-- loan gurantors -->
             </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">

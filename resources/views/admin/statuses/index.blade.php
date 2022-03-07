@@ -40,7 +40,7 @@
 
                             </td>
                             <td>
-                                {{ $status->id ?? '' }}
+                            {{ $key++ }}
                             </td>
                             <td>
                                 {{ $status->name ?? '' }}

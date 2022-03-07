@@ -30,7 +30,7 @@ class SubmittedAnalysisNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -47,5 +47,16 @@ class SubmittedAnalysisNotification extends Notification
                     ->line('Comment: ' . $this->loanApplication->comments()->latest()->first()->comment_text)
                     ->action('See Application', route('admin.loan-applications.show', $this->loanApplication))
                     ->line('Thank you for using our application!');
+    }
+
+    public function toArray($notifiable)
+    {
+        return [
+            'loan_id' => $this->loanApplication->id,
+            'message_desc' => 'Please review the folowing status change',
+            'message_desc_1' => $this->loanApplication->status->name,
+            'message_comment' => $this->loanApplication->comments()->latest()->first()->comment_text,
+            'notification_type' => 'StatusAnalysis',
+        ];
     }
 }

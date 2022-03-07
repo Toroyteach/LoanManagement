@@ -7,6 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Auth;
 
 class NewApplicationNotification extends Notification
 {
@@ -20,6 +21,8 @@ class NewApplicationNotification extends Notification
     public function __construct(LoanApplication $loanApplication)
     {
         $this->loanApplication = $loanApplication;
+        //dd($loanApplication);
+        //dd($loanApplication->created_by->email === Auth::user()->email);
     }
 
     /**
@@ -30,7 +33,7 @@ class NewApplicationNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -41,9 +44,32 @@ class NewApplicationNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('New loan application has been submitted')
-                    ->action('See Application', route('admin.loan-applications.show', $this->loanApplication))
-                    ->line('Thank you for using our application!');
+
+        // if($this->loanApplication->created_by->email === Auth::user()->email){
+
+        //     return (new MailMessage)
+        //     ->line('Dear .'.$this->loanApplication->created_by->name.'. Your New loan application has been submitted')
+        //     ->action('See Application', route('admin.loan-applications.show', $this->loanApplication))
+        //     ->line('Thank you for using our application!');
+
+        // } else {
+
+            return (new MailMessage)
+            ->line('New loan application has been created')
+            ->action('See Application', route('admin.loan-applications.show', $this->loanApplication))
+            ->line('Thank you for using our application!');
+
+        //}
+
+    }
+
+    public function toArray($notifiable)
+    {
+        return [
+            'loan_id' => $this->loanApplication->id,
+            'message_name' => $this->loanApplication->created_by->firstname,
+            'message_desc' => 'A new loan Application was created',
+            'notification_type' => 'NewLoanApplication',
+        ];
     }
 }

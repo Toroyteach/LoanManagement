@@ -7,6 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -48,8 +49,6 @@ class LoginController extends Controller
             'idno' => ['required'],
         ]);
 
-        dd($request->all());
-
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'idno' => $request->idno])) {
             $request->session()->regenerate();
 
@@ -64,6 +63,16 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         //dd($request->all());
+        if ($this->guard()->validate($this->credentials($request))) {
+            //IF USER EXISTS, FIND USER USING EMAIL FROM REQUEST
+            $user = \App\User::where('email', $request->email)->first();
+            //CHECK STATUS OF USER (HERE, 1 = ACTIVE & 0 = INACTIVE)
+            if ($user->status === 0) {
+                //THROW ERROR WITH CUSTOM MESSAGE
+                throw ValidationException::withMessages([$this->username() => __('User account has been deactivated. Please Contact the Administrator.')]);
+            }
+        }
+
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password, 'idno' => $request->idno]))
         {
             // Updated this line

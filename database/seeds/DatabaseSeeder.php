@@ -1,11 +1,18 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeds;
 
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+
+    public function __construct()
+    {
+        dd('seeded');
+    }
+
+
     public function run()
     {
         $this->call([
@@ -15,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             RoleUserTableSeeder::class,
             StatusesTableSeeder::class,
+            //LoanApplicationSeeder::class,
         ]);
     }
 }
