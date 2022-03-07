@@ -19,9 +19,9 @@ class ExampleTest extends TestCase
 
         //$this->assertDatabaseCount('users', 0);
 
-        $this->assertDatabaseMissing('users', [
-            'email' => 'sally@example.com',
-        ]);
+       // $this->assertDatabaseMissing('users', [
+         //   'email' => 'sally@example.com',
+        //]);
 
     }
 }
