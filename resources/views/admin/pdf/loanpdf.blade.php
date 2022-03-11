@@ -470,7 +470,7 @@
             * in order to get left/right margins on left/right pages right
             */
 
-            @page :right{
+            /* @page :right{
                 margin-left: 73.22pt;
                 margin-right: 36.14pt;
             }
@@ -478,7 +478,7 @@
             @page :left {
                 margin-left: 36.14pt;
                 margin-right: 73.22pt;
-            }
+            } */
         </style>
     </head>
 
@@ -518,7 +518,7 @@
                         <div class="two-tables">
                             <table class="accounting table-left">
                                 <caption>
-                                    <span>Loan Application</span>
+                                    <span>Loan Application Entry</span>
                                 </caption>
                                 <thead>
                                     <tr class="headers">

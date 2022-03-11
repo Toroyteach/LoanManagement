@@ -171,8 +171,8 @@ class AuditLogService
 
                     $value['postingDate'] = Carbon::parse($loanLog->updated_at)->toFormattedDateString();
                     $value['description'] = substr(date("F", strtotime('m')), 0, 3).' - Interest Due';
-                    $value['expectedMonthly'] = strval($current['next_months_pay']);
-                    $value['debitAmount'] = strval($inputValue);
+                    $value['expectedMonthly'] = number_format((float)($current['next_months_pay']), 2, '.', '');
+                    $value['debitAmount'] = strval(number_format((float)($inputValue), 2, '.', ''));
                     $value['creditAmount'] = '0.00';
                     $value['balance'] = strval(number_format((float)($totalBalance), 2, '.', ''));
 
