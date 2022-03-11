@@ -1,101 +1,657 @@
+<!DOCTYPE html>
 <html>
-<head><meta http-equiv=Content-Type content="text/html; charset=UTF-8">
-<style type="text/css">
-span.cls_002{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-div.cls_002{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-span.cls_004{font-family:Arial,serif;font-size:9.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
-div.cls_004{font-family:Arial,serif;font-size:9.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
-span.cls_005{font-family:Arial,serif;font-size:9.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-div.cls_005{font-family:Arial,serif;font-size:9.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-span.cls_003{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
-div.cls_003{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
-span.cls_006{font-family:Arial,serif;font-size:10.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
-div.cls_006{font-family:Arial,serif;font-size:10.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+    <head>
+        <title>Loan Statements</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <style>
+            @import "fonts.css";
 
-</style>
-</head>
-<body>
-<div style="position:absolute; left:50%; margin-left:-297px; top:0px; width:595px; height:100%; border-style:outset; overflow:hidden;page-break-after: initial;">
+            @page {
+            size: 8.5in 11in;
+            margin: 0.5in;
+            margin-top: 1in;
+            }
 
-    <div style="position:absolute;left:65px;top:5px;">
-        <img src="{{ storage_path('app/logo/mtangazaji.png') }}" width="40" height="40">
-    </div>
+            body {
+            font-size: 9pt;
+            }
 
-    <div style="position:absolute;left:127.66px;top:14.08px" class="cls_002"><span class="cls_002">{{ $pdfDetails['saccoName'] }}</span></div>
-    <div style="position:absolute;left:359.50px;top:13.57px" class="cls_002"><span class="cls_002">Printed on :{{ $pdfDetails['printedOn'] }} </span></div>
-    <div style="position:absolute;left:127.66px;top:25.60px" class="cls_002"><span class="cls_002">{{ $pdfDetails['saccoAddress'] }}</span></div>
-    <div style="position:absolute;left:361.51px;top:29.34px" class="cls_002"><span class="cls_002">Page No :1</span></div>
-    <div style="position:absolute;left:127.66px;top:38.13px" class="cls_002"><span class="cls_002">Loan Statement</span></div>
-    <div style="position:absolute;left:127.66px;top:57.28px" class="cls_002"><span class="cls_002">{{ $pdfDetails['memberNo'] }}</span></div>
-    <div style="position:absolute;left:59.83px;top:57.28px" class="cls_002"><span class="cls_002">MemberNo. :</span></div>
-    <div style="position:absolute;left:361.44px;top:62.40px" class="cls_004"></div>
-    <div style="position:absolute;left:59.83px;top:75.78px" class="cls_002"><span class="cls_002">Name :</span></div>
-    <div style="position:absolute;left:127.66px;top:76.79px" class="cls_002"><span class="cls_002">{{ $pdfDetails['memberName'] }}</span></div>
-    <div style="position:absolute;left:59.83px;top:96.80px" class="cls_002"><span class="cls_002">Phone No. :</span></div>
-    <div style="position:absolute;left:127.66px;top:96.80px" class="cls_002"><span class="cls_002">{{ $pdfDetails['memberPhone'] }}</span></div>
-    <div style="position:absolute;left:361.44px;top:102.43px" class="cls_005"></div>
-    <div style="position:absolute;left:59.83px;top:121.29px" class="cls_002"><span class="cls_002">ID No. :</span></div>
-    <div style="position:absolute;left:127.66px;top:121.29px" class="cls_002"><span class="cls_002">{{ $pdfDetails['memberIdno'] }}</span></div>
+            .letter {
+            font-family: "Lucida Grande";
+            }
 
-    <div style="position:relative; top:20px;" class="">
-        @foreach($userLogs as $loanItem)
+            h1 {
+            font-size: 9pt;
+            text-align: center;
+            font-weight: bold;
+            break-after: avoid;
+            }
 
-            <div style="position:relative;left:56px;top:143px" class="cls_002"><span class="cls_002">Loan Number</span></div>
-            <div style="position:relative;left:149px;top:134px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_number'] }}</span></div>
+            h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            break-after: avoid;
+            }
 
-            <div style="position:relative;left:280px;top:124px" class="cls_002"><span class="cls_002">Loan Start Date</span></div>
-            <div style="position:relative;left:371px;top:115px" class="cls_002"><span class="cls_002">Loan Period</span></div>
-            <div style="position:relative;left:485px;top:106px" class="cls_002"><span class="cls_002">Loan End Date</span></div>
-            <div style="position:relative;left:56px;top:130px" class="cls_002"><span class="cls_002">Reqested Amount</span></div>
+            p {
+            text-align: justify;
+            hyphens: auto;
+            }
 
-            <div style="position:relative;left:149px;top:121px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_amount'] }}</span></div>
-            <div style="position:relative;left:285px;top:112px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_start_date'] }}</span></div>
-            <div style="position:relative;left:376px;top:104px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_duration'] }} Months</span></div>
-            <div style="position:relative;left:493px;top:95px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_end_date'] }}</span></div>
+            .footer-link {
+            color: #be945b;
+            }
+
+            div.letter {
+            line-height: 1.6em;
+            }
+
+            .letter-logo {
+            position: running(letter-logo);
+            text-align: center;
+            }
+
+            .letter-logo img {
+            width: 30mm;
+            height: auto;
+            }
+
+            .letter-footer {
+            position: running(letter-footer);
+            font-size: 8pt;
+            font-family: "Lucida Grande";
+            text-align: center;
+            }
+
+            .letter-signature {
+            width: 3cm;
+            display: block;
+            }
+
+            .letter p {
+            break-inside: avoid;
+            }
+
+            .letter-closing {
+            break-inside: avoid;
+            }
+
+            @page addendum {
+            @bottom-center {
+                content: element(letter-footer);
+            }
+
+            @top-center {
+                content: element(letter-logo);
+            }
+            }
+
+            .addendum-images img {
+                width: 100%;
+            }
+            @font-face {
+                font-family: "Lucida Grande";
+                src: url("../fonts/LucidaGrande.ttf") format("truetype");
+            }
+            @font-face {
+                font-family: goudyoldstylet;
+                src: url("../fonts/GOUDYOLDSTYLET-REGULAR.TTF") format("truetype");
+            }
             
-            <div style="position:relative;left:56px;top:114px" class="cls_002"><span class="cls_002">Loan Amount Plus Interest</span></div>
-            <div style="position:relative;left:155px;top:106px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_amount_plus_interest'] }}</span></div>
+            @font-face {
+                font-family: goudyoldstylet;
+                font-weight: bold;
+                src: url("../fonts/GOUDYOLDSTYLET-BOLD.TTF") format("truetype");
+            }
             
-            <div style="position:relative;left:56px;top:124px" class="cls_002"><span class="cls_002">Loan Type</span></div>
-            <div style="position:relative;left:149px;top:116px" class="cls_003"><span class="cls_003">{{ $loanItem['loan_type'] }}</span></div>
+            @font-face {
+                font-family: goudyoldstylet;
+                font-weight: bold;
+                font-style: italic;
+                src: url("../fonts/GOUDYOLDSTYLE-BOLDITALIC.TTF") format("truetype");
+            }
+            
+            @font-face {
+                font-family: gothamrounded;
+                src: url("../fonts/GOTHAMROUNDED-MEDIUM.OTF") format("opentype");
+            }
+            
+            @font-face {
+                font-family: Arial;
+                src: url("../fonts/ArialUnicode.ttf") format("opentype");
+            }
+
+        @import "fonts.css";
+
+            body {
+                font-size: 8pt;
+                font-family: Arial;
+            }
+
+            .head1-left {
+                position: absolute;
+                top: 0;
+                /* left indent for image */
+                left: -30pt; 
+            }
+
+            .head1-left img {
+                /* Width of top-left 50% table (investor information) */
+                max-width: 245.40pt;
+                height: auto;
+            }
+
+            /* text in box should vertically aligned bottom with a height of 51.63pt.
+            * Using `top` here should have the same effect.
+            */
+            .head1-right {
+                position: absolute;
+                text-align: right;
+                top: 14pt;
+                right: 0;
+                vertical-align: bottom;
+            }
+
+            .head-title {
+                font-family: "Lucida Grande";
+                font-size: 16pt;
+                font-weight: bold;
+                font-style: italic;
+                margin-bottom: 0.5em;
+            }
+
+            .head-date {
+                font-family: "Lucida Grande";
+                font-size: 10pt;
+            }
+
+            .head2-left {
+                position: absolute;
+                top: 4cm;
+                left: 0;
+                width: 40%;
+                font-family: Arial;
+                font-size: 9pt;
+            }
+
+            .head2-right {
+                position: absolute;
+                text-align: right;
+                top: 93.40pt;
+                right: 0;
+                font-family: "Lucida Grande"
+            }
+            /* vertical spacer on first page where the tables start.
+            * Address, advisor etc. have an absolute positioning.
+            */
+            .spacer {
+                height: 180pt;
+            }
+
+            /* Vertical spacer on CGLS page */
+            .spacer2 {
+                height: 30mm;
+            }
+
+            /* turn .footer into a running element */
+            .footer {
+                position: running(footer);
+                font-size: 9pt;
+                font-family: Arial;
+                width: 100%;
+            }
+
+            .advisor {
+                border-right: 1pt solid grey;
+                text-transform: uppercase;
+                margin-right: -5px;
+                padding-right: 3px;
+                font-size: 9pt;
+                line-height: 1.4em;
+            }
+
+            .advisor-title {
+                font-weight: bold;
+                font-style: italic;
+                font-size: 11pt;
+                margin-bottom: 0.25em;
+            }
+
+            .sequence-number {
+                font-family: Arial;
+                color: grey;
+                font-size: 6pt; 
+                text-align: right;
+            }
+
+            table.accounting {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25.81pt;
+                font-family: Arial;
+                font-size: 8pt;
+                margin-bottom: 25.81pt;
+                break-inside: avoid;
+            }
+
+            table.layout-fixed {
+                table-layout: fixed;
+            }
+
+            table.accounting tr {
+                padding: 0;
+                margin: 0;
+            }
+
+            table.accounting th,
+            table.accounting td {
+                max-width: 20%;
+            }
+
+            table.accounting caption {
+                text-align: left;
+                border-top: 0.6pt solid #5972b2;
+                margin-bottom: 1em;
+            }
+
+            table.accounting caption span {
+                font-family: goudyoldstylet;
+                background: #5972b2;
+                font-weight: bold;
+                font-size: 10pt;
+                color: white;
+                display: inline-block;
+                padding-right: 0.25em;
+                padding-left: 0.25em;
+                padding-top: 0.25em;
+                padding-bottom: 0.25em;
+            }
+
+            table.accounting .headers th {
+                font-family: "Lucida Grande";
+                font-weight: bold;
+                font-style: italic;
+            }
+
+            table.accounting td {
+                padding-top: 1px;
+                padding-bottom: 2px;
+            }
+
+            table.accounting tfoot td {
+                padding-top: 1em;
+            }
+
+            /* Investor/Account information 50|50 tables implemented
+            * as left/right float within their #two-tables container
+            */
+
+            .two-tables .table-left {
+                float: left;
+                width: 245.40pt;
+            }
+
+            .two-tables .table-right {
+                float: right;
+                width: 245.40pt;
+            }
+
+            /* general table cell decoration with borders */
+
+            .border-top td {
+                border-top: 1px solid black;
+            }
+
+            .border-bottom td {
+                border-bottom: 1px solid black;
+            }
+
+            /* text alignment within a cell */
+
+            table.accounting .text-left {
+                text-align: left
+            }
+
+            table.accounting .text-right {
+                text-align: right;
+            }
+
+            table.accounting .text-center {
+                text-align: center;
+            }
+
+            table.accounting .extra-top-padding {
+                padding-top: 1em;
+            }
 
 
-            <div style="position:relative;left:56px;top:140px" class="cls_002"><span class="cls_002">Posting Date</span></div>
-            <div style="position:relative;left:170px;top:130px" class="cls_002"><span class="cls_002">Description</span></div>
-            <div style="position:relative;left:250px;top:130px" class="cls_002"><span class="cls_002">Expected M-P</span></div>
-            <div style="position:relative;left:339px;top:120px" class="cls_002"><span class="cls_002">Debit Amount</span></div>
-            <div style="position:relative;left:417px;top:110px" class="cls_002"><span class="cls_002">Credit Amount</span></div>
-            <div style="position:relative;left:520px;top:100px" class="cls_002"><span class="cls_002">Balance</span></div>
+            table.accounting .extra-bottom-padding {
+                padding-bottom: 1em;
+            }
 
-            <div style="position:relative;left:56px;top:120px" class="cls_002"><span class="cls_002">Balance B/F</span></div>
+            table.width-50 {
+                width: 245.40pt;
+            }
 
-            @foreach($loanItem['changes'] as $accountItem)
-                <div style="position:relative;left:56px;top:140px" class="cls_003"><span class="cls_003">{{ $accountItem['postingDate'] }}</span></div>
-                <div style="position:relative;left:170px;top:130px" class="cls_003"><span class="cls_003">{{ $accountItem['description'] }}</span></div>
-                <div style="position:relative;left:250px;top:120px" class="cls_003"><span class="cls_003">{{ $accountItem['expectedMonthly'] }}</span></div>
-                <div style="position:relative;left:349px;top:120px" class="cls_003"><span class="cls_003">{{ $accountItem['debitAmount'] }}</span></div>
-                <div style="position:relative;left:436px;top:110px" class="cls_003"><span class="cls_003">{{ $accountItem['creditAmount'] }}</span></div>
-                <div style="position:relative;left:518px;top:100px" class="cls_003"><span class="cls_003">{{ $accountItem['balance'] }}</span></div>
-            @endforeach
+            /* defines font classes by pt size for general usage */
+
+            .text-7 {
+                font-size: 7pt;
+            }
+
+            .text-8 {
+                font-size: 8pt;
+            }
+
+            .text-9 {
+                font-size: 10pt;
+            }
 
 
-            <div style="position:relative;left:56px;top:129px" class="cls_002"><span class="cls_002">Loan Balance</span></div>
-            <div style="position:relative;left:347px;top:119px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_debit_total'] }}</span></div>
-            <div style="position:relative;left:428px;top:109px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_credit_total'] }}</span></div>
-            <div style="position:relative;left:518px;top:99px" class="cls_002"><span class="cls_002">{{ $loanItem['loan_balance'] }}</span></div>
+            .text-10 {
+                font-size: 10pt;
+            }
 
-            <!-- <div><hr style="position:relative;border-top: 1px dashed red;"></div> -->
-        @endforeach
-    </div>
+            /* text/font decorations */
 
-    <!-- <div style="position:absolute;left:13px;top:1000px" class="cls_002"><span class="cls_002">Printed By:</span></div>
-    <div style="position:absolute;left:64px;top:1000px" class="cls_003"><span class="cls_003">{{ $pdfDetails['saccoName'] }}</span></div>
-    <div style="position:absolute;left:225px;top:1000px" class="cls_002"><span class="cls_002">Date:</span></div>
-    <div style="position:absolute;left:283px;top:1000px" class="cls_003"><span class="cls_003">{{ $pdfDetails['printedOn'] }}</span></div>
-    <div style="position:absolute;left:478px;top:1000px" class="cls_002"><span class="cls_002">Page No.</span></div>
-    <div style="position:absolute;left:526px;top:1000px" class="cls_003"><span class="cls_003">1</span></div> -->
+            .bold {
+                font-weight: bold;
+            }
 
-</div>
+            .italic {
+                font-style: italic;
+            }
 
-</body>
+            /* needed for Weasyprint (#1062)*/
+            table::before {
+                content: target-counter(url(#end), page);
+                display: none;
+            }
+
+            .chart {
+                border-bottom: 1px solid black;
+                margin-bottom: 2em;
+            }
+
+            .chart img {
+                max-width: 100%
+            }
+
+            .footnote-marker {
+                display: inline-block;
+                width: 0.5em;
+            }
+
+            .cgls-head {
+                margin-bottom: 4em;
+            }
+
+            @page statement {
+
+                margin-bottom: 30mm;
+
+                @bottom-left {
+                    content: element(footer);
+                    vertical-align: bottom;
+                    display: table-cell;
+                    border-bottom: 1pt solid grey;
+                    font-family: Arial;
+                    margin-bottom: 1cm;
+                    height: 1.5cm;
+                }
+                @bottom-right {
+                    font-family: Arial;
+                    font-size: 8pt;
+                    border-bottom: 1pt solid grey;
+                    vertical-align: bottom;
+                    width: 3cm;
+                    height: 1.5cm;
+                    display: table-cell;
+                    content: "Page " counter(page) " of " counter(pages);
+                    margin-bottom: 1cm;
+                }
+            }
+
+            @page statement-cgls {
+
+                margin-bottom: 30mm;
+
+                @bottom-left {
+                    content: element(footer);
+                    vertical-align: bottom;
+                    display: table-cell;
+                    border-bottom: 1pt solid grey;
+                    font-family: Arial;
+                    margin-bottom: 1cm;
+                    height: 1.5cm;
+                }
+            }
+
+            @import "fonts.css";
+
+            .statement,
+            .addendum {
+                page-break-after: auto;
+            }
+
+            .statement {
+                page: statement;
+            }
+
+            .statement-cgls {
+                page: statement-cgls;
+            }
+
+
+            .addendum {
+                page: addendum;
+            }
+
+            /* general page size and margins */
+
+            @page {
+                size: 8.5in 11in;
+                margin-bottom: 20.26pt;
+                margin-top: 105.38pt;
+            }
+
+            /* First statement page has a custom margin-top */
+            @page :first {
+                margin-top: 20.26pt;
+            }
+
+            /* same for CGLS page */
+            @page statement-cgls {
+                margin-top: 20.26pt;
+            }
+
+            /* ATT: page 1 is usually a right page. But for the statements
+            * page 1 should be left page that's why we swap :right and :left
+            * in order to get left/right margins on left/right pages right
+            */
+
+            @page :right{
+                margin-left: 73.22pt;
+                margin-right: 36.14pt;
+            }
+
+            @page :left {
+                margin-left: 36.14pt;
+                margin-right: 73.22pt;
+            }
+        </style>
+    </head>
+
+    <body lang="en">
+         
+        <article>
+            <section class="statement">
+                <div>
+
+                    <div class="head1-left">
+                        <!--
+                            <img src="logo.png" />
+                        -->
+                        <img src="{{ storage_path('app/logo/mtangazaji.png') }}" width="100" height="auto" style="position: relative; left: 50px;"/>
+                    </div>
+
+                    <div class="head1-right">
+                        <div class="head-title">{{ $pdfDetails['saccoName'] }} <br> <span style="font-size: 18px;">Loan Statements</span></div>
+                        <div class="head-date">{{ $pdfDetails['printedOn'] }}</div>
+                    </div>
+
+                    <div class="head2-left">
+                        <div class="advisor-outer">
+                            <div class="">
+                                <div>Name : {{ $pdfDetails['memberName'] }}</div>
+                                <div>Member No : {{ $pdfDetails['memberNo'] }}</div>
+                                <div>Member Email : {{ $pdfDetails['memberEmail'] }}</div>
+                                <div>Mobile Number : {{ $pdfDetails['memberPhone'] }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spacer">&nbsp;</div>
+
+                    @foreach($userLogs as $loanItem)
+
+                        <div class="two-tables">
+                            <table class="accounting table-left">
+                                <caption>
+                                    <span>Loan Application</span>
+                                </caption>
+                                <thead>
+                                    <tr class="headers">
+                                        <th class="text-left">Loan Type</th>
+                                        <th class="text-left">Loan Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="headers border-bottom" >
+                                        <td class="text-left text-10 bold">{{ $loanItem['loan_type'] }}</td>
+                                        <td class="text-left text-10 bold">{{ $loanItem['loan_number'] }}</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    
+                                        <tr class="border-bottom">
+                                            <td colspan="4">
+                                                <div class="text-left">Loan Duration</div>
+                                                <div class="text-left text-10 bold">{{ $loanItem['loan_duration'] }} months</div>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-bottom">
+                                            <td colspan="2">
+                                                <div class="text-left">Loan Start Date</div>
+                                                <div class="text-left text-10 bold">{{ $loanItem['loan_start_date'] }}</div>
+                                            </td>
+                                            <td colspan="2">
+                                                <div class="text-left">Loan End Date</div>
+                                                <div class="text-left text-10 bold">{{ $loanItem['loan_end_date'] }}</div>
+                                            </td>
+                                        </tr>
+                                    
+                                </tfoot>
+                            </table>
+
+                            <table class="accounting table-right">
+                                <caption>
+                                    <span>Amount Value</span>
+                                </caption>
+                                <tbody>
+                                    <tr class="border-bottom">
+                                        <td class="text-left text-10">
+                                        Requested Amount
+                                        </td>
+                                        <td class="text-right bold text-10">
+                                        ksh {{ $loanItem['loan_amount'] }}
+                                        </td>
+                                    </tr>
+                                    <tr class="border-bottom">
+                                        <td class="text-left text-10">
+                                        Requested Amount Plus Intrest
+                                        </td>
+                                        <td class="text-right bold text-10">
+                                        ksh {{ $loanItem['loan_amount_plus_interest'] }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="clear: both"></div>
+                        </div>
+
+                        <table class="accounting account-summary">
+                            <caption>
+                                <span>Account Summary</span>
+                            </caption>
+                            <thead>
+                                <tr class="headers border-bottom">
+                                    <th class="text-left">Posting Date</th>
+                                    <th class="text-center">Description</th>
+                                    <th class="text-right">Expected Monthly <br> Pay (ksh) </th>
+                                    <th class="text-right">Debit<br />Amount (ksh)</th>
+                                    <th class="text-right">Credit<br />Amount (ksh)</th>
+                                    <th class="text-right">Balance<br />Amount (ksh)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-bottom">
+                                    <td colspan="7" class="text-7 text-left">Balance B/F</td>
+                                </tr>
+
+                                @foreach($loanItem['changes'] as $accountItem)
+
+                                
+                                    <tr class="border-bottom">
+                                        <td class="text-left">{{ $accountItem['postingDate'] }}</td>
+                                        <td class="text-center">{{ $accountItem['description'] }}</td>
+                                        <td class="text-right">{{ $accountItem['expectedMonthly'] }}</td>
+                                        <td class="text-right">{{ $accountItem['debitAmount'] }}</td>
+                                        <td class="text-right">{{ $accountItem['creditAmount'] }}</td>
+                                        <td class="text-right">{{ $accountItem['balance'] }}</td>
+                                    </tr>
+                                    
+                                    <tr class="border-bottom">
+                                        <td class="text-left" colspan="2"></td>
+                                        <td class="text-right" colspan="1"></td>
+                                        <td class="text-right" colspan="4"></td>
+                                    </tr>
+
+                                @endforeach
+
+                                    <tr class="border-bottom">
+                                        <td class="text-left">Total</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-right"></td>
+                                        <td class="text-right">{{ $loanItem['loan_debit_total'] }}</td>
+                                        <td class="text-right">{{ $loanItem['loan_credit_total'] }}</td>
+                                        <td class="text-right">{{ $loanItem['loan_balance'] }}</td>
+                                    </tr>
+
+                                    <tr class="">
+                                        <td class="text-left" colspan="6"></td>
+                                    </tr>
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                    @endforeach
+
+
+                    <div>Please review your statement of account carefully.  If there is any information that does not match your records, contact your Financial Advisor or our Client Services department within 20 days.</div>
+
+                </div>
+
+                <div id="end"></div>
+            </section>
+
+        </article> 
+        
+    </body>
 </html>

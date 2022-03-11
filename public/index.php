@@ -38,7 +38,9 @@ require __DIR__.'/../vendor/autoload.php';
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 //$app = require_once __DIR__.'/../mtangazaProduction/bootstrap/app.php';
-//
+//$app->bind('path.public', function(){
+//    return __DIR__.'/,,/public_html';
+//});
 
 /*
 |--------------------------------------------------------------------------
