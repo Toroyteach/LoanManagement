@@ -3,6 +3,6 @@ deployment:
         tasks:
                 - export DEPLOYPATH=/home/mtangaza/
                 - export HOMEPATH=/home/mtangaza/mtangazaProduction/
-                - /bin/cp -r * $HOMEPATH
-                - /bin/rm -r $DEPLOYPATH/public_html/*
-                - /bin/cp -r $HOMEPATH/public/* $DEPLOYPATH/public_html/
+                - /bin/cp -R * $HOMEPATH
+                - /bin/rm -R $DEPLOYPATH/public_html/*
+                - /bin/cp -R $HOMEPATH/public/* $DEPLOYPATH/public_html/
