@@ -33,6 +33,7 @@
         "livewire/livewire": "^2.5",
         "maatwebsite/excel": "3.1.37",
         "mongodb/mongodb": "^1.9",
+        "queueworker/sansdaemon": "^1.2",
         "realrashid/sweet-alert": "^4.0",
         "webpatser/laravel-uuid": "^3.0",
         "yajra/laravel-datatables-oracle": "^9.9"

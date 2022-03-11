@@ -133,7 +133,7 @@ class AuditLogService
                 'loan_number'      => $log->loan_entry_number,
                 'loan_start_date'  => Carbon::parse($log->created_at)->toFormattedDateString(),
                 'loan_duration'    => $log->duration,
-                'loan_end_date'    => ($log->status_id ?? 10) ? $log->repayment_date : 'NUll',
+                'loan_end_date'    => ($log->status_id ?? 10) ? Carbon::parse($log->repayment_date)->toFormattedDateString() : 'NUll',
                 'loan_amount'      => strval($log->loan_amount),
                 'loan_amount_plus_interest' => strval($log->loan_amount_plus_interest),
                 'loan_balance'      => null,
@@ -204,7 +204,6 @@ class AuditLogService
                             //debit amount
                             $inputValue = $currentValue - $previousValue;
                             $interest = $inputValue - $log->equated_monthly_instal;
-                            var_dump('<br>'.$previousValue.'  '.$currentValue.' '.$interest);
 
                             $totalBalance += ($interest <= 0) ? 0 : $interest;
                             $totalDebit += ($interest <= 0) ? 0 : $interest;
