@@ -1,67 +1,573 @@
+<!DOCTYPE html>
 <html>
-<head><meta http-equiv=Content-Type content="text/html; charset=UTF-8">
-<style type="text/css">
-    
-span.cls_004{font-family:Arial,serif;font-size:9.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-div.cls_004{font-family:Arial,serif;font-size:9.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-span.cls_002{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-div.cls_002{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
-span.cls_003{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
-div.cls_003{font-family:Arial,serif;font-size:8.0px;color:rgb(0,0,0);font-weight:normal;font-style:normal;text-decoration: none}
+    <head>
+        <title>Loan Statements</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <style>
+            @import "fonts.css";
 
-</style>
+            @page {
+            size: 8.5in 11in;
+            margin: 0.5in;
+            margin-top: 1in;
+            }
 
-</head>
-<body>
-<div style="position:absolute; left:50%; margin-left:-306px; top:0px; width:612px; height:100%; border-style:outset; overflow:hidden">
+            body {
+            font-size: 9pt;
+            }
 
-    <div style="position:absolute;left:400px;top:5px">
-        <img src="{{ storage_path('app/logo/mtangazaji.png') }}" width="80" height="80">
-    </div>
+            .letter {
+            font-family: "Lucida Grande";
+            }
 
-    <div style="position:absolute;left:185.83px;top:5.04px" class="cls_004"><span class="cls_004">{{ $pdfDetails['saccoName'] }}</span></div>
-    <div style="position:absolute;left:125.35px;top:21.82px" class="cls_004"><span class="cls_004">{{ $pdfDetails['saccoAddress'] }} Harry Thuku Nairobi</span></div>
-    <div style="position:absolute;left:212.83px;top:31.83px" class="cls_004"><span class="cls_004">Region: Nairobi</span></div>
-    <div style="position:absolute;left:171.07px;top:45.79px" class="cls_004"><span class="cls_004">Tel: {{ $pdfDetails['memberPhone'] }} Office Tel:</span></div>
-    <div style="position:absolute;left:123.98px;top:61.85px" class="cls_004"><span class="cls_004">E-mail: {{ $pdfDetails['saccoUrl'] }}- Website:</span></div>
-    <div style="position:absolute;left:170.21px;top:71.86px" class="cls_004"><span class="cls_004"> </span><a href="">{{ $pdfDetails['saccoEmail'] }}</A> </div>
-    <!-- <div style="position:absolute;left:17.78px;top:102.46px" class="cls_002"><span class="cls_002">Account No.</span></div>
-    <div style="position:absolute;left:87.48px;top:102.46px" class="cls_003"><span class="cls_003">A0201526700</span></div> -->
-    <div style="position:absolute;left:17.78px;top:115.92px" class="cls_002"><span class="cls_002">Member No.:</span></div>
-    <div style="position:absolute;left:87.48px;top:115.92px" class="cls_003"><span class="cls_003">{{ $pdfDetails['memberPhone'] }}</span></div>
-    <div style="position:absolute;left:17.78px;top:128.95px" class="cls_002"><span class="cls_002">Member Name:</span><span class=""> {{ $pdfDetails['memberName'] }}</span></div>
-    <div style="position:absolute;left:17.78px;top:142.42px" class="cls_002"><span class="cls_002">ID Number:</span></div>
-    <div style="position:absolute;left:87.48px;top:142.42px" class="cls_003"><span class="cls_003">{{ $pdfDetails['memberIdno'] }}</span></div>
-    <div style="position:absolute;left:359.28px;top:142.42px" class="cls_002"><span class="cls_002">E-Mail:</span></div>
-    <div style="position:absolute;left:389.52px;top:142.42px" class="cls_003"><span class="cls_003">{{ $pdfDetails['memberEmail'] }}</span></div>
-    <div style="position:absolute;left:342.36px;top:156.67px" class="cls_002"><span class="cls_002">Mobile No.:</span></div>
-    <div style="position:absolute;left:389.52px;top:156.67px" class="cls_003"><span class="cls_003">{{ $pdfDetails['memberPhone'] }}</span></div>
+            h1 {
+            font-size: 9pt;
+            text-align: center;
+            font-weight: bold;
+            break-after: avoid;
+            }
+
+            h2 {
+            font-size: 8pt;
+            font-weight: bold;
+            break-after: avoid;
+            }
+
+            p {
+            text-align: justify;
+            hyphens: auto;
+            }
+
+            .footer-link {
+            color: #be945b;
+            }
+
+            div.letter {
+            line-height: 1.6em;
+            }
+
+            .letter-logo {
+            position: running(letter-logo);
+            text-align: center;
+            }
+
+            .letter-logo img {
+            width: 30mm;
+            height: auto;
+            }
+
+            .letter-footer {
+            position: running(letter-footer);
+            font-size: 8pt;
+            font-family: "Lucida Grande";
+            text-align: center;
+            }
+
+            .letter-signature {
+            width: 3cm;
+            display: block;
+            }
+
+            .letter p {
+            break-inside: avoid;
+            }
+
+            .letter-closing {
+            break-inside: avoid;
+            }
+
+            @page addendum {
+            @bottom-center {
+                content: element(letter-footer);
+            }
+
+            @top-center {
+                content: element(letter-logo);
+            }
+            }
+
+            .addendum-images img {
+                width: 100%;
+            }
+            @font-face {
+                font-family: "Lucida Grande";
+                src: url("../fonts/LucidaGrande.ttf") format("truetype");
+            }
+            @font-face {
+                font-family: goudyoldstylet;
+                src: url("../fonts/GOUDYOLDSTYLET-REGULAR.TTF") format("truetype");
+            }
+            
+            @font-face {
+                font-family: goudyoldstylet;
+                font-weight: bold;
+                src: url("../fonts/GOUDYOLDSTYLET-BOLD.TTF") format("truetype");
+            }
+            
+            @font-face {
+                font-family: goudyoldstylet;
+                font-weight: bold;
+                font-style: italic;
+                src: url("../fonts/GOUDYOLDSTYLE-BOLDITALIC.TTF") format("truetype");
+            }
+            
+            @font-face {
+                font-family: gothamrounded;
+                src: url("../fonts/GOTHAMROUNDED-MEDIUM.OTF") format("opentype");
+            }
+            
+            @font-face {
+                font-family: Arial;
+                src: url("../fonts/ArialUnicode.ttf") format("opentype");
+            }
+
+        @import "fonts.css";
+
+            body {
+                font-size: 8pt;
+                font-family: Arial;
+            }
+
+            .head1-left {
+                position: absolute;
+                top: 0;
+                /* left indent for image */
+                left: -30pt; 
+            }
+
+            .head1-left img {
+                /* Width of top-left 50% table (investor information) */
+                max-width: 245.40pt;
+                height: auto;
+            }
+
+            /* text in box should vertically aligned bottom with a height of 51.63pt.
+            * Using `top` here should have the same effect.
+            */
+            .head1-right {
+                position: absolute;
+                text-align: right;
+                top: 14pt;
+                right: 0;
+                vertical-align: bottom;
+            }
+
+            .head-title {
+                font-family: "Lucida Grande";
+                font-size: 16pt;
+                font-weight: bold;
+                font-style: italic;
+                margin-bottom: 0.5em;
+            }
+
+            .head-date {
+                font-family: "Lucida Grande";
+                font-size: 10pt;
+            }
+
+            .head2-left {
+                position: absolute;
+                top: 4cm;
+                left: 0;
+                width: 40%;
+                font-family: Arial;
+                font-size: 9pt;
+            }
+
+            .head2-right {
+                position: absolute;
+                text-align: right;
+                top: 93.40pt;
+                right: 0;
+                font-family: "Lucida Grande"
+            }
+            /* vertical spacer on first page where the tables start.
+            * Address, advisor etc. have an absolute positioning.
+            */
+            .spacer {
+                height: 180pt;
+            }
+
+            /* Vertical spacer on CGLS page */
+            .spacer2 {
+                height: 30mm;
+            }
+
+            /* turn .footer into a running element */
+            .footer {
+                position: running(footer);
+                font-size: 9pt;
+                font-family: Arial;
+                width: 100%;
+            }
+
+            .advisor {
+                border-right: 1pt solid grey;
+                text-transform: uppercase;
+                margin-right: -5px;
+                padding-right: 3px;
+                font-size: 9pt;
+                line-height: 1.4em;
+            }
+
+            .advisor-title {
+                font-weight: bold;
+                font-style: italic;
+                font-size: 11pt;
+                margin-bottom: 0.25em;
+            }
+
+            .sequence-number {
+                font-family: Arial;
+                color: grey;
+                font-size: 6pt; 
+                text-align: right;
+            }
+
+            table.accounting {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25.81pt;
+                font-family: Arial;
+                font-size: 8pt;
+                margin-bottom: 25.81pt;
+                break-inside: avoid;
+            }
+
+            table.layout-fixed {
+                table-layout: fixed;
+            }
+
+            table.accounting tr {
+                padding: 0;
+                margin: 0;
+            }
+
+            table.accounting th,
+            table.accounting td {
+                max-width: 20%;
+            }
+
+            table.accounting caption {
+                text-align: left;
+                border-top: 0.6pt solid #5972b2;
+                margin-bottom: 1em;
+            }
+
+            table.accounting caption span {
+                font-family: goudyoldstylet;
+                background: #5972b2;
+                font-weight: bold;
+                font-size: 10pt;
+                color: white;
+                display: inline-block;
+                padding-right: 0.25em;
+                padding-left: 0.25em;
+                padding-top: 0.25em;
+                padding-bottom: 0.25em;
+            }
+
+            table.accounting .headers th {
+                font-family: "Lucida Grande";
+                font-weight: bold;
+                font-style: italic;
+            }
+
+            table.accounting td {
+                padding-top: 1px;
+                padding-bottom: 2px;
+            }
+
+            table.accounting tfoot td {
+                padding-top: 1em;
+            }
+
+            /* Investor/Account information 50|50 tables implemented
+            * as left/right float within their #two-tables container
+            */
+
+            .two-tables .table-left {
+                float: left;
+                width: 245.40pt;
+            }
+
+            .two-tables .table-right {
+                float: right;
+                width: 245.40pt;
+            }
+
+            /* general table cell decoration with borders */
+
+            .border-top td {
+                border-top: 1px solid black;
+            }
+
+            .border-bottom td {
+                border-bottom: 1px solid black;
+            }
+
+            /* text alignment within a cell */
+
+            table.accounting .text-left {
+                text-align: left
+            }
+
+            table.accounting .text-right {
+                text-align: right;
+            }
+
+            table.accounting .text-center {
+                text-align: center;
+            }
+
+            table.accounting .extra-top-padding {
+                padding-top: 1em;
+            }
 
 
-    <div style="position:absolute;left:17.78px;top:187.57px" class="cls_004"><span class="cls_004">Deposit Contribution</span></div>
-    <div style="position:absolute;left:17.78px;top:202.54px" class="cls_004"><span class="cls_004">Posting Date</span></div>
-    <div style="position:absolute;left:170.78px;top:202.54px" class="cls_004"><span class="cls_004">Description</span></div>
-    <!-- <div style="position:absolute;left:326.81px;top:202.54px" class="cls_004"><span class="cls_004">Debit Amount</span></div> -->
-    <div style="position:absolute;left:395.35px;top:202.54px" class="cls_004"><span class="cls_004">Credit Amount</span></div>
-    <div style="position:absolute;left:495.00px;top:202.54px" class="cls_004"><span class="cls_004">Balance</span></div>
+            table.accounting .extra-bottom-padding {
+                padding-bottom: 1em;
+            }
+
+            table.width-50 {
+                width: 245.40pt;
+            }
+
+            /* defines font classes by pt size for general usage */
+
+            .text-7 {
+                font-size: 7pt;
+            }
+
+            .text-8 {
+                font-size: 8pt;
+            }
+
+            .text-9 {
+                font-size: 10pt;
+            }
 
 
-    @foreach($userLogs as $key => $loanItem)
-        <div style="position:relative;left:17.78px;top:229.97px" class="cls_003"><span class="cls_003">{{ $loanItem['postingDate'] }}</span></div>
-        <div style="position:relative;left:170.78px;top:221px" class="cls_003"><span class="cls_003">{{ $loanItem['description'] }}</span></div>
-        <!-- <div style="position:relative;left:369.94px;top:221px" class="cls_003"><span class="cls_003">{{ $loanItem['debitAmount'] }}</span></div> -->
-        <div style="position:relative;left:426.31px;top:214px" class="cls_003"><span class="cls_003">{{ $loanItem['creditAmount'] }}</span></div>
-        <div style="position:relative;left:498.31px;top:204px" class="cls_003"><span class="cls_003">{{ $loanItem['balance'] }}</span></div>
-    @endforeach
+            .text-10 {
+                font-size: 10pt;
+            }
 
-    <div style="position:absolute;left:13.68px;top:1000.74px" class="cls_002"><span class="cls_002">Printed By:</span></div>
-    <div style="position:absolute;left:64.44px;top:1000.74px" class="cls_003"><span class="cls_003">{{ $pdfDetails['saccoName'] }}</span></div>
-    <div style="position:absolute;left:225.58px;top:1000.74px" class="cls_002"><span class="cls_002">Date & Time:</span></div>
-    <div style="position:absolute;left:283.82px;top:1000.74px" class="cls_003"><span class="cls_003">{{ $pdfDetails['printedOn'] }}</span></div>
-    <div style="position:absolute;left:478.08px;top:1000.74px" class="cls_002"><span class="cls_002">Page No.</span></div>
-    <div style="position:absolute;left:526.90px;top:1000.74px" class="cls_003"><span class="cls_003">1</span></div>
+            /* text/font decorations */
 
-</div>
+            .bold {
+                font-weight: bold;
+            }
 
-</body>
+            .italic {
+                font-style: italic;
+            }
+
+            /* needed for Weasyprint (#1062)*/
+            table::before {
+                content: target-counter(url(#end), page);
+                display: none;
+            }
+
+            .chart {
+                border-bottom: 1px solid black;
+                margin-bottom: 2em;
+            }
+
+            .chart img {
+                max-width: 100%
+            }
+
+            .footnote-marker {
+                display: inline-block;
+                width: 0.5em;
+            }
+
+            .cgls-head {
+                margin-bottom: 4em;
+            }
+
+            @page statement {
+
+                margin-bottom: 30mm;
+
+                @bottom-left {
+                    content: element(footer);
+                    vertical-align: bottom;
+                    display: table-cell;
+                    border-bottom: 1pt solid grey;
+                    font-family: Arial;
+                    margin-bottom: 1cm;
+                    height: 1.5cm;
+                }
+                @bottom-right {
+                    font-family: Arial;
+                    font-size: 8pt;
+                    border-bottom: 1pt solid grey;
+                    vertical-align: bottom;
+                    width: 3cm;
+                    height: 1.5cm;
+                    display: table-cell;
+                    content: "Page " counter(page) " of " counter(pages);
+                    margin-bottom: 1cm;
+                }
+            }
+
+            @page statement-cgls {
+
+                margin-bottom: 30mm;
+
+                @bottom-left {
+                    content: element(footer);
+                    vertical-align: bottom;
+                    display: table-cell;
+                    border-bottom: 1pt solid grey;
+                    font-family: Arial;
+                    margin-bottom: 1cm;
+                    height: 1.5cm;
+                }
+            }
+
+            @import "fonts.css";
+
+            .statement,
+            .addendum {
+                page-break-after: auto;
+            }
+
+            .statement {
+                page: statement;
+            }
+
+            .statement-cgls {
+                page: statement-cgls;
+            }
+
+
+            .addendum {
+                page: addendum;
+            }
+
+            /* general page size and margins */
+
+            @page {
+                size: 8.5in 11in;
+                margin-bottom: 20.26pt;
+                margin-top: 105.38pt;
+            }
+
+            /* First statement page has a custom margin-top */
+            @page :first {
+                margin-top: 20.26pt;
+            }
+
+            /* same for CGLS page */
+            @page statement-cgls {
+                margin-top: 20.26pt;
+            }
+
+            /* ATT: page 1 is usually a right page. But for the statements
+            * page 1 should be left page that's why we swap :right and :left
+            * in order to get left/right margins on left/right pages right
+            */
+
+            /* @page :right{
+                margin-left: 73.22pt;
+                margin-right: 36.14pt;
+            }
+
+            @page :left {
+                margin-left: 36.14pt;
+                margin-right: 73.22pt;
+            } */
+        </style>
+    </head>
+
+    <body lang="en">
+         
+        <article>
+            <section class="statement">
+                <div>
+
+                    <div class="head1-left">
+                        <!--
+                            <img src="logo.png" />
+                        -->
+                        <img src="{{ storage_path('app/logo/mtangazaji.png') }}" width="100" height="auto" style="position: relative; left: 50px;"/>
+                    </div>
+
+                    <div class="head1-right">
+                        <div class="head-title">{{ $pdfDetails['saccoName'] }} <br> <span style="font-size: 18px;">Monthly Contribution</span></div>
+                        <div class="head-date">{{ $pdfDetails['printedOn'] }}</div>
+                    </div>
+
+                    <div class="head2-left">
+                        <div class="advisor-outer">
+                            <div class="">
+                                <div>Name : {{ $pdfDetails['memberName'] }}</div>
+                                <div>Member No : {{ $pdfDetails['memberNo'] }}</div>
+                                <div>Member Email : {{ $pdfDetails['memberEmail'] }}</div>
+                                <div>Mobile Number : {{ $pdfDetails['memberPhone'] }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spacer">&nbsp;</div>
+
+                        <table class="accounting account-summary">
+                            <caption>
+                                <span>Account Summary</span>
+                            </caption>
+                            <thead>
+                                <tr class="headers border-bottom">
+                                    <th class="text-left">Posting Date</th>
+                                    <th class="text-center">Description</th>
+                                    <th class="text-right">Credit<br />Amount (ksh)</th>
+                                    <th class="text-right">Balance<br />Amount (ksh)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-bottom">
+                                    <td colspan="7" class="text-7 text-left">Monthly Contribution</td>
+                                </tr>
+
+                                @foreach($userLogs as $key => $loanItem)
+
+                                    <tr class="border-bottom">
+                                        <td class="text-left">{{ $loanItem['postingDate'] }}</td>
+                                        <td class="text-center">{{ $loanItem['description'] }}</td>
+                                        <td class="text-right">{{ $loanItem['creditAmount'] }}</td>
+                                        <td class="text-right">{{ $loanItem['balance'] }}</td>
+                                    </tr>
+                                    
+                                    <tr class="border-bottom">
+                                        <td class="text-left" colspan="2"></td>
+                                        <td class="text-right" colspan="1"></td>
+                                        <td class="text-right" colspan="4"></td>
+                                    </tr>
+
+                                @endforeach
+
+                                    <tr class="">
+                                        <td class="text-left" colspan="6"></td>
+                                    </tr>
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                    <div>Please review your statement of account carefully.  If there is any information that does not match your records, contact your Financial Advisor or our Client Services department within 20 days.</div>
+
+                </div>
+
+                <div id="end"></div>
+            </section>
+
+        </article> 
+        
+    </body>
 </html>

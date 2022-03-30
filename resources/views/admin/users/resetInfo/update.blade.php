@@ -3,61 +3,18 @@
 
 <div class="card">
     <div class="card-header">
-        {{ trans('global.create') }} Member
+        <p class="alert alert-warning"> You need to Fill the following to continue </p>
     </div>
 
     <div class="card-body">
-        <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data" id="memberCreate">
+        <form method="POST" action="{{ route('users.profile.firsttime') }}" enctype="multipart/form-data" id="memberCreate">
             @csrf
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label class="required" for="firstname">{{ trans('cruds.user.fields.firstname') }}</label>
-                    <input class="form-control {{ $errors->has('firstname') ? 'is-invalid' : '' }}" type="text" name="firstname" id="firstname" value="{{ old('firstname', '') }}">
-                    @if($errors->has('firstname'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('firstname') }}
-                        </div>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.user.fields.firstname_helper') }}</span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label class="required" for="lastname">{{ trans('cruds.user.fields.lastname') }}</label>
-                    <input class="form-control {{ $errors->has('lastname') ? 'is-invalid' : '' }}" type="text" name="lastname" id="lastname" value="{{ old('lastname', '') }}">
-                    @if($errors->has('lastname'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('lastname') }}
-                        </div>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.user.fields.lastname_helper') }}</span>
-                </div>
-
-                <div class="form-group col-md-6">
-                    <label for="middlename">{{ trans('cruds.user.fields.middlename') }}</label>
-                    <input class="form-control {{ $errors->has('middlename') ? 'is-invalid' : '' }}" type="text" name="middlename" id="middlename" value="{{ old('middlename', '') }}">
-                    @if($errors->has('middlename'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('middlename') }}
-                        </div>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.user.fields.middlename_helper') }}</span>
-                </div>
-                <div class="form-group col-md-6">
-                    <label class="required" for="nationalid">{{ trans('cruds.user.fields.nationalid') }}</label>
-                    <input class="form-control {{ $errors->has('nationalid') ? 'is-invalid' : '' }}" type="number" name="nationalid" id="nationalid" value="{{ old('nationalid', '') }}">
-                    @if($errors->has('nationalid'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('nationalid') }}
-                        </div>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.user.fields.nationalid_helper') }}</span>
-                </div>
-            </div>
 
             <br><br>
             
             <div class="row">
                 <div class="form-group col-md-6">
-                    <label class="required" for="email">{{ trans('cruds.user.fields.email') }}</label>
+                    <label class="required" for="email">New {{ trans('cruds.user.fields.email') }}</label>
                     <input class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}" type="email" name="email" id="email" value="{{ old('email', '') }}">
                     @if($errors->has('email'))
                         <div class="invalid-feedback">
@@ -83,29 +40,11 @@
                     <span class="help-block">{{ trans('cruds.user.fields.password_helper') }}</span>
                 </div>
 
-                <div class="form-group col-md-6">
-                    <label class="required" for="password">Member No</label>
-                    <input class="form-control {{ $errors->has('idno') ? 'is-invalid' : '' }}" type="number" value="{{ old('idno', '') }}" placeholder="Enter 6 digits" name="idno" id="idno">
-                    @if($errors->has('idno'))
-                        <div class="invalid-feedback">
-                            The Member Number must be 6 digits
-                        </div>
-                    @endif
-                </div>
             </div>
 
             <br><br>
 
             <div class="row">
-                <div class="form-group col-md-6">
-                    <label class="required" for="number">Phone Number</label>
-                    <input class="form-control {{ $errors->has('number') ? 'is-invalid' : '' }}" type="number" placeholder="254..." value="{{ old('number', '') }}" name="number" id="number" >
-                    @if($errors->has('number'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('number') }}
-                        </div>
-                    @endif
-                </div>
 
                 <div class="form-group col-md-6">
                     <label class="required" for="address">Address</label>
@@ -174,29 +113,6 @@
                             {{ $errors->first('avatar') }}
                         </div>
                     @endif
-                </div>
-            </div>
-
-            <br><br>
-
-            <div class="row">
-                <div class="form-group col-md-6">
-                    <label class="required" for="roles">{{ trans('cruds.user.fields.roles') }}</label>
-                    <div style="padding-bottom: 4px">
-                        <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                        <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                    </div>
-                    <select class="form-control select2 {{ $errors->has('roles') ? 'is-invalid' : '' }}" name="roles[]" id="roles" multiple required>
-                        @foreach($roles as $id => $roles)
-                            <option value="{{ $id }}" {{ in_array($id, old('roles', [])) ? 'selected' : '' }}>{{ $roles }}</option>
-                        @endforeach
-                    </select>
-                    @if($errors->has('roles'))
-                        <div class="invalid-feedback">
-                            {{ $errors->first('roles') }}
-                        </div>
-                    @endif
-                    <span class="help-block">{{ trans('cruds.user.fields.roles_helper') }}</span>
                 </div>
             </div>
 
@@ -280,9 +196,9 @@
     let fullScreenLoader = document.getElementById("fullLoader");
 
     swal.fire({
-            title: "Create Member",
+            title: "Fill Details",
             icon: 'question',
-            text: "Your are about to create a member. Please check details, then confirm!",
+            text: "Your are about to Submit your Details. Please check details, then confirm!",
             showCancelButton: !0,
             confirmButtonText: "Yes, Submit",
             cancelButtonText: "No, cancel!",

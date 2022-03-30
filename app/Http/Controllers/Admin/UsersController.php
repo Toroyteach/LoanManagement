@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyUserRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\FirstTimeLoginRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UpdateUserProfileRequest;
 use App\Http\Requests\AdminUpdateRequest;
@@ -34,6 +35,7 @@ use App\Action\StoreUserAction;
 use Validator;
 use Mail;
 use Illuminate\Support\Facades\Hash;
+use App\UserBulk;
 
 class UsersController extends Controller
 {
@@ -50,6 +52,54 @@ class UsersController extends Controller
         $users = User::all();
 
         return view('admin.users.index', compact('users'));
+        //dd('bulk add users');
+        // $bulkUsers = UserBulk::all();
+
+        // $start = microtime(true);
+
+        // foreach($bulkUsers as $key => $item){
+
+        //     $user = User::create([
+        //         'firstname' => trim($item->fristname),
+        //         'middlename' => trim($item->middlename),
+        //         'lastname' => trim($item->lastname),
+        //         'nationalid' => trim($item->nationalid),
+        //         'number' => trim($item->number),
+        //         'idno' => trim($item->memberno),
+        //         'email' => strtolower(trim($item->fristname)).''.strtolower(trim($item->lastname)).'@mtangazajisacco.co.ke',
+        //         'password' => 'password',
+        //         'name' => trim($item->fristname).' '.trim($item->lastname),
+        //     ]);
+
+        //     $user->roles()->sync(1);
+        //     $user->save();
+
+        //     UsersAccount::create([
+        //         'total_amount' => 0.00,
+        //         'user_id' => $user->id,
+        //     ]);
+
+        //     //add/deposit on the sacco account
+        //     SaccoAccount::create([
+        //         'opening_bal' =>  0.00,
+        //         'deposit_bal' =>  0.00, //registration amount
+        //         'created_by' =>   2, //staff who created the account
+        //         'user_id' =>  $user->id,
+        //     ]);
+
+        //     MonthlySavings::create([
+        //         'total_contributed' =>  0.00,
+        //         'monthly_amount' =>  1000.00,
+        //         'created_by' =>   \Auth::user()->id,
+        //         'user_id' =>  $user->id,
+        //         'next_payment_date' => Carbon::createFromFormat('Y-m-d H:i:s', $user->created_at)->firstOfMonth()->addDays(4)->addMonths(1)->format('Y-m-d'),
+        //         'overpayment_amount' => 0.00,
+        //     ]);
+        // }
+
+        // $time_elapsed_secs = microtime(true) - $start;
+
+        // dd('done', $time_elapsed_secs);
     }
 
     public function create()
@@ -124,8 +174,53 @@ class UsersController extends Controller
     		$user->save();
         }
 
-            return redirect()->route('admin.users.index')->with('success','User created successfully!');
+        return redirect()->route('admin.users.index')->with('success','User created successfully!');
 
+    }
+
+    public function firstTimeLoginUpdate(FirstTimeLoginRequest $request)
+    {
+
+        //fill in the new details of the user
+        $user = User::find(\Auth::user()->id);
+        $user->update($request->all());
+
+        //dynamic adding of multiple next of kins
+        foreach($request->input('kin') as $key => $value) {
+
+            NextKin::create([
+                'name' => $value['name'],
+                'phone' => $value['number'],
+                'relationship' => $value['type'],
+                'user_id' => $user->id,
+            ]);   
+
+        }
+
+        if ($request->has('avatar')) {
+            $filename = time() . '_' . $request->file('avatar')->getClientOriginalName();
+            $request->file('avatar')->storeAs('profileavatar', $filename, 'uploads');
+            $user->avatar = $filename;
+        }
+        
+        $user->save();
+
+        //send the verification link to the new email provided
+        $user->sendEmailVerificationNotification();
+
+        //redirect home.
+        \Auth::logout();
+        return redirect('/login');
+    }
+
+    public function getUserFillProfile()
+    {
+        return view('admin.users.resetInfo.update');
+    }
+
+    public function completeDetails()
+    {
+        return view('admin.users.resetInfo.index');
     }
 
     public function edit(User $user)
