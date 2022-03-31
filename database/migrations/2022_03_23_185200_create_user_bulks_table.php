@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateUserBulksTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('user_bulks', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('fristname');
+            $table->string('middlename')->nullable();
+            $table->string('lastname');
+            $table->string('nationalid');
+            $table->string('memberno');
+            $table->string('number');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('user_bulks');
+    }
+}

@@ -53,7 +53,7 @@ class StoreUserRequest extends FormRequest
                 'required','unique:users', 'digits:6',
             ],
             'password' => [
-                'required',
+                'required_with:password_confirmation',
             ],
             'avatar'  => [
                 'required','image:jpeg,png,jpg,gif,svg|max:2048',
@@ -124,6 +124,7 @@ class StoreUserRequest extends FormRequest
             'joinedsacco' => 'Date Joined Sacco',
             'roles' => 'Member Role',
             'avatar' => 'Member Image',
+            'kin' => 'Next of Kin',
         ];
     }
 }

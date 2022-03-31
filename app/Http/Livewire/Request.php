@@ -314,7 +314,7 @@ class Request extends Component
             
             unset($request);
 
-            $request = CreateLoanRequest::where('user_id', auth()->user()->id)->first();
+            $request = CreateLoanRequest::where('user_id', auth()->user()->id)->with('files')->first();
 
             if($request){
 

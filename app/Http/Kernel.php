@@ -43,5 +43,6 @@ class Kernel extends HttpKernel
         'signed'           => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle'         => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'fill_details'     => \App\Http\Middleware\FirstTimeLoginResetDetails::class,
     ];
 }
